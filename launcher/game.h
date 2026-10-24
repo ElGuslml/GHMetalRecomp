@@ -122,7 +122,15 @@ struct Language {
   const char* variant_cvar;  // null: none
   const char* locales;       // null: any locale of the language
 };
-inline constexpr std::array<Language, 0> kLanguages{};
+// The disc's text packs (DATA/COMPRESSED/PAK/qs_*.pak.xen): English and French, German, Italian, Spanish (Spain's);
+// the game picks one from XGetLanguage at start (checked: Spanish's main menu, German's title screen).
+inline constexpr std::array<Language, 5> kLanguages{{
+    {3, "Deutsch", nullptr, nullptr},
+    {1, "English", nullptr, nullptr},
+    {5, "Español", nullptr, nullptr},
+    {4, "Français", nullptr, nullptr},
+    {6, "Italiano", nullptr, nullptr},
+}};
 
 // Switches of the game's own (src/), each a boolean cvar with a row in the Game page; their titles and hints are
 // game.cpp's (GameTexts::toggles, in this order).
