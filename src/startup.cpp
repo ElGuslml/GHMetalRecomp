@@ -86,6 +86,11 @@ anisotropic_override = 5
 # been read and missed most blocks: from the title screen on, the music played as noise. 0 = the SDK
 # default (no spacing).
 audio_callback_min_interval_us = 3000
+# Report a controller (and the keyboard's emulated one) as a guitar: the game gives a plain gamepad
+# the vocals, which need a microphone. Frets on A (green), B (red), Y (yellow), X (blue) and LB
+# (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real
+# guitar or drum kit keeps its own kind. 8 = drum kit, 0 = the SDK default (a gamepad).
+gamepad_subtype = 6
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {
