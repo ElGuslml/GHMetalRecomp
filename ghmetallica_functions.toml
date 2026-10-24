@@ -1,12 +1,38 @@
 # ghmetallica_functions.toml - Manual corrections for the analyzer (default.xex): functions it missed, [[switch_tables]] the
 # codegen mistranslates and [[midasm_hook]]s into src/. KameoRecomp's kameo_functions.toml, POTCAWERecomp's
 # potcawe_functions.toml and GRAWRecomp's yeti_functions.toml have examples of each.
-#
-# Later, as in those games: the C runtime's setjmp_address / longjmp_address (with share_registers on their
-# callers), then the *_as_local codegen options (the registers as local variables, a CPU gain), each checked as
-# CLAUDE.md says.
+
+# The C runtime's setjmp and longjmp (sub_8252F5B0 saves f14-f31, r13-r31, v64-v127, r1, LR and CR in the jmp_buf;
+# sub_8252EF50 unwinds to it and loads them back), the same code as in KameoRecomp. The codegen turns calls to them
+# into the host's setjmp and longjmp, keyed by the guest jmp_buf; translated as plain functions, longjmp would load
+# the registers and return to its caller instead of jumping. Only the image decoders use them: libjpeg
+# (sub_821DF7E0: setjmp at its error manager + 144, where its error function sub_821DE890 longjmps back) and libpng
+# (sub_821DFA00, sub_821F3028: setjmp at the start of the png struct, longjmp from sub_821F12A0 and sub_821DE958).
+setjmp_address = 0x8252F5B0
+longjmp_address = 0x8252EF50
+
+# Codegen: the registers no call passes on are local variables of each function, not fields of the PPCContext, so
+# the compiler keeps them in host registers and the __savegprlr/__restgprlr helpers are elided, as in KameoRecomp,
+# GRAWRecomp and POTCAWERecomp. non_argument_as_local (r0, r2, r11, r12) stays off: the SEH funclets read r12, which
+# the SDK does not pass them. The non-volatile vector registers stay in the context (SDK change 42): this game's
+# compiler passes values to its callees in them, outside the calling convention. sub_82697A78, sub_82699540 and
+# sub_8269B6F0 set v92 (vor128 v92,v12,v12) and call sub_826973D8, whose callees sub_8269F488, sub_8269F770 and
+# sub_8269FBB0 read it without writing it (vmsum4fp128 v23,v92,v24); as local variables v92 would be unset there.
+non_volatile_as_local = true
+non_volatile_vectors_as_local = false
+cr_as_local = true
+ctr_as_local = true
+xer_as_local = true
+reserved_as_local = true
 
 [functions]
+# The functions that call setjmp keep their registers in the context (share_registers): the host longjmp returns
+# into their C++ frame, and the codegen restores the context it saved at the setjmp, not local variables. The guest
+# longjmp loaded r14-r31 with their values at the setjmp. None of them calls longjmp itself, so their ends (from
+# .pdata) do not move.
+0x821DF7E0 = { share_registers = true }   # libjpeg's guard
+0x821DFA00 = { share_registers = true }   # libpng's guards
+0x821F3028 = { share_registers = true }
 # Branch (b) targets that the automatic analysis did not assign to any function. All are small functions
 # reached only through tail calls, each right after an unconditional end (b, bctr, blr): virtual call thunks
 # (lwz r11,0(r3) / lwz r10,N(r11) / mtctr / bctr), a byte setter, a null check before a tail call and a

@@ -11,6 +11,9 @@
 #include <rex/system/kernel_state.h>
 #include <rex/system/xthread.h>
 
+#include <native_x_renderer/native_x_renderer.h>
+
+#include "native_x_renderer_ghmetallica.h"
 #include "options.h"
 #include "project.h"
 #include "startup.h"
@@ -53,20 +56,23 @@ class GhmetallicaApp : public rex::ReXApp {
     ghmetallica::EnsureDefaultConfig(exe_dir / GAME_CONFIG);
     if (!rex::ReXApp::SetupEnvironment()) return false;
     REXLOG_INFO("[startup] User data: {}", user_data_root().string());
+    REXLOG_INFO("[startup] {}", native_x_renderer::Describe());
     if (!rex::cvar::Query<bool>("achievements_cache_only") && !ghmetallica::CheckGameFiles(game_data_root())) return false;
     ghmetallica::LoadLauncherOptions(exe_dir / GAME_OPTIONS, ghmetallica::GpuPluginPath());
     return true;
   }
 
-  // Window title (the SDK sets "<app name> <SDK build stamp>"). NativeXRenderer is initialized here too, before
-  // the guest starts, once the game has its side (native_x_renderer/docs/integrating-a-game.md, step 2):
-  //   native_x_renderer::Initialize(ghmetallica::NativeXRendererProfile(),
-  //                                 runtime() ? runtime()->graphics_system() : nullptr, window(),
-  //                                 runtime() ? runtime()->cache_root() : std::filesystem::path());
-  // Then ultrawide (src/widescreen.cpp): the cameras' aspect ratio follows the window.
+  // Window title (the SDK sets "<app name> <SDK build stamp>"), then NativeXRenderer, before the guest starts: its
+  // hooks (src/native_x_renderer_ghmetallica.cpp) are pass-throughs until it is initialized; then ultrawide
+  // (src/widescreen.cpp): the cameras' aspect ratio follows the window.
   void OnPostSetup() override {
     if (window()) {
       window()->SetTitle(GAME_TITLE);
+    }
+    native_x_renderer::Initialize(ghmetallica::NativeXRendererProfile(),
+                                  runtime() ? runtime()->graphics_system() : nullptr, window(),
+                                  runtime() ? runtime()->cache_root() : std::filesystem::path());
+    if (window()) {
       ghmetallica::SetOutputSize(window()->GetActualPhysicalWidth(), window()->GetActualPhysicalHeight());
     }
   }
