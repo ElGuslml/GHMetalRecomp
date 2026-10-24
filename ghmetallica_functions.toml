@@ -57,3 +57,15 @@ registers = ["r6"]
 address = 0x822E45F4   # stfd f0,3072(r7) (sub_822E4588: the main thread's frame, before its wait)
 name = "GHMetallicaQuitPromptHook"
 
+# Ultrawide (src/widescreen.cpp), with ghmetallica_ultrawide: the engine's screen aspect ratio, which its cameras read,
+# follows the window (3D views see more to the sides); root_window, which every screen element hangs from, is narrowed
+# around the center (the menus, the HUD and the note highway stay 16:9).
+[[midasm_hook]]
+address = 0x8238F918   # lis r11,-32081 (entry of sub_8238F918: f1 = the screen's aspect ratio, SetScreen)
+name = "GHMetallicaScreenAspectHook"
+registers = ["f1"]
+[[midasm_hook]]
+address = 0x82376084   # loc_82376084 in sub_82375E08: a screen element's summed properties, after root_window's own copy
+name = "GHMetallicaRootElementHook"
+registers = ["r31"]
+

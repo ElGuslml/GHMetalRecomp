@@ -7,6 +7,7 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 |---|---|
 | [Game language](language.md) | Working: launcher language row (German, English, Spanish, French, Italian) |
 | [Quitting from the title screen and the main menu](quit-prompt.md) | Working: B asks whether to quit (A quits, B cancels) |
+| [Ultrawide displays](ultrawide.md) | Working: wider stage, menus, HUD and highway kept 16:9 in the center (a dark band around the highway) |
 | [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar (the keyboard's keys still the SDK's) |

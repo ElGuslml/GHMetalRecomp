@@ -70,6 +70,7 @@ set(GHMETALLICA_SOURCES
     src/startup.cpp
     src/thread_waits.cpp
     src/timer.cpp
+    src/widescreen.cpp
 )
 
 if(WIN32)

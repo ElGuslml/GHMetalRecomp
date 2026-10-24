@@ -14,6 +14,7 @@
 #include "options.h"
 #include "project.h"
 #include "startup.h"
+#include "widescreen.h"
 
 class GhmetallicaApp : public rex::ReXApp {
  public:
@@ -62,10 +63,15 @@ class GhmetallicaApp : public rex::ReXApp {
   //   native_x_renderer::Initialize(ghmetallica::NativeXRendererProfile(),
   //                                 runtime() ? runtime()->graphics_system() : nullptr, window(),
   //                                 runtime() ? runtime()->cache_root() : std::filesystem::path());
+  // Then ultrawide (src/widescreen.cpp): the cameras' aspect ratio follows the window.
   void OnPostSetup() override {
     if (window()) {
       window()->SetTitle(GAME_TITLE);
+      ghmetallica::SetOutputSize(window()->GetActualPhysicalWidth(), window()->GetActualPhysicalHeight());
     }
+  }
+  void OnWindowPixelSizeChanged(uint32_t pixel_width, uint32_t pixel_height) override {
+    ghmetallica::SetOutputSize(pixel_width, pixel_height);
   }
 
   // On exit, log whether the game asked to launch another executable.
