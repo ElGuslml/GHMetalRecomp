@@ -1,7 +1,6 @@
 # Noise instead of music from the title screen on
 
-**Status: fixed on the developer's machine (2026-10-24), waiting for a listening test.** Measured on the title
-screen: the game's music now plays at the real rate (below).
+**Status: fixed (2026-10-24).** Confirmed by ear: the title screen and the menus play their music.
 
 ## Symptom
 

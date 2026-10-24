@@ -5,4 +5,5 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 
 | Note | Status |
 |---|---|
-| [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace (waiting for a listening test) |
+| [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |
+| [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace |
