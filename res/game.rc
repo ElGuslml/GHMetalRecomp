@@ -1,0 +1,31 @@
+// Resources of GHMetallicaRecomp.exe: icon (res/icon.ico, when present) and file properties.
+#include <winver.h>
+#include "version.h"
+
+#ifdef RECOMP_HAS_ICON
+1 ICON "icon.ico"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION RECOMP_VERSION
+PRODUCTVERSION RECOMP_VERSION
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "FileDescription", "Guitar Hero: Metallica - GHMetalRecomp"
+      VALUE "FileVersion", RECOMP_VERSION_STR
+      VALUE "ProductName", "GHMetalRecomp"
+      VALUE "ProductVersion", RECOMP_VERSION_STR
+      VALUE "OriginalFilename", "GHMetallicaRecomp.exe"
+      VALUE "LegalCopyright", "GHMetalRecomp code: MIT License. Game content belongs to its owners."
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END

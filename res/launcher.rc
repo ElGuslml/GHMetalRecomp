@@ -1,0 +1,42 @@
+// Resources of "GH Metallica Launcher.exe": icon (res/icon.ico, when present), file properties, and the launcher's fonts and
+// art (launcher/resources.h).
+#include <winver.h>
+#include "version.h"
+#include "../launcher/resources.h"
+
+#ifdef RECOMP_HAS_ICON
+1 ICON "icon.ico"
+#endif
+
+IDR_FONT_REGULAR RCDATA "../launcher/fonts/Barlow-Regular.ttf"
+IDR_FONT_MEDIUM RCDATA "../launcher/fonts/Barlow-Medium.ttf"
+IDR_FONT_SEMIBOLD RCDATA "../launcher/fonts/Barlow-SemiBold.ttf"
+IDR_FONT_BOLD RCDATA "../launcher/fonts/Barlow-Bold.ttf"
+IDR_FONT_CONDENSED_SEMIBOLD RCDATA "../launcher/fonts/BarlowCondensed-SemiBold.ttf"
+IDR_FONT_CONDENSED_BOLD RCDATA "../launcher/fonts/BarlowCondensed-Bold.ttf"
+IDR_ART_HERO RCDATA "../launcher/art/hero.svg"
+IDR_ART_INSTALL RCDATA "../launcher/art/install.svg"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION RECOMP_VERSION
+PRODUCTVERSION RECOMP_VERSION
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "FileDescription", "GH Metallica Launcher - options for GHMetalRecomp"
+      VALUE "FileVersion", RECOMP_VERSION_STR
+      VALUE "ProductName", "GHMetalRecomp"
+      VALUE "ProductVersion", RECOMP_VERSION_STR
+      VALUE "OriginalFilename", "GH Metallica Launcher.exe"
+      VALUE "LegalCopyright", "GHMetalRecomp code: MIT License."
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1200
+  END
+END

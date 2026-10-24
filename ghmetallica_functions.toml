@@ -1,0 +1,18 @@
+# ghmetallica_functions.toml - Manual corrections for the analyzer (default.xex): functions it missed, [[switch_tables]] the
+# codegen mistranslates and [[midasm_hook]]s into src/. KameoRecomp's kameo_functions.toml, POTCAWERecomp's
+# potcawe_functions.toml and GRAWRecomp's yeti_functions.toml have examples of each.
+#
+# Later, as in those games: the C runtime's setjmp_address / longjmp_address (with share_registers on their
+# callers), then the *_as_local codegen options (the registers as local variables, a CPU gain), each checked as
+# CLAUDE.md says.
+
+[functions]
+# Branch (b) targets that the automatic analysis did not assign to any function. All are small functions
+# reached only through tail calls, each right after an unconditional end (b, bctr, blr): virtual call thunks
+# (lwz r11,0(r3) / lwz r10,N(r11) / mtctr / bctr), a byte setter, a null check before a tail call and a
+# one-instruction thunk.
+0x8222E528 = {}   # branched to from 0x8222E8F4 (b 0x8222E190, a one-instruction thunk)
+0x8238B140 = {}   # branched to from 0x823C435C (virtual call thunk, slot 108)
+0x8238B1D0 = {}   # branched to from 0x823C4584 (virtual call thunk, slot 156)
+0x82477EE8 = {}   # branched to from 0x823336EC and 0x82333708 (sets the byte at +241)
+0x82683A38 = {}   # branched to from 0x8256A818 (null check, then b 0x82532A60)
