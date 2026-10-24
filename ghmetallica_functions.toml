@@ -16,3 +16,28 @@
 0x8238B1D0 = {}   # branched to from 0x823C4584 (virtual call thunk, slot 156)
 0x82477EE8 = {}   # branched to from 0x823336EC and 0x82333708 (sets the byte at +241)
 0x82683A38 = {}   # branched to from 0x8256A818 (null check, then b 0x82532A60)
+
+# The game's threads wait without spinning (src/thread_waits.cpp): four loops checked a condition again and
+# again and kept a core at 100 % each (the three job workers, the main thread at the start of a frame and while
+# it waits for the render thread, the render thread waiting for the vertical blank). Each hook spins briefly and then sleeps between checks;
+# ghmetallica_wait_sleep_us = 0 disables them.
+[[midasm_hook]]
+address = 0x82425A78   # li r4,0 (sub_82425A18: a job worker with an empty queue, before WaitForSingleObject(event, 0))
+name = "GHMetallicaJobWaitHook"
+[[midasm_hook]]
+address = 0x822E4600   # cmplwi cr6,r3,0 (sub_822E4588: while (sub_8243C3D8(0x82C129E8) != 0) {})
+name = "GHMetallicaFrameWaitHook"
+registers = ["r3"]
+[[midasm_hook]]
+address = 0x822E0C44   # cmplw cr6,r11,r10 (sub_822E0C10: while (frames[24] == frames[20]) {}, waiting for the render thread)
+name = "GHMetallicaRenderWaitHook"
+registers = ["r11", "r10"]
+[[midasm_hook]]
+address = 0x8241C954   # cmpld cr6,r3,r11 (sub_8241C840: until the vertical blank counter reaches the next value)
+name = "GHMetallicaVblankWaitHook"
+registers = ["r3", "r11"]
+[[midasm_hook]]
+address = 0x8241CA9C   # cmpld cr6,r3,r30 (sub_8241C840: until the other counter reaches the frame's last vertical blank)
+name = "GHMetallicaVblankWaitHook"
+registers = ["r3", "r30"]
+

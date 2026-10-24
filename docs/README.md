@@ -5,6 +5,7 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 
 | Note | Status |
 |---|---|
+| [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar (the keyboard's keys still the SDK's) |
 | [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |
 | [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace |

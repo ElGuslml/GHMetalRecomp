@@ -67,6 +67,7 @@ set(GHMETALLICA_SOURCES
     src/main.cpp
     src/options.cpp
     src/startup.cpp
+    src/thread_waits.cpp
 )
 
 if(WIN32)
