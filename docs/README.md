@@ -5,6 +5,7 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 
 | Note | Status |
 |---|---|
+| [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar (the keyboard's keys still the SDK's) |
 | [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |

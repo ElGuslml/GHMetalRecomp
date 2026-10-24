@@ -41,3 +41,11 @@ address = 0x8241CA9C   # cmpld cr6,r3,r30 (sub_8241C840: until the other counter
 name = "GHMetallicaVblankWaitHook"
 registers = ["r3", "r30"]
 
+# Songs in sync with their audio (src/timer.cpp): the engine's timer replaces the 50,000,000 Hz that
+# KeQueryPerformanceFrequency reports by the original console's real timebase rate, 49,875,000; the SDK's timebase
+# runs at 50 MHz, so the game's clock ran 0.25 % fast and the notes drifted ahead of the audio.
+# ghmetallica_timer_fix = false disables it.
+[[midasm_hook]]
+address = 0x822D1058   # cmplw cr6,r11,r6 (sub_822D0FB8: r11 = the reported frequency, r6 = 50,000,000)
+name = "GHMetallicaTimerFrequencyHook"
+registers = ["r6"]

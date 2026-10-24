@@ -86,6 +86,10 @@ anisotropic_override = 5
 # been read and missed most blocks: from the title screen on, the music played as noise. 0 = the SDK
 # default (no spacing).
 audio_callback_min_interval_us = 3000
+# Audio frames queued for the sound device (5.3 ms each): 4 is the least the SDK allows, 21 ms less
+# delay between a strum and its sound than the SDK's 8. With the calls spaced the queue stays full
+# (no gap in a whole song, measured); the game's calibration covers what is left. 8 = the SDK default.
+audio_maxqframes = 4
 # Report a controller (and the keyboard's emulated one) as a guitar: the game gives a plain gamepad
 # the vocals, which need a microphone. Frets on A (green), B (red), Y (yellow), X (blue) and LB
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real
