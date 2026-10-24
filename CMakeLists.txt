@@ -66,6 +66,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${GHMETALLICA_SO
 set(GHMETALLICA_SOURCES
     src/main.cpp
     src/options.cpp
+    src/quit_prompt.cpp
     src/startup.cpp
     src/thread_waits.cpp
     src/timer.cpp

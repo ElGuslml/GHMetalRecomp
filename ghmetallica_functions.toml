@@ -49,3 +49,11 @@ registers = ["r3", "r30"]
 address = 0x822D1058   # cmplw cr6,r11,r6 (sub_822D0FB8: r11 = the reported frequency, r6 = 50,000,000)
 name = "GHMetallicaTimerFrequencyHook"
 registers = ["r6"]
+
+
+# Quitting from the title screen and the main menu (src/quit_prompt.cpp): once per frame, the hook looks the screens'
+# own elements up in the game's element table and offers the SDK's quit prompt (B) while one exists.
+[[midasm_hook]]
+address = 0x822E45F4   # stfd f0,3072(r7) (sub_822E4588: the main thread's frame, before its wait)
+name = "GHMetallicaQuitPromptHook"
+
