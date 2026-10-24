@@ -78,6 +78,9 @@ inline constexpr const char* kReleasesPage = "";
 // internal resolution, antialiasing and image format. False: the game is drawn by Xenos only, and the launcher says
 // nothing of NativeXRenderer.
 inline constexpr bool kHasNativeXRenderer = GAME_HAS_NATIVE_X_RENDERER;
+// The renderer chosen until the player picks one (an options file without native_x_renderer): NativeXRenderer once a
+// full play test has gone through it (as in POTCAWE, its D56), the Xenos path until then.
+inline constexpr bool kNativeXRendererDefault = false;
 
 // The Graphics page's shadow quality row: NativeXRenderer draws the game's shadow maps at a scale of their own
 // (native_x_renderer_shadow_scale, its D92): at least twice or four times the game's resolution. Only where it

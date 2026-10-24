@@ -2,6 +2,7 @@
 
 #include "widescreen.h"
 
+#include <native_x_renderer/native_x_renderer.h>
 #include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc/context.h>
@@ -12,8 +13,9 @@
 #include <cstring>
 
 REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide, false, "GHMetallica",
-                    "Ultrawide: the game's cameras use the window's aspect ratio (anamorphic, the presenter "
-                    "stretches the 16:9 image; needs present_letterbox = false)");
+                    "Ultrawide on the Xenos path: the game's cameras use the window's aspect ratio (anamorphic, the "
+                    "presenter stretches the 16:9 image; needs present_letterbox = false). With NativeXRenderer, "
+                    "native_x_renderer_fill_screen does this instead");
 REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide_hud, true, "GHMetallica",
                     "With ghmetallica_ultrawide: keep the HUD, the menus and the videos at 16:9 in the center "
                     "(false = stretched)");
@@ -60,7 +62,22 @@ void StoreScreenAspect(float aspect) {
 
 void SetOutputSize(uint32_t width, uint32_t height) {
   double factor = 1.0;
-  if (REXCVAR_GET(ghmetallica_ultrawide) && width > 0 && height > 0) {
+  if (native_x_renderer::Renders()) {
+    // NativeXRenderer renders at the output's aspect ratio when it fills it (the profile says these hooks widen the
+    // cameras): the hooks follow its factor, whatever ghmetallica_ultrawide says. They handle wider outputs only.
+    double native = native_x_renderer::AspectFactor();
+    if (native > 1.0) {
+      factor = native;
+    } else if (native < 1.0) {
+      static std::atomic<bool> warned{false};
+      if (!warned.exchange(true)) {
+        REXLOG_WARN("[ultrawide] NativeXRenderer fills an output taller than 16:9 ({:.4f}); the game's hooks only "
+                    "widen views, so the image is stretched vertically (native_x_renderer_fill_screen = false "
+                    "keeps 16:9 with bars)",
+                    native);
+      }
+    }
+  } else if (REXCVAR_GET(ghmetallica_ultrawide) && width > 0 && height > 0) {
     double aspect = double(width) / double(height);
     if (aspect > kGuestAspect) {
       factor = aspect / kGuestAspect;

@@ -6,13 +6,13 @@ engine's use of them, and the verification. The hooks and the profile are in
 [`src/native_x_renderer_ghmetallica.cpp`](../src/native_x_renderer_ghmetallica.cpp); the library's checklist is
 `native_x_renderer/docs/integrating-a-game.md`.
 
-**Status (2026-10-24):** steps 1-3 done, step 4 started. The map comes from static analysis (this executable matched
-function by function against POTCAWE's library, XDK 5426, the nearest mapped version, then every function used here
-read); the observer matches 100 % of the draws on the title screen, the main menu and a song (section 7). With
-`native_x_renderer = true` the menus, the career's opening cinematic and its songs draw correctly at 60 FPS since
-NativeXRenderer's D95 (a resolve through a 4x MSAA surface of the scene drawn at the same EDRAM). It stays off by
-default (`native_x_renderer = false`): the game draws on the Xenos path until Gustavo's play test and the
-performance comparison.
+**Status (2026-10-24):** steps 1-4 done. The map comes from static analysis (this executable matched function by
+function against POTCAWE's library, XDK 5426, the nearest mapped version, then every function used here read); the
+observer matches 100 % of the draws on the title screen, the main menu and in songs (section 7). With
+`native_x_renderer = true` the menus, the career's opening cinematic and its songs draw as on the Xenos path at 60 FPS
+(since NativeXRenderer's D95), with SMAA or FXAA on the scene, filling ultrawide screens, at about half the GPU
+time of the Xenos path at 1440p and above. GH Metallica Launcher has the renderer row, with the Xenos path the
+default until a full play test (`kNativeXRendererDefault` in `launcher/game.h`).
 
 **Main findings:**
 - **The device layout is Dante's Inferno's up to the end of the register shadow** (POTCAWE's + 128): six dirty
@@ -333,10 +333,36 @@ same base with no draw in between, a 2×2 average of the scene. NativeXRenderer'
 the career's opening cinematic and its first song in the arena are then clean (`ghmetallica_059.log`: "a resolve
 through a 640x360 surface with 4x MSAA reads the 1280x720 target drawn at the same EDRAM").
 
+**Antialiasing:** the copy of the finished scene before the HUD is the profile's `scene_resolve_caller`, `0x8251F04C`
+(called from `0x824B80C0`): after the post-processing, the engine resolves the 1280×720 scene into `0x40008BE0` and
+its last full-screen pass (the bloom composite) draws it back, then the HUD and the note highway go over it (the
+RenderDoc capture: the composite reads that texture). It comes once a frame, in the menus too (their 3D background,
+before the 2D layer). With `native_x_renderer_antialiasing = smaa` the log reports SMAA applied in 560-596 of every
+600 frames; the menus' text and the HUD stay sharp.
+
+**Ultrawide:** `src/widescreen.cpp` takes NativeXRenderer's `AspectFactor()` when it draws (`widens_cameras` in the
+profile), so with `native_x_renderer_fill_screen` the stage is seen wider and the 2D layer stays 16:9 in the center,
+as on the Xenos path's anamorphic ultrawide (3440×1440: the same image on both paths).
+
+**Performance A/B** (2026-10-24, `local_docs/04`, the career's first gig: the title, the menu, the opening
+cinematic 25 s in, the song 65 s and 85 s in; the same anisotropic filtering, no antialiasing, the Xenos path at
+the output's resolution scale): both at 60 FPS everywhere, the longest frame 17.6-20.1 ms on both. GPU use and power
+in the song:
+
+| Output | Xenos | NativeXRenderer |
+|---|---|---|
+| 1280×720 (window) | 29 % / 51.6 W | 22 % / 45.6 W |
+| 2560×1440 | 45 % / 96 W | 27 % / 53.3 W |
+| 3440×1440 (ultrawide) | 59 % / 123.5 W | 31 % / 55.9 W |
+
+The idle desktop draws about 40 W; at 3440×1440 the Xenos path also raised the GPU clock (2865 MHz against 2745).
+CPU: 1.2-1.3 cores on the Xenos path, 1.3-1.45 with NativeXRenderer (its renderer thread); the busiest thread, about
+43 % of a core in songs and 73 % in the cinematic, is the game's own on both. Images: the menus match within 0.3 of 255
+on average; the cinematic and the songs differ by 7-16, the camera at a slightly different moment.
+
 Seen but not handled: the crowd's impostor atlas (768×1024) gets its mips 1-5 by resolves to those levels, which
 NativeXRenderer skips (it resolves level 0 only); its host texture has one level, so the crowd is sampled at level 0
-(sharper, possibly shimmering at a distance). Not compared yet: the same spots on both paths side by side, the
-performance (a song in the arena: 1.37 cores with NativeXRenderer; the Xenos path's 0.84-0.89 was in another venue).
+(sharper, possibly shimmering at a distance).
 
 ## 8. Open questions
 
@@ -358,7 +384,7 @@ performance (a song in the arena: 1.37 cores with NativeXRenderer; the Xenos pat
 4. **Output size**: 1280×720 assumed; the presentation parameters come from a video-mode table at run time. The
    trace's Present (front buffer fetch constant) will tell, at 720p and at another console video mode if the SDK can
    report one.
-5. **`scene_resolve_caller`**: needs the trace (the finished scene before the HUD). If the scene's color is resolved
+5. **`scene_resolve_caller`** (settled: `0x8251F04C`, section 7): needs the trace (the finished scene before the HUD). If the scene's color is resolved
    by EndTiling, that resolve is nested and the field cannot name it: another reason for question 2.
 6. **Queries and D32**: Issue END can make the GPU write the `0xFFFFFEED` marker (`MEM_WRITE`) and wait for it when
    the previous result is pending, and GetData decides "pending" by the fence. Check that NativeXRenderer's host
@@ -371,8 +397,8 @@ performance (a song in the arena: 1.37 cores with NativeXRenderer; the Xenos pat
 9. **Trace argument names**: VertexBufferLock/IndexBufferLock are `(buffer, offset, size, flags)` → pointer here, so
    the trace's `data` column is the flags. SetStreamSource, SetTexture and the constant setters have one more
    argument (the dirty bit or mask) than `calls.inc` names.
-10. **`widens_cameras`**: the game already has anamorphic ultrawide hooks (`docs/ultrawide.md`); whether they can
-    widen by `native_x_renderer::AspectFactor()` instead is for later.
+10. **`widens_cameras`** (settled, section 7): the ultrawide hooks widen by `native_x_renderer::AspectFactor()` when
+    NativeXRenderer draws.
 11. Not checked statically (should not matter): `sub_821C5E28` (a library function that calls SetRenderTarget,
     SetVertexShader and SetPixelShader: a state restore, *likely*), the meaning of `+12728 = 2`, `+10912`, the bits of
     `+10941`–`+10943` beyond those listed, Present's internal draws (`sub_821DA978`, `sub_821D6680`), and the replay

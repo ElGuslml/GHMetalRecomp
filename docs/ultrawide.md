@@ -31,6 +31,12 @@ frame is stretched over the screen (anamorphic), and the game is corrected by th
 **Known issue:** during songs, a dark band shaped like the note highway, a little wider than it, shows at its sides:
 something drawn behind the highway is not narrowed with it. It does not change the notes or the gameplay.
 
+## With NativeXRenderer
+
+When NativeXRenderer draws the game (GH Metallica Launcher's renderer row), it renders at the screen's aspect ratio
+itself with its image format "fill the screen" (`native_x_renderer_fill_screen`), and the same hooks widen the
+cameras and keep the 2D layer at 16:9 by its factor: the image is the same, without the stretched 1280×720 frame.
+
 ## Turning it off
 
 Choose 16:9 in GH Metallica Launcher's image format (it writes `ghmetallica_ultrawide = false`), or start the game with

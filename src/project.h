@@ -28,4 +28,4 @@
 #define GAME_ULTRAWIDE_CVAR "ghmetallica_ultrawide"
 // - NativeXRenderer: 1 once src/native_x_renderer_ghmetallica.cpp (hooks and profile) is in and the observer matches
 //   (native_x_renderer/docs/integrating-a-game.md): the "Renderer" row, its internal resolution and antialiasing.
-#define GAME_HAS_NATIVE_X_RENDERER 0
+#define GAME_HAS_NATIVE_X_RENDERER 1

@@ -77,6 +77,14 @@ const native_x_renderer::Profile& NativeXRendererProfile() {
     p.xdk_version = "2.0.7978";
     p.output_width = 1280;  // the presentation parameters come from a video-mode table at run time
     p.output_height = 720;
+    // The finished scene, before the HUD and the note highway: after the post-processing (the 640x360 4x MSAA
+    // downsample of the scene, the 320x180 blurs), the engine copies the 1280x720 scene into 0x40008BE0 (Resolve's
+    // return address 0x8251F04C, called from 0x824B80C0, once a frame) and draws it back with the bloom, then the
+    // HUD over it. In the menus the same copy is their 3D background, before the 2D layer.
+    p.scene_resolve_caller = 0x8251F04C;
+    // The ultrawide hooks (src/widescreen.cpp) widen the 16:9 cameras by AspectFactor() and keep the 2D layer at
+    // 16:9 in the center: NativeXRenderer may fill a wider output (native_x_renderer_fill_screen).
+    p.widens_cameras = true;
     native_x_renderer::DeviceLayout& d = p.device;
     // Six dirty masks from +0: VS constants, PS constants, register groups and the program, fetch slots (low half,
     // slot 0 in bit 31) and the 0x2280 group, the 0x2300/0x2380 groups with the clip planes and bool/loop constants,

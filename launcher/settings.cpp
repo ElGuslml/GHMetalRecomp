@@ -276,7 +276,7 @@ Options OptionsFromConfig(const Config& c, unsigned primary_dpi) {
   for (size_t i = 0; i < game::kToggles.size(); ++i) {
     o.toggles[i] = GetBool(c, game::kToggles[i].cvar, game::kToggles[i].default_value);
   }
-  o.native = game::kHasNativeXRenderer && GetBool(c, "native_x_renderer", true);  // the default (D56)
+  o.native = game::kHasNativeXRenderer && GetBool(c, "native_x_renderer", game::kNativeXRendererDefault);
   if (game::kShadowQuality) {
     double shadow_scale = std::strtod(GetString(c, "native_x_renderer_shadow_scale").c_str(), nullptr);
     o.shadow_quality = shadow_scale >= 4.0 ? 2 : shadow_scale >= 2.0 ? 1 : 0;
@@ -642,7 +642,7 @@ bool SaveOptions(const Settings& s) {
   // Anisotropic filtering for textures with mipmaps, sharper at oblique angles (SDK cvar; the game itself
   // asks for 4x on some textures only): 5 = 16x, 4 = 8x, 3 = 4x, 2 = 2x, 0 = off.
   f << "anisotropic_override = " << o.anisotropic << "\n";
-  // NativeXRenderer (native_x_renderer/): draw natively on Vulkan instead of emulating the GPU (the default, D56).
+  // NativeXRenderer (native_x_renderer/): draw natively on Vulkan instead of emulating the GPU (game::kNativeXRendererDefault).
   if (game::kHasNativeXRenderer) {
     f << "native_x_renderer = " << boolean(o.native) << "\n";
     // NativeXRenderer's image format and internal resolution (D54).

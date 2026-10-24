@@ -92,7 +92,7 @@ struct Options {
   bool no_msaa = false;                    // game::kNoMsaaCvar (src/msaa.cpp)
   int anisotropic = 5;                     // anisotropic_override (SDK): 5 = 16x, 4 = 8x, 3 = 4x, 2 = 2x, 0 = off
   bool vulkan = false;                     // gpu_backend = "vulkan" (otherwise "d3d12")
-  bool native = game::kHasNativeXRenderer;  // native_x_renderer: NativeXRenderer draws instead of Xenos (D56)
+  bool native = game::kHasNativeXRenderer && game::kNativeXRendererDefault;  // native_x_renderer: NativeXRenderer draws
   // native_x_renderer_antialiasing: a NativeAntialiasing, or kNativeAntialiasingCount for the experimental mode
   // the options file named (native_aa_experimental, an index of kExperimentalAntialiasing; -1: none).
   int native_aa = kSmaa;
