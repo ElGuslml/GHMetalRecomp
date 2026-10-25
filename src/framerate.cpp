@@ -37,7 +37,8 @@ REXCVAR_DEFINE_INT32(ghmetallica_frame_rate, 60, "GHMetallica",
 
 REXCVAR_DEFINE_BOOL(ghmetallica_frame_rate_fix, true, "GHMetallica",
                     "With the vertical blank above 60 Hz: what the game counts in frames keeps the console's speed "
-                    "(script waits in game frames, the loading screen's animations, clocks counted in vertical blanks) "
+                    "(script waits in game frames, the whammy on sustains, the loading screen's animations, clocks "
+                    "counted in vertical blanks) "
                     "and scripts are given the button presses of the frames they skip (false = those run faster, to "
                     "compare)");
 
@@ -279,6 +280,80 @@ void GHMetallicaButtonPollEndHook() {
     }
   }
   g_patched_count = 0;
+}
+
+// The whammy on a sustain (the note hold update sub_82148DA8 -> sub_82146590, run every frame for each player:
+// sub_82137F18 -> sub_8214AC00 -> sub_8214A748, 120 calls a second at 120 FPS): sub_82143530 (the whammy bar;
+// sub_821463B0 for the touch strip) compares the bar's position (0 at rest to 1) with the previous frame's and, if it
+// moved more than 0.03, sets a countdown at +49628 to 5; sub_82146590 takes one from it each frame and, while above 0,
+// the player is whammying (star power grows by the frame's time); after 5 frames in a row of whammying or not
+// (+49632, +49636) it tells the held frets (sub_82130380), and a star power sustain turns blue or back. Above 60 Hz a
+// frame's movement is smaller and 5 frames are shorter (Gustavo at 120: the blue came and went while he moved the
+// bar). The position is compared with the one from a 60th of a second before, and the 5 frames are 5 / 60 s.
+namespace {
+
+struct WhammySamples {
+  std::chrono::steady_clock::time_point when[8] = {};
+  float position[8] = {};
+  int next = 0;
+};
+
+std::mutex g_whammy_mutex;
+std::unordered_map<uint64_t, WhammySamples> g_whammy;  // by the note hold object << 1 | axis
+
+// The position the previous frame's is replaced by: the sample nearest a 60th of a second before (the newest at
+// least that less half a frame old, if not more than a frame and a half over it); else the game's own.
+void CompareWhammyOverSixtieth(int axis, uint32_t object, PPCRegister& position, PPCRegister& previous) {
+  if (!HighRate()) {
+    return;
+  }
+  const auto now = std::chrono::steady_clock::now();
+  const double frame = FrameSeconds();
+  std::lock_guard lock(g_whammy_mutex);
+  WhammySamples& samples = g_whammy[uint64_t(object) << 1 | uint64_t(axis)];
+  for (int i = 1; i <= 8; ++i) {
+    const int slot = (samples.next - i) & 7;
+    const double age = std::chrono::duration<double>(now - samples.when[slot]).count();
+    if (age >= 1.0 / 60.0 - 0.5 * frame) {
+      if (age <= 1.0 / 60.0 + 1.5 * frame) {
+        previous.f64 = samples.position[slot];
+      }
+      break;
+    }
+  }
+  samples.when[samples.next] = now;
+  samples.position[samples.next] = float(position.f64);
+  samples.next = (samples.next + 1) & 7;
+}
+
+int WhammyFrames(int frames) { return int(std::lround(frames * VblankRate() / 60.0)); }
+
+}  // namespace
+
+// [[midasm_hook]] 0x821436A0 and 0x8214379C (sub_82143530) and 0x8214652C (sub_821463B0): before "fsubs" of the
+// position and the previous frame's: r30 / r31 = the note hold object, f30 / f0 = the position, f13 / f0 = the previous.
+void GHMetallicaWhammyHook(PPCRegister& object, PPCRegister& position, PPCRegister& previous) {
+  CompareWhammyOverSixtieth(0, object.u32, position, previous);
+}
+
+// [[midasm_hook]] 0x821437B0 (sub_82143530, a controller's second axis): r30, f29 = the position, f0 = the previous.
+void GHMetallicaWhammy2Hook(PPCRegister& object, PPCRegister& position, PPCRegister& previous) {
+  CompareWhammyOverSixtieth(1, object.u32, position, previous);
+}
+
+// [[midasm_hook]] 0x821436D0, 0x821437D0 (r10) and 0x82146558 (r9): the countdown of 5 frames before it is stored.
+void GHMetallicaWhammyCountdownHook(PPCRegister& frames) {
+  if (HighRate()) {
+    frames.u64 = uint64_t(WhammyFrames(int32_t(frames.u32)));
+  }
+}
+
+// [[midasm_hook]] 0x82146790 and 0x8214686C (sub_82146590): before "cmpwi cr6,r11,5", r11 = the frames in a row of
+// whammying or not (dead after the comparison): 5 when they reach 5 / 60 s.
+void GHMetallicaWhammyStateHook(PPCRegister& r11) {
+  if (HighRate()) {
+    r11.u64 = int32_t(r11.u32) == WhammyFrames(5) ? 5 : 0;
+  }
 }
 
 // The loading screen (sub_824C3028, drawn every frame while the byte 0x81BDC850 is set: sub_823A4AB0 ->

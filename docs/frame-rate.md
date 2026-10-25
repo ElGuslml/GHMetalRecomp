@@ -3,7 +3,7 @@
 **Status: working, experimental (2026-10-25).** The game runs at 120, 144, 160, 165 or 240 FPS, chosen in GH Metallica
 Launcher's frame rate row (offered up to the monitor's refresh rate). Checked: 120 FPS through the career's first song
 at the console's speed, 160 FPS in the menus; Gustavo's play test at 120 and 160: songs in sync and smooth, the boot's
-star and both calibrations as at 60. Open: on a star power sustain the whammy's blue flickers at 120 (steady at 60).
+star and both calibrations as at 60, the whammy on star power sustains as at 60.
 
 ## Symptom
 
@@ -35,6 +35,10 @@ targets). `ghmetallica_frame_rate_fix` (on) covers:
 - **button presses polled by those scripts**: a press shows for one frame, and a script held to the console's pace
   skips frames, so the calibrations missed strums (3 of 7 at 160 FPS in a test). Each script is given, once, the
   presses of the frames it skipped (7 of 7);
+- **the whammy on a sustain**, told by the frame: the bar counted as moving when it moved more than 3 % of its
+  travel since the previous frame, for the next 5 frames, and a star power sustain turns blue or back after 5 frames
+  in a row. At 120 a frame's movement is half as big and 5 frames half as long, so the blue came and went (Gustavo).
+  The bar is compared with its position a 60th of a second before, and the 5 frames last 5 / 60 s;
 - **the loading screen**, which turns its star by a fixed angle each frame: the angle is scaled to the frame rate
   (3.60 radians a second at 60, 3.52 at 160 while the boot ran at 156 FPS; 9.34 without this);
 - **clocks counted in vertical blanks**, which divide by the game's vertical blanks per second (60, or 50 for PAL):

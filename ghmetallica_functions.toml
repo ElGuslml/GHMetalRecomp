@@ -160,6 +160,44 @@ registers = ["r4"]
 [[midasm_hook]]
 address = 0x823B6E10   # addi r1,r1,112 (sub_823B6D50's exit, every path)
 name = "GHMetallicaButtonPollEndHook"
+# The whammy on a sustain is told by the frame (the bar's movement since the previous frame, a countdown of 5 frames,
+# 5 frames in a row to turn a star power sustain blue or back): above 60 Hz over a 60th of a second and 5 / 60 s.
+[[midasm_hook]]
+address = 0x821436A0   # fsubs f13,f30,f13 (sub_82143530, a guitar: the bar's position minus the previous frame's)
+name = "GHMetallicaWhammyHook"
+registers = ["r30", "f30", "f13"]
+[[midasm_hook]]
+address = 0x8214379C   # fsubs f12,f30,f0 (sub_82143530, another controller: the first axis minus the previous frame's)
+name = "GHMetallicaWhammyHook"
+registers = ["r30", "f30", "f0"]
+[[midasm_hook]]
+address = 0x821437B0   # fsubs f0,f29,f0 (sub_82143530, another controller: the second axis minus the previous frame's)
+name = "GHMetallicaWhammy2Hook"
+registers = ["r30", "f29", "f0"]
+[[midasm_hook]]
+address = 0x8214652C   # fsubs f13,f0,f13 (sub_821463B0, the touch strip: its position minus the previous frame's)
+name = "GHMetallicaWhammyHook"
+registers = ["r31", "f0", "f13"]
+[[midasm_hook]]
+address = 0x821436D0   # stwx r10,r30,r8 (sub_82143530: the whammy countdown, 5 frames)
+name = "GHMetallicaWhammyCountdownHook"
+registers = ["r10"]
+[[midasm_hook]]
+address = 0x821437D0   # lfs f13,11328(r8) (sub_82143530: r10 = 5, the countdown both axes store)
+name = "GHMetallicaWhammyCountdownHook"
+registers = ["r10"]
+[[midasm_hook]]
+address = 0x82146558   # stwx r9,r31,r8 (sub_821463B0: the whammy countdown, 5 frames)
+name = "GHMetallicaWhammyCountdownHook"
+registers = ["r9"]
+[[midasm_hook]]
+address = 0x82146790   # cmpwi cr6,r11,5 (sub_82146590: frames in a row of whammying)
+name = "GHMetallicaWhammyStateHook"
+registers = ["r11"]
+[[midasm_hook]]
+address = 0x8214686C   # cmpwi cr6,r11,5 (sub_82146590: frames in a row of not whammying)
+name = "GHMetallicaWhammyStateHook"
+registers = ["r11"]
 # The loading screen's animations step by the frame: above 60 Hz the steps are scaled by 60 / the rate.
 [[midasm_hook]]
 address = 0x824C2DC4   # after lfd f31,4208(r10) (sub_824C2CB0: the boot's spinning star, f31 = its turn each frame, 0.06 radians)
