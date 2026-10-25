@@ -25,8 +25,8 @@
 // - The main thread waiting for a group of jobs to finish (sub_822BAD30: while (pending[group] != 0) run the
 //   group's jobs, sub_82425D30) took the queue's critical section again and again while the workers ran them, the
 //   lock they need to finish: between its passes it now watches the count without the lock.
-// - The render thread sleeps in one go until shortly before the vertical blank it waits for, which comes every
-//   1/60 s.
+// - The render thread sleeps in one go until shortly before the vertical blank it waits for, which comes at the video
+//   mode's refresh rate (1/60 s by default).
 
 #include <rex/cvar.h>
 #include <rex/ppc/context.h>
@@ -173,8 +173,9 @@ bool WaitForJob(JobWait& state) {
 }
 
 // A vertical blank counter's last advance seen while the render thread was checking it closely, the anchor of
-// when the next ones come: the SDK's vblank thread advances it every 1/60 s, within a millisecond (it checks the
-// time every millisecond).
+// when the next ones come: the SDK's vblank thread advances it once a period (VblankPeriod), within a millisecond
+// (it checks the time every millisecond). The first version took 1/60 s for any rate: at 120 Hz it slept through
+// every other vblank (about 67 FPS), and with the counter far past a stale anchor it slept for seconds.
 struct Vblank {
   uint64_t value = 0;
   Clock::time_point checked;   // the previous check
@@ -184,10 +185,24 @@ struct Vblank {
 };
 thread_local Vblank t_vblank[2];
 
-constexpr auto kVblankPeriod = std::chrono::nanoseconds(1'000'000'000 / 60);
 // How long before the expected advance the long sleep ends, for the vblank thread's millisecond and the sleep's
 // own lateness; checked in slices from there.
 constexpr auto kVblankMargin = 2ms;
+
+// The vertical blank's period as the SDK's vblank thread keeps it: 1 / video_mode_refresh_rate with vsync (60 Hz by
+// default; 120 for a higher frame rate), or none without vsync (a vblank every millisecond: nothing to predict).
+// Read once a second.
+std::chrono::nanoseconds VblankPeriod() {
+  thread_local std::chrono::nanoseconds period{0};
+  thread_local Clock::time_point read;
+  const Clock::time_point now = Clock::now();
+  if (read == Clock::time_point{} || now - read > 1s) {
+    read = now;
+    const double hz = std::clamp(rex::cvar::Query<double>("video_mode_refresh_rate"), 24.0, 240.0);
+    period = rex::cvar::Query<bool>("vsync") ? std::chrono::nanoseconds(int64_t(1e9 / hz)) : std::chrono::nanoseconds(0);
+  }
+  return period;
+}
 
 void VblankWait(Vblank& state, uint64_t counter, uint64_t target) {
   const Clock::time_point now = Clock::now();
@@ -204,10 +219,15 @@ void VblankWait(Vblank& state, uint64_t counter, uint64_t target) {
   if (counter >= target) {
     return;
   }
-  if (Smart() && state.anchor_value && target > state.anchor_value) {
-    const Clock::time_point due = state.anchor_time + (target - state.anchor_value) * kVblankPeriod;
-    if (due - now > kVblankMargin + 1ms) {
-      rex::thread::PreciseSleep(std::chrono::duration_cast<std::chrono::microseconds>(due - now - kVblankMargin));
+  // Predicted only from a recent anchor a few vblanks before the target: one found long ago, or with the counter far
+  // ahead of it, says nothing about the next advance. And never more than a period in one sleep.
+  const std::chrono::nanoseconds period = Smart() ? VblankPeriod() : std::chrono::nanoseconds(0);
+  if (period.count() > 0 && state.anchor_value && target > state.anchor_value &&
+      target - state.anchor_value <= 4 && now - state.anchor_time < 8 * period) {
+    const Clock::time_point due = state.anchor_time + int64_t(target - state.anchor_value) * period;
+    const auto sleep = std::min<std::chrono::nanoseconds>(due - now - kVblankMargin, period);
+    if (sleep > 1ms) {
+      rex::thread::PreciseSleep(std::chrono::duration_cast<std::chrono::microseconds>(sleep));
       state.checked = state.wait.last = Clock::now();
       return;
     }

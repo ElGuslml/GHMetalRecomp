@@ -97,10 +97,12 @@ struct FrameRate {
   int value;
   int fps;
 };
+// Here src/framerate.cpp's ghmetallica_frame_rate, the frame rate itself: 60 as on the console, above it the emulated
+// vblank's rate (src/options.cpp), which the game follows at its own speed.
 inline constexpr const char* kFrameRateCvar = GAME_FRAME_RATE_CVAR;
-inline constexpr bool kFrameRateIsBool = true;
-inline constexpr std::array<FrameRate, 2> kFrameRates{{{0, 30}, {1, 60}}};
-inline constexpr int kFrameRateDefault = 0;
+inline constexpr bool kFrameRateIsBool = false;
+inline constexpr std::array<FrameRate, 6> kFrameRates{{{60, 60}, {120, 120}, {144, 144}, {160, 160}, {165, 165}, {240, 240}}};
+inline constexpr int kFrameRateDefault = 60;
 
 // The Xenos path's MSAA turned off (src/msaa.cpp): the Graphics page's antialiasing row with Xenos, the game's own
 // antialiasing (its label, "2× MSAA") or none.

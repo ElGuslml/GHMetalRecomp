@@ -118,3 +118,62 @@ address = 0x821B3498   # bl EndVertices in sub_821B2ED8 (a sprite drawn as a gri
 name = "GHMetallicaMeshSpriteHook"
 registers = ["r3"]
 
+
+# Frame rates above 60 (src/framerate.cpp, ghmetallica_frame_rate_fix): the engine's clocks counted in vertical blanks
+# divide by its vertical blanks per second (the global 0x82839118, 60): the divisions use it times the emulated
+# vblank's rate over 60, so those clocks keep their speed (no visible case known).
+[[midasm_hook]]
+address = 0x824B1C68   # extsw r8,r30 (sub_824B1B00: a vblank clock's vblanks into seconds, r30 = vblanks per second)
+name = "GHMetallicaVblankClockHook"
+registers = ["r30"]
+[[midasm_hook]]
+address = 0x824B1EF0   # extsw r11,r30 (sub_824B1B00: seconds back into vblanks, r30 = vblanks per second)
+name = "GHMetallicaVblankClockHook"
+registers = ["r30"]
+[[midasm_hook]]
+address = 0x822D0E00   # extsw r5,r10 (sub_822D0DE0: the frame's vblanks into its time, r10 = vblanks per second)
+name = "GHMetallicaVblankFrameTimeHook"
+registers = ["r10"]
+# Script waits counted in game frames ("Wait N gameframes"): above 60 Hz they last the console's N / 60 s.
+[[midasm_hook]]
+address = 0x8242A018   # entry of sub_8242A018 (a type 1 game-frame wait set: r3 = the wait, r4 = N)
+name = "GHMetallicaFrameWaitSetHook"
+registers = ["r3", "r4"]
+[[midasm_hook]]
+address = 0x82429FC8   # entry of sub_82429FC8 (a type 8 game-frame wait set: r3 = the wait, r4 = N)
+name = "GHMetallicaFrameWaitSetHook"
+registers = ["r3", "r4"]
+[[midasm_hook]]
+address = 0x8242A35C   # addi r11,r11,-1 (sub_8242A318: a game-frame wait's count above 0, r3 = the wait)
+name = "GHMetallicaFrameWaitCountHook"
+registers = ["r3", "r11"]
+# Button presses polled by scripts (ControllerMake) last one frame: a script whose waits are held above 60 Hz is given
+# the presses of the frames it skipped.
+[[midasm_hook]]
+address = 0x8239BD4C   # bgt cr6 (sub_8239BB88: a controller's input state updated, r30 = the state, r9 = the pressed bits)
+name = "GHMetallicaInputUpdateHook"
+registers = ["r30", "r9"]
+[[midasm_hook]]
+address = 0x823B6D50   # entry of sub_823B6D50 (the script function ControllerMake: r4 = the script)
+name = "GHMetallicaButtonPollHook"
+registers = ["r4"]
+[[midasm_hook]]
+address = 0x823B6E10   # addi r1,r1,112 (sub_823B6D50's exit, every path)
+name = "GHMetallicaButtonPollEndHook"
+# The loading screen's animations step by the frame: above 60 Hz the steps are scaled by 60 / the rate.
+[[midasm_hook]]
+address = 0x824C2DC4   # after lfd f31,4208(r10) (sub_824C2CB0: the boot's spinning star, f31 = its turn each frame, 0.06 radians)
+name = "GHMetallicaLoadingStarHook"
+registers = ["f31"]
+[[midasm_hook]]
+address = 0x823F833C   # add r11,r10,r11 (sub_823F82F0: DisplayLoadingScreen's icon, its angle plus its step, r10 = the step in degrees)
+name = "GHMetallicaLoadingSpinnerHook"
+registers = ["r10"]
+[[midasm_hook]]
+address = 0x824C3250   # fadds f0,f0,f29 (sub_824C3028's mode 2: a wave's phase plus its step, f29)
+name = "GHMetallicaLoadingWaveHook"
+registers = ["f29"]
+[[midasm_hook]]
+address = 0x824C3260   # fadds f0,f13,f0 (sub_824C3028's mode 2: the other phase plus its step, f0)
+name = "GHMetallicaLoadingWaveHook"
+registers = ["f0"]

@@ -8,6 +8,7 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 | [NativeXRenderer in Guitar Hero: Metallica](native-x-renderer-ghmetallica.md) | Working: draws the game as the Xenos path does, with SMAA and ultrawide, at about half the GPU time (off by default) |
 | [Game language](language.md) | Working: launcher language row (German, English, Spanish, French, Italian) |
 | [Quitting from the title screen and the main menu](quit-prompt.md) | Working: B asks whether to quit (A quits, B cancels) |
+| [Frame rates above 60](frame-rate.md) | Working, experimental: 120 to 240 FPS at the game's speed, the launcher's frame rate row |
 | [Ultrawide displays](ultrawide.md) | Working: the stage seen wider (Hor+), menus, HUD and note highway kept 16:9 in the center |
 | [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |

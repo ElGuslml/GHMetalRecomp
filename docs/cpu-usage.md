@@ -35,7 +35,8 @@ slower the workers woke, the longer it spun (with 1 ms slices the main thread re
 - a worker with an empty queue blocks on the event the game pulses when it queues a job: it wakes as soon as a job
   comes, and otherwise once a millisecond;
 - the main thread waiting for its jobs watches their count between its passes, without the lock;
-- the render thread sleeps in one go until shortly before the vertical blank it waits for (one comes every 1/60 s).
+- the render thread sleeps in one go until shortly before the vertical blank it waits for (one comes every 1/60 s,
+  or at the higher rate of [frame-rate.md](frame-rate.md); the first version assumed 1/60 s and held 120 at 67 FPS).
 
 Measured in the career's first song (1280x720 window, NativeXRenderer, the same build with and without): 1.42 →
 1.11 cores, the main thread 43 % → 13 % of a core; frame pacing unchanged (16.67 ms on average, the same longest

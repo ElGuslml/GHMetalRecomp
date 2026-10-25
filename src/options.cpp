@@ -47,6 +47,15 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
                 options_path.string());
   }
 
+  // The frame rate (src/framerate.cpp): above 60 the emulated vertical blank runs at that rate (the SDK's
+  // video_mode_refresh_rate, read when the graphics system starts, after this). At 60 it is left alone, so a
+  // video_mode_refresh_rate given on its own still counts.
+  if (kHasFrameRate) {
+    if (int32_t frame_rate = rex::cvar::Query<int32_t>(GAME_FRAME_RATE_CVAR); frame_rate > 60) {
+      rex::cvar::SetFlagByName("video_mode_refresh_rate", std::to_string(frame_rate));
+    }
+  }
+
   // NativeXRenderer draws through its own Vulkan device (DiligentCore), and the SDK's backend only keeps the
   // GPU in sync then. Its Vulkan backend keeps the process on one graphics API: no idle D3D12 device next
   // to NativeXRenderer's, and overlays such as RTSS report the API that presents. (The native_x_renderer cvar
@@ -69,7 +78,8 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
   bool fullscreen = rex::cvar::Query<bool>("fullscreen");
   std::string features;
   if (kHasFrameRate) {
-    features += std::string(" ") + GAME_FRAME_RATE_CVAR + "=" + (rex::cvar::Query<bool>(GAME_FRAME_RATE_CVAR) ? "true" : "false");
+    features += std::string(" ") + GAME_FRAME_RATE_CVAR + "=" + std::to_string(rex::cvar::Query<int32_t>(GAME_FRAME_RATE_CVAR)) +
+                " refresh=" + std::to_string(int(rex::cvar::Query<double>("video_mode_refresh_rate")));
   }
   if (kHasUltrawide) {
     features += std::string(" ") + GAME_ULTRAWIDE_CVAR + "=" + (rex::cvar::Query<bool>(GAME_ULTRAWIDE_CVAR) ? "true" : "false");
