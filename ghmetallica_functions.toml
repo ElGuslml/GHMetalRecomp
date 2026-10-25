@@ -83,15 +83,32 @@ registers = ["r6"]
 address = 0x822E45F4   # stfd f0,3072(r7) (sub_822E4588: the main thread's frame, before its wait)
 name = "GHMetallicaQuitPromptHook"
 
-# Ultrawide (src/widescreen.cpp), with ghmetallica_ultrawide: the engine's screen aspect ratio, which its cameras read,
-# follows the window (3D views see more to the sides); root_window, which every screen element hangs from, is narrowed
-# around the center (the menus, the HUD and the note highway stay 16:9).
+# Ultrawide (src/widescreen.cpp), with ghmetallica_ultrawide: the projection of every 16:9 view is widened (Hor+: the
+# 3D views see more at the sides; their aspect ratio is the view's size, not the SetScreen aspect), and the screen
+# elements' vertices (pixels of the 1280x720 canvas) are narrowed around the center just before they are drawn to the
+# screen (the menus, the HUD, the note highway and its notes stay 16:9), with the clip windows they draw through.
 [[midasm_hook]]
-address = 0x8238F918   # lis r11,-32081 (entry of sub_8238F918: f1 = the screen's aspect ratio, SetScreen)
-name = "GHMetallicaScreenAspectHook"
-registers = ["f1"]
+address = 0x82356538   # entry of sub_82356538, a perspective projection from its frustum (f1-f4: left, right, bottom, top)
+name = "GHMetallicaFrustumHook"
+registers = ["f1", "f2", "f3", "f4"]
 [[midasm_hook]]
-address = 0x82376084   # loc_82376084 in sub_82375E08: a screen element's summed properties, after root_window's own copy
-name = "GHMetallicaRootElementHook"
-registers = ["r31"]
+address = 0x82421D78   # bl DrawVerticesUP in sub_82421B60 (a sprite's quad: r6 = its vertices, r7 = their stride)
+name = "GHMetallicaSpriteHook"
+registers = ["r6", "r7"]
+[[midasm_hook]]
+address = 0x82454A68   # bl DrawVerticesUP in sub_82454990 (a batch of quads: r5 = vertices, r6 = data, r7 = stride)
+name = "GHMetallicaSpriteBatchHook"
+registers = ["r5", "r6", "r7"]
+[[midasm_hook]]
+address = 0x82420B84   # bl SetScissorRect in sub_82420A20 (a screen element's clip window: r4 = {x1, y1, x2, y2})
+name = "GHMetallicaClipWindowHook"
+registers = ["r4"]
+[[midasm_hook]]
+address = 0x821B5A74   # bl DrawVerticesUP in sub_821B4FB0 (a sustained note's tail: r5 = vertices, r6 = data, r7 = stride)
+name = "GHMetallicaTailHook"
+registers = ["r5", "r6", "r7"]
+[[midasm_hook]]
+address = 0x821B3498   # bl EndVertices in sub_821B2ED8 (a sprite drawn as a grid of quads, the highway's board: r3 = device)
+name = "GHMetallicaMeshSpriteHook"
+registers = ["r3"]
 

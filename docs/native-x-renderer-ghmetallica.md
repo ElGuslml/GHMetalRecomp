@@ -364,6 +364,18 @@ Seen but not handled: the crowd's impostor atlas (768×1024) gets its mips 1-5 b
 NativeXRenderer skips (it resolves level 0 only); its host texture has one level, so the crowd is sampled at level 0
 (sharper, possibly shimmering at a distance).
 
+**The post-processing mask** (2026-10-24, Gustavo's play, NativeXRenderer D96).
+- **The mask:** a 128×64 k_8 texture at `0x76ED000` (texture object `0x40009110`).
+  - The engine resolves it once, when the career's first song loads, and never again.
+  - It binds it to sampler 5 (`0x82519114`, from `0x8251EFB4`, just before the scene's copy for the antialiasing)
+    for the post-processing's full-screen composite, which blends the sharp and the blurred scene through it.
+  - That composite samples it only in the pause menu, on the failed-song screen and in some moments of a song.
+- **The symptom:** NativeXRenderer freed resolved textures after a minute unused (D52). After a minute of playing
+  without those moments, the mask was gone and the composite read guest memory, which no resolve had written: the
+  stage under a blocky pattern.
+- **The fix:** D96 keeps the resolved textures that still hold their resolve, up to 384 MB
+  (`native_x_renderer_resolved_memory_mb`). This game's 22 take 117 MB at 3440×1440.
+
 ## 8. Open questions
 
 1. **Inline draws.** The profile relies on D77 (`inline_draw_end = 13444`) for both DrawIndexedVerticesUP (no
