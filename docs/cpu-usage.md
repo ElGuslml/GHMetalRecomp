@@ -24,6 +24,34 @@ game's code is unchanged: a wait first checks for 100 µs as before (short waits
 thread sleeps 200 µs between checks. The settings `ghmetallica_wait_spin_us` and `ghmetallica_wait_sleep_us` set
 those times.
 
+## Songs: smarter waits (2026-10-24, later)
+
+A song still used about 1.4 cores. The waiting threads slept, but in slices of 200 µs: each one woke thousands of
+times a second, and each wake costs the kernel a timer and a context switch (the waiting threads spent more time in
+the kernel than in the game). And the main thread, waiting for the job system's workers to finish a group of its
+jobs, checked the queue again and again under the queue's lock, the lock the workers need to finish them; the
+slower the workers woke, the longer it spun (with 1 ms slices the main thread reached 92 % of a core). So:
+
+- a worker with an empty queue blocks on the event the game pulses when it queues a job: it wakes as soon as a job
+  comes, and otherwise once a millisecond;
+- the main thread waiting for its jobs watches their count between its passes, without the lock;
+- the render thread sleeps in one go until shortly before the vertical blank it waits for (one comes every 1/60 s).
+
+Measured in the career's first song (1280x720 window, NativeXRenderer, the same build with and without): 1.42 →
+1.11 cores, the main thread 43 % → 13 % of a core; frame pacing unchanged (16.67 ms on average, the same longest
+frames). Menus unchanged (about 0.4). `ghmetallica_wait_smart = false` goes back to the slices. Gustavo played
+with it: no stutter, the songs in sync.
+
+Left for later:
+- **The job workers**, still about 10 % of a core each in a song. They now block on the job event 75 % of the time;
+  the rest is each wake's own cost: the game's WaitForSingleObject(event, 0) after the wait (in the SDK a
+  SwitchToThread and the object table's lock), and the queue's critical section, contended. If the event wakes all
+  three workers for each job, one waiting worker would be enough.
+- **NativeXRenderer's thread**, about 27 %: besides drawing, it protects the guest memory of each upload again every
+  frame (VirtualProtect) to see the game's next writes there, and those writes then fault on the game's render
+  thread; the dynamic data the game rewrites every frame could be compared instead of watched. A NativeXRenderer
+  topic (its `docs/plan.md`).
+
 ## Also: registers as local variables in the generated code (2026-10-24)
 
 Not a bug, an optimization of the recompiled code, as in KameoRecomp, GRAWRecomp and POTCAWERecomp: with the SDK's
@@ -44,4 +72,5 @@ cores at 60 FPS.
 ## Turning it off
 
 Set `ghmetallica_wait_sleep_us = 0` in `ghmetallica.toml`, or start the game with `--ghmetallica_wait_sleep_us=0`:
-the threads wait as on the console again.
+the threads wait as on the console again. `ghmetallica_wait_smart = false` keeps the slices but not the smarter waits
+above.

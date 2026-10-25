@@ -46,7 +46,9 @@ reserved_as_local = true
 # The game's threads wait without spinning (src/thread_waits.cpp): four loops checked a condition again and
 # again and kept a core at 100 % each (the three job workers, the main thread at the start of a frame and while
 # it waits for the render thread, the render thread waiting for the vertical blank). Each hook spins briefly and then sleeps between checks;
-# ghmetallica_wait_sleep_us = 0 disables them.
+# ghmetallica_wait_sleep_us = 0 disables them. With ghmetallica_wait_smart (on) the workers block on the job event,
+# the render thread sleeps until shortly before the vertical blank, and the main thread waiting for a job group
+# (sub_822BAD30) watches the group's count between passes instead of taking the queue's lock again at once.
 [[midasm_hook]]
 address = 0x82425A78   # li r4,0 (sub_82425A18: a job worker with an empty queue, before WaitForSingleObject(event, 0))
 name = "GHMetallicaJobWaitHook"
@@ -64,8 +66,12 @@ name = "GHMetallicaVblankWaitHook"
 registers = ["r3", "r11"]
 [[midasm_hook]]
 address = 0x8241CA9C   # cmpld cr6,r3,r30 (sub_8241C840: until the other counter reaches the frame's last vertical blank)
-name = "GHMetallicaVblankWaitHook"
+name = "GHMetallicaVblankWait2Hook"
 registers = ["r3", "r30"]
+[[midasm_hook]]
+address = 0x822BADA4   # lwz r11,20(r29) (sub_822BAD30: the main thread waiting for a job group, after a pass)
+name = "GHMetallicaJobGroupWaitHook"
+registers = ["r29", "r30"]
 
 # Songs in sync with their audio (src/timer.cpp): the engine's timer replaces the 50,000,000 Hz that
 # KeQueryPerformanceFrequency reports by the original console's real timebase rate, 49,875,000; the SDK's timebase
