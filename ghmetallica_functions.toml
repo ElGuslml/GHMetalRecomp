@@ -72,6 +72,11 @@ registers = ["r3", "r30"]
 address = 0x822BADA4   # lwz r11,20(r29) (sub_822BAD30: the main thread waiting for a job group, after a pass)
 name = "GHMetallicaJobGroupWaitHook"
 registers = ["r29", "r30"]
+# The D3D library's six waits for the GPU (fences, the present, ...) call sub_821C5A48 for every check: at 120 FPS
+# the render thread spent half its time there.
+[[midasm_hook]]
+address = 0x821C5A48   # mflr r12 (entry of sub_821C5A48: a check of a wait for the GPU, its condition still false)
+name = "GHMetallicaGpuWaitHook"
 
 # Songs in sync with their audio (src/timer.cpp): the engine's timer replaces the 50,000,000 Hz that
 # KeQueryPerformanceFrequency reports by the original console's real timebase rate, 49,875,000; the SDK's timebase

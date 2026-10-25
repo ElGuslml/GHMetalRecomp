@@ -48,10 +48,25 @@ Left for later:
   the rest is each wake's own cost: the game's WaitForSingleObject(event, 0) after the wait (in the SDK a
   SwitchToThread and the object table's lock), and the queue's critical section, contended. If the event wakes all
   three workers for each job, one waiting worker would be enough.
-- **NativeXRenderer's thread**, about 27 %: besides drawing, it protects the guest memory of each upload again every
-  frame (VirtualProtect) to see the game's next writes there, and those writes then fault on the game's render
-  thread; the dynamic data the game rewrites every frame could be compared instead of watched. A NativeXRenderer
-  topic (its `docs/plan.md`).
+- **The main thread's waits for the render thread** (sub_822E4588, sub_822E0C10) still sleep in slices: about 20 % of
+  a core at 120 FPS, half of it in the kernel.
+
+## Songs at 120 FPS: the D3D library's waits for the GPU, NativeXRenderer's thread (2026-10-25)
+
+At 120 FPS (see [frame-rate.md](frame-rate.md)) a song took 2.06 cores (NativeXRenderer, 1280x720 window, the career's
+first song):
+- **The render thread spun in its D3D library's waits for the GPU**, half its time (47 % of its samples in
+  `sub_821C5A48`, the check each of the library's six wait loops calls), as Kameo's, GRAW's and POTCAWE's did; at 60
+  FPS it rarely waited there. The check now spins briefly and then sleeps in slices like the loops above
+  (`GHMetallicaGpuWaitHook`, [`src/thread_waits.cpp`](../src/thread_waits.cpp)): the render thread 29 % → 18 % of a
+  core.
+- **NativeXRenderer's thread** took 4.8 ms of CPU per frame (56 % of a core at 120 FPS), over half of it protecting
+  again every frame the guest memory the game rewrites every frame, hashing pages requested again unchanged, and
+  waiting for the lock the game's faults on those pages held. NativeXRenderer's D97 compares those pages by hash
+  instead of watching them: 2.9 ms per frame.
+
+Together: 2.06 → 1.65 cores at 120 FPS, 1.17 → 0.90 at 60. Turned off with `ghmetallica_wait_sleep_us = 0` (all the
+waits) and `native_x_renderer_unwatch_rewritten = false`.
 
 ## Also: registers as local variables in the generated code (2026-10-24)
 

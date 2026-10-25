@@ -27,6 +27,12 @@
 //   lock they need to finish: between its passes it now watches the count without the lock.
 // - The render thread sleeps in one go until shortly before the vertical blank it waits for, which comes at the video
 //   mode's refresh rate (1/60 s by default).
+//
+// The D3D library's waits for the GPU (six loops: sub_821C7CB8, sub_821C7D50, sub_821C8870 the fences, sub_821D1418
+// in the present, sub_821D1BC8, sub_821D1DF8; each fills a record with sub_821C5938 and calls sub_821C5A48 for every
+// check, a delay of 32 db16cyc and a hang check) spun too, like Kameo's, GRAW's and POTCAWE's: rarely at 60 FPS, but
+// at 120 the render thread spent half its time in the present's (measured in a song with NativeXRenderer: 47 % of
+// its samples in sub_821C5A48). They spin and sleep in slices like the loops above.
 
 #include <rex/cvar.h>
 #include <rex/ppc/context.h>
@@ -107,6 +113,7 @@ thread_local WaitState t_job_wait;
 thread_local WaitState t_frame_wait;
 thread_local WaitState t_render_wait;
 thread_local WaitState t_vblank_wait;
+thread_local WaitState t_gpu_wait;
 
 // The job queue's event: sub_82425A18 loads its handle with lwz r3,-10892(r29), r29 = 0x82A90000.
 constexpr uint32_t kJobEventHandle = 0x82A8D574;
@@ -290,3 +297,6 @@ void GHMetallicaVblankWaitHook(PPCRegister& r3, PPCRegister& r11) { VblankWait(t
 // [[midasm_hook]] 0x8241CA9C (sub_8241C840): before "cmpld cr6,r3,r30", r3 = the counter 0x82A92590 and r30 the
 // frame's last vertical blank.
 void GHMetallicaVblankWait2Hook(PPCRegister& r3, PPCRegister& r30) { VblankWait(t_vblank[1], r3.u64, r30.u64); }
+
+// [[midasm_hook]] at the entry of sub_821C5A48: a check of a D3D wait for the GPU whose condition is still false.
+void GHMetallicaGpuWaitHook() { SpinOrSleep(t_gpu_wait); }
