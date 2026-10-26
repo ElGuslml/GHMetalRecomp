@@ -1,6 +1,6 @@
 # Profiles shared by the launchers
 
-**Status: working (2026-10-26), GH Metallica Launcher 2.2.0.** The player's profile, its saves, settings and
+**Status: working (2026-10-26), GH Metallica Launcher 2.3.0.** The player's profile, its saves, settings and
 achievements are shared by the launchers of these recompilations (Guitar Hero: Metallica, Kameo, Pirates of the
 Caribbean: At World's End, Ghost Recon Advanced Warfighter) and live outside the game's folder.
 
@@ -20,6 +20,11 @@ Now:
   profile already has saves of this game (from another installation), the launcher asks which to keep; the others are
   kept in `%APPDATA%\ElGuslml Recomps\backups\`.
 - The game runs with the current profile, also when started without the launcher.
+- The profile's card at the bottom of the launcher's sidebar opens its menu: the profile's page, editing it,
+  switching to another profile (for every launcher) and creating one. The profile's page shows the level (one XP per
+  Gamerscore point, 100 XP a level), the achievements of every recompilation whose launcher ran on this computer, and
+  a showcase of up to three pinned achievements. Editing changes the name, a motto, the avatar or photo and the
+  color; a profile other than the last one can be deleted (to the Recycle Bin, with its saves).
 
 ## How it works
 
@@ -27,6 +32,10 @@ Two options of the SDK (changes 47 and 49 of its `recomp` branch): `profile_root
 the settings in each game and the unlocks go there), and `profile_name`, the name the game gets. The game sets them
 at start from the launchers' current profile (`src/startup.cpp`, `ConfigureProfile`, with RecompLauncher's
 `profile_store.h`). Every profile has the same Xbox 360 user ID, so a save works in any profile.
+
+Each launcher writes its game into `%APPDATA%\ElGuslml Recomps\games\<title ID>\` (`game.toml`: name, color, icon,
+the launcher's path, the version, when it last ran; and a copy of the game's achievement list), which is how the
+other launchers show it.
 
 ## Turning it off
 
