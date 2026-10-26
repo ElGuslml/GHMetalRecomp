@@ -1,7 +1,8 @@
-// This game's profile: everything the launcher knows about the game it belongs to. The rest of launcher\ is the same
-// for every game (recomp-tools' template copies it); game.h, game.cpp (the game's own texts) and palette.h (its
-// colors) are each game's, with the art (launcher\art), the icon (res\icon.ico) and the version
-// (res\version.h). The names and the options the game executable shares are src/project.h's.
+// This game's profile: everything the launcher knows about the game it belongs to. The launcher's code is the same for
+// every game (the RecompLauncher submodule, recomp_launcher\, with game_types.h for the types below); game.h, game.cpp
+// (the game's own texts) and palette.h (its colors) are each game's, with the art (launcher\art), the icon
+// (res\icon.ico), the resource script (res\launcher.rc) and the version (res\version.h). The names and the options the
+// game executable shares are src/project.h's.
 
 #pragma once
 
@@ -9,6 +10,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "game_types.h"
 #include "project.h"
 #include "version.h"
 
@@ -100,15 +102,8 @@ inline constexpr bool kNativeXRendererDefault = false;
 // native_x_renderer_shadow_scale = 4, and their image is right.
 inline constexpr bool kShadowQuality = kHasNativeXRenderer && false;
 
-// The Graphics page's frame rate row: kFrameRateCvar's choices, each a value of the cvar and the frame rate it
-// gives, and the value without the key. A boolean cvar (kFrameRateIsBool: the values are 0 and 1, as
-// src/framerate.cpp's 60 FPS) or a number (the emulated vblank's rate, video_mode_refresh_rate, which some games
-// follow). A rate above 60 is offered only where the monitor reaches it, and marked experimental.
-struct FrameRate {
-  int value;
-  int fps;
-};
-// Here src/framerate.cpp's ghmetallica_frame_rate, the frame rate itself: 60 as on the console, above it the emulated
+// The Graphics page's frame rate row: kFrameRateCvar's choices (game_types.h's FrameRate) and the value without the
+// key. Here src/framerate.cpp's ghmetallica_frame_rate, the frame rate itself: 60 as on the console, above it the emulated
 // vblank's rate (src/options.cpp), which the game follows at its own speed.
 inline constexpr const char* kFrameRateCvar = GAME_FRAME_RATE_CVAR;
 inline constexpr bool kFrameRateIsBool = false;
@@ -125,19 +120,8 @@ inline constexpr const char* kMsaaLabel = "";
 // applies to NativeXRenderer only.
 inline constexpr const char* kUltrawideCvar = GAME_ULTRAWIDE_CVAR;
 
-// The languages the game has: the Game page's language row, in this order. Empty: the game asks in its own menu,
-// and the launcher has no row. Each is an XLanguage id (user_language: 1 English, 2 Japanese, 3 German, 4 French,
-// 5 Spanish, 6 Italian, 7 Korean, 8 Traditional Chinese, 9 Portuguese, 10 Simplified Chinese, 11 Polish,
-// 12 Russian) with its name in its own words (UTF-8; the launcher draws other scripts with Windows' fonts). A game
-// with two versions of a language lists it twice, the second with a boolean cvar set when it is chosen (Kameo's
-// Latin American Spanish). Until one is chosen, the Windows display language's: the entry whose `locales` (a
-// locale name prefix, "es-ES") matches the user's locale best, or the first with that id.
-struct Language {
-  uint32_t id;
-  const char* name;
-  const char* variant_cvar;  // null: none
-  const char* locales;       // null: any locale of the language
-};
+// The languages the game has (game_types.h's Language): the Game page's language row, in this order. Empty: the game
+// asks in its own menu, and the launcher has no row.
 // The disc's text packs (DATA/COMPRESSED/PAK/qs_*.pak.xen): English and French, German, Italian, Spanish (Spain's);
 // the game picks one from XGetLanguage at start (checked: Spanish's main menu, German's title screen).
 inline constexpr std::array<Language, 5> kLanguages{{
@@ -148,12 +132,8 @@ inline constexpr std::array<Language, 5> kLanguages{{
     {6, "Italiano", nullptr, nullptr},
 }};
 
-// Switches of the game's own (src/), each a boolean cvar with a row in the Game page; their titles and hints are
-// game.cpp's (GameTexts::toggles, in this order).
-struct Toggle {
-  const char* cvar;
-  bool default_value;
-};
+// Switches of the game's own (src/), each a boolean cvar with a row in the Game page (game_types.h's Toggle); their
+// titles and hints are game.cpp's (GameTexts::toggles, in this order).
 inline constexpr std::array<Toggle, 0> kToggles{};
 
 // The Settings group has a Game page (page_game.cpp) when the game has a language row or switches.
@@ -172,11 +152,7 @@ inline constexpr bool kHasDlcPage = true;
 // The Keyboard page's defaults where they are not the SDK's (its "Reset to defaults", and a control the files do not
 // set): keybind_* cvars and their keys, as src/startup.cpp writes them for the game. The keyboard as a guitar
 // (Gustavo's frets): D, F, J, K, L; the arrows strum; Space or Backspace Star Power; the sticks' other keys off, as
-// W A S D, F and K would move them with the frets.
-struct KeyDefault {
-  const char* cvar;
-  const char* keys;
-};
+// W A S D, F and K would move them with the frets. Empty: the SDK's (game_types.h's KeyDefault).
 inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
     {"keybind_a", "D"},
     {"keybind_b", "F"},
@@ -205,26 +181,7 @@ inline constexpr const char* kKeyboardTapTarget = "dpad_down";
 
 // --- The controls in the game's words ---
 
-// A function of the game, as the Keyboard and Gamepad pages show it in place of the Xbox 360 control it is on (GH
-// Metallica's mockup: "Green fret" where the launcher said "A button"): its chip, a square of a fret's color or a
-// short text on grey, and its names.
-struct GameControl {
-  int bind;              // the Xbox 360 control: a Bind of settings.h
-  const char* chip;      // the chip's text (UTF-8; an up or down arrow draws one), or "": color only
-  uint32_t chip_color;   // 0xRRGGBB
-  uint32_t chip_text;    // 0xRRGGBB
-  const char* name;      // the function, in the launcher's language
-  // The Gamepad page's value for a control the controllers cannot move (the D-pad, a stick): on the game's guitar
-  // ("Whammy bar") and on any other controller ("Right stick"). On a guitar the moved buttons are named after the
-  // function they press by default ("Green fret").
-  const char* on_guitar = nullptr;
-  const char* on_pad = nullptr;
-};
-struct GameControlGroup {
-  const char* title;
-  std::vector<GameControl> controls;
-};
-// The game's functions in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls
+// The game's functions (game_types.h's GameControl) in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls
 // (texts.cpp). The Keyboard page lists after them, under "Other controls", the ones no function is on.
 const std::vector<GameControlGroup>& GameControlsFor(uint32_t language);
 

@@ -91,6 +91,9 @@ official ReXGlue SDK's nightly of 2026-10-02 (v0.10.0 and 24 later commits) with
 game, and the options they add are off by default; the ones for NativeXRenderer change nothing while it is off. The
 branch's `RECOMP.md` lists them, and each commit message explains its change.
 
+The launcher is [RecompLauncher](https://github.com/ElGuslml/RecompLauncher) (`recomp_launcher/`, a submodule shared by
+these recompilations) with this game's profile, texts, colors and art in `launcher/`.
+
 NativeXRenderer (`native_x_renderer/`, a submodule: a native renderer that hooks the game's Direct3D calls) is built
 and linked, and draws this game once its side is written (`src/native_x_renderer_ghmetallica.cpp`).
 

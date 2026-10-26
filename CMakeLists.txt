@@ -107,59 +107,30 @@ target_compile_definitions(ghmetallica PRIVATE
 
 # GH Metallica Launcher: the options, the first run from the player's ISO, the achievements and the updates, in a separate
 # executable so that GHMetallicaRecomp.exe starts right away (for example from Steam Big Picture); "Play" starts the game, and
-# the launcher comes back when it closes. It writes ghmetallica_options.toml next to GHMetallicaRecomp.exe. The launcher is
-# POTCAWERecomp's, shared through recomp-tools' template: the game's own names, files and options are
-# launcher/game.h (with src/project.h, which the game shares) and launcher/game.cpp, its art launcher/art/. SDL3
-# and Dear ImGui from the SDK tree, linked statically (one executable, without the SDK's DLLs), drawn with
-# Direct3D 11 (the SDK builds SDL3 without SDL_render); nanosvg draws its icons and art.
+# the launcher comes back when it closes. It writes ghmetallica_options.toml next to GHMetallicaRecomp.exe. The launcher's
+# code is the RecompLauncher submodule (recomp_launcher/, the same in every game); the game's own names, files and
+# options are launcher/game.h (with src/project.h, which the game shares) and launcher/game.cpp, its colors
+# launcher/palette.h, its art launcher/art/, its resources res/launcher.rc. RECOMP_LAUNCHER_DIR points elsewhere to try
+# a working copy of it.
+set(RECOMP_LAUNCHER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/recomp_launcher" CACHE PATH "The RecompLauncher tree")
+if(NOT EXISTS "${RECOMP_LAUNCHER_DIR}/RecompLauncher.cmake")
+    message(FATAL_ERROR "The RecompLauncher submodule (${RECOMP_LAUNCHER_DIR}) is missing: git submodule update --init")
+endif()
 if(WIN32)
-    add_executable(ghmetallica_launcher WIN32
-        launcher/main.cpp
-        launcher/app.cpp
-        launcher/game.cpp
-        launcher/settings.cpp
-        launcher/texts.cpp
-        launcher/page_play.cpp
-        launcher/page_settings.cpp
-        launcher/page_game.cpp
-        launcher/page_keyboard.cpp
-        launcher/page_gamepad.cpp
-        launcher/page_updates.cpp
-        launcher/page_achievements.cpp
-        launcher/page_install.cpp
-        launcher/page_dlc.cpp
-        launcher/dlc.cpp
-        launcher/iso.cpp
-        launcher/install.cpp
-        launcher/achievements.cpp
-        launcher/net.cpp
-        launcher/updater.cpp
-        launcher/zip.cpp
-        launcher/ui/gfx.cpp
-        launcher/ui/ui.cpp
-        "${REXSDK_DIR}/thirdparty/imgui/backends/imgui_impl_sdl3.cpp"
-        "${REXSDK_DIR}/thirdparty/imgui/backends/imgui_impl_dx11.cpp")
-    set_target_properties(ghmetallica_launcher PROPERTIES OUTPUT_NAME "GH Metallica Launcher")
-    target_compile_definitions(ghmetallica_launcher PRIVATE UNICODE _UNICODE NOMINMAX IMGUI_DEFINE_MATH_OPERATORS)
-    target_include_directories(ghmetallica_launcher PRIVATE launcher src res launcher/thirdparty/nanosvg
-        "${REXSDK_DIR}/thirdparty/imgui/backends" "${REXSDK_DIR}/thirdparty/tomlplusplus"
-        "${REXSDK_DIR}/thirdparty/inja/third_party/include" "${REXSDK_DIR}/thirdparty/stb")
-    target_link_libraries(ghmetallica_launcher PRIVATE imgui SDL3::SDL3 d3d11 dxgi d3dcompiler shcore windowscodecs ole32
-        winhttp bcrypt)
-    # A development build's game files, as the game falls back to them: the launcher then skips the first run.
-    target_compile_definitions(ghmetallica_launcher PRIVATE
-        LAUNCHER_DEFAULT_GAME_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/assets")
-    # The embedded fonts and art (res/launcher.rc): a change rebuilds the resources.
-    file(GLOB GHMETALLICA_LAUNCHER_RESOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/launcher/fonts/*.ttf" "${CMAKE_CURRENT_SOURCE_DIR}/launcher/art/*.svg")
-    set_source_files_properties(res/launcher.rc PROPERTIES OBJECT_DEPENDS "${GHMETALLICA_LAUNCHER_RESOURCES}")
+    include("${RECOMP_LAUNCHER_DIR}/RecompLauncher.cmake")
+    recomp_launcher_add(ghmetallica_launcher
+        OUTPUT_NAME "GH Metallica Launcher"
+        GAME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/launcher"
+        RC "${CMAKE_CURRENT_SOURCE_DIR}/res/launcher.rc"
+        SDK_DIR "${REXSDK_DIR}"
+        INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/res"
+        DEFAULT_GAME_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 endif()
 
 # Windows resources: file properties (res/version.h) and the icon, res/icon.ico, when it exists. The
 # executable's first icon is also the one SDL and the launcher use for their windows.
 if(WIN32)
     target_sources(ghmetallica PRIVATE res/game.rc)
-    target_sources(ghmetallica_launcher PRIVATE res/launcher.rc)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/icon.ico")
         target_compile_definitions(ghmetallica PRIVATE RECOMP_HAS_ICON)
         target_compile_definitions(ghmetallica_launcher PRIVATE RECOMP_HAS_ICON)
