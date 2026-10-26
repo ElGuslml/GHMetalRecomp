@@ -1,6 +1,6 @@
 # Profiles shared by the launchers
 
-**Status: working (2026-10-26), GH Metallica Launcher 2.3.0.** The player's profile, its saves, settings and
+**Status: working (2026-10-26), GH Metallica Launcher 2.4.0.** The player's profile, its saves, settings and
 achievements are shared by the launchers of these recompilations (Guitar Hero: Metallica, Kameo, Pirates of the
 Caribbean: At World's End, Ghost Recon Advanced Warfighter) and live outside the game's folder.
 
@@ -25,6 +25,9 @@ Now:
   Gamerscore point, 100 XP a level), the achievements of every recompilation whose launcher ran on this computer, and
   a showcase of up to three pinned achievements. Editing changes the name, a motto, the avatar or photo and the
   color; a profile other than the last one can be deleted (to the Recycle Bin, with its saves).
+- The time played counts from Play to the game's exit, only when the game starts from its launcher (not the
+  computer's sleep): hours per game, the streaks of days with play and the week's activity on the profile's page.
+- Play or Continue on another game's card closes this launcher and opens that game's.
 
 ## How it works
 
@@ -35,7 +38,8 @@ at start from the launchers' current profile (`src/startup.cpp`, `ConfigureProfi
 
 Each launcher writes its game into `%APPDATA%\ElGuslml Recomps\games\<title ID>\` (`game.toml`: name, color, icon,
 the launcher's path, the version, when it last ran; and a copy of the game's achievement list), which is how the
-other launchers show it.
+other launchers show it. The playtime is in each profile's `games\<title ID>.toml` (seconds, sessions, seconds per
+day), written by the game's launcher each minute while the game runs.
 
 ## Turning it off
 
