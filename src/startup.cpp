@@ -95,6 +95,8 @@ audio_maxqframes = 4
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real
 # guitar or drum kit keeps its own kind. 8 = drum kit, 0 = the SDK default (a gamepad).
 gamepad_subtype = 6
+# An Xbox 360 guitar reads its whammy bar half pressed until the bar first moves: at rest until then.
+guitar_whammy_rest = true
 # Start pressed on a second controller: the game asks that controller to sign in, and only the first
 # has a profile. The sign-in UI closes as when the player cancels it, and the game shows its "not
 # signed in" message (sign in / continue without saving); the SDK default reported a sign-in change

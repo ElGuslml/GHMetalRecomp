@@ -64,9 +64,10 @@ the players' update, `sub_82137F18`, which runs every frame of a song).
 With an Xbox 360 guitar the whammy bar acted half pressed on every sustain from the start of a song until the player
 moved it once. The bar is the right stick's X axis, -32768 at rest, and the game measures it from a rest at -0.76 of
 the axis (`resting_whammy_position`): the axis at 0 is the bar at 43 %. The guitar reads 0 there until the bar first
-moves, and SDL reports an axis only when it changes. A change in the SDK (change 46 of its `recomp` branch): a
-guitar's bar is at rest until the guitar reports a position; the log says when (`whammy bar reported its first
-position`).
+moves, and SDL reports an axis only when it changes. A change in the SDK (changes 46 and 48 of its `recomp` branch,
+`guitar_whammy_rest`, set in `src/startup.cpp`): a guitar's bar is at rest until the guitar reports a position; the
+log says when (`whammy bar reported its first position`). Off in the SDK by default: in a game without guitars a
+guitar's bar at rest is its right stick held left.
 
 ## Turning it off
 
