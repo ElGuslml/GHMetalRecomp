@@ -40,12 +40,14 @@ class GhmetallicaApp : public rex::ReXApp {
   }
 
   // Game files: without --game_data_root, assets/ next to GHMetallicaRecomp.exe or the repository's assets/. User data
-  // (saves, profile, shader cache): userdata/ next to the executable (src/startup.cpp).
+  // (shader cache, downloadable content; the saves and achievements before the profiles): userdata/ next to the
+  // executable; the saves, settings and achievements in the launchers' current profile (src/startup.cpp).
   void OnConfigurePaths(rex::PathConfig& paths) override {
     if (paths.game_data_root.empty()) {
       paths.game_data_root = ghmetallica::DefaultGameRoot();
     }
     ghmetallica::ConfigureUserData(paths.user_data_root, paths.cache_root);
+    ghmetallica::ConfigureProfile(paths.user_data_root);
   }
 
   // ghmetallica.toml with the built-in defaults if it is missing, then (after the SDK loads it) the game files check

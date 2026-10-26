@@ -5,6 +5,7 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 
 | Note | Status |
 |---|---|
+| [Profiles shared by the launchers](profiles.md) | Working: a profile per player in %APPDATA%, the saves and achievements copied into it |
 | [NativeXRenderer in Guitar Hero: Metallica](native-x-renderer-ghmetallica.md) | Working: draws the game as the Xenos path does, with SMAA and ultrawide, at about half the GPU time (off by default) |
 | [Game language](language.md) | Working: launcher language row (German, English, Spanish, French, Italian) |
 | [Quitting from the title screen and the main menu](quit-prompt.md) | Working: B asks whether to quit (A quits, B cancels) |

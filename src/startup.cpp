@@ -5,6 +5,7 @@
 #include <rex/cvar.h>
 #include <rex/filesystem.h>
 #include <rex/logging.h>
+#include <rex/system/flags.h>
 
 #include <algorithm>
 #include <cwctype>
@@ -12,6 +13,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iterator>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -23,6 +25,7 @@
 #include <windows.h>
 #endif
 
+#include "profile_store.h"
 #include "project.h"
 
 namespace ghmetallica {
@@ -204,6 +207,19 @@ void ConfigureUserData(std::filesystem::path& user_data_root, std::filesystem::p
   user_data_root = portable;
   if (rex::cvar::Query<std::string>("cache_root").empty()) {
     cache_root = portable / "cache";
+  }
+}
+
+void ConfigureProfile(const std::filesystem::path& user_data_root) {
+  if (!REXCVAR_GET(profile_root).empty()) {
+    return;  // chosen on the command line
+  }
+  if (std::optional<launcher::profiles::GameProfile> profile = launcher::profiles::ForGame(user_data_root)) {
+    std::u8string folder = profile->folder.u8string();
+    REXCVAR_SET(profile_root, std::string(folder.begin(), folder.end()));
+    if (REXCVAR_GET(profile_name).empty()) {
+      REXCVAR_SET(profile_name, profile->name);
+    }
   }
 }
 
