@@ -95,6 +95,11 @@ audio_maxqframes = 4
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real
 # guitar or drum kit keeps its own kind. 8 = drum kit, 0 = the SDK default (a gamepad).
 gamepad_subtype = 6
+# Start pressed on a second controller: the game asks that controller to sign in, and only the first
+# has a profile. The sign-in UI closes as when the player cancels it, and the game shows its "not
+# signed in" message (sign in / continue without saving); the SDK default reported a sign-in change
+# and the game waited for that controller's profile forever on an empty screen.
+signin_ui_cancel = true
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

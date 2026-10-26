@@ -13,5 +13,6 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 | [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar (the keyboard's keys still the SDK's) |
+| [An empty screen after pressing a button on a second controller](second-controller.md) | Fixed: the game's "not signed in" message, as on the console; planned: one profile, the other controllers its guests |
 | [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |
 | [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace |
