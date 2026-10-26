@@ -68,6 +68,14 @@ first song):
 Together: 2.06 → 1.65 cores at 120 FPS, 1.17 → 0.90 at 60. Turned off with `ghmetallica_wait_sleep_us = 0` (all the
 waits) and `native_x_renderer_unwatch_rewritten = false`.
 
+## Songs at 3440x1440 and 160 FPS: NativeXRenderer's presentation (2026-10-25)
+
+At 3440x1440 in a borderless window and 160 FPS, NativeXRenderer's thread spent 2-3.5 ms of every frame asking the
+swap chain for its next image: NVIDIA's Vulkan driver spins until the display's next refresh frees one. NativeXRenderer's
+DiligentCore patch `0007` (its decision D99) asks for the image only when the frame is composed, and waits for it
+asleep: a song 2.17 → 1.68 cores, NativeXRenderer's thread 0.78 → 0.39 cores, the frame pacing slightly better. In a
+1280x720 window nothing changes (the image was free at once there). It has no switch: it is part of NativeXRenderer.
+
 ## Also: registers as local variables in the generated code (2026-10-24)
 
 Not a bug, an optimization of the recompiled code, as in KameoRecomp, GRAWRecomp and POTCAWERecomp: with the SDK's
