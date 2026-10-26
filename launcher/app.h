@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "achievements.h"
+#include "dlc.h"
 #include "install.h"
 #include "updater.h"
 #include "settings.h"
@@ -37,8 +38,9 @@ void OpenUrl(const char* url);
 void OpenFolder(const std::filesystem::path& folder);
 
 
-// kGame only when the game has options of its own (game::kHasGamePage).
-enum class Page : int { kPlay, kAchievements, kKeyboard, kGamepad, kVideo, kGraphics, kGame, kUpdates, kCount };
+// kDlc only when the game takes downloadable content (game::kHasDlcPage); kGame only when the game has options of its
+// own (game::kHasGamePage).
+enum class Page : int { kPlay, kDlc, kAchievements, kKeyboard, kGamepad, kVideo, kGraphics, kGame, kUpdates, kCount };
 
 class App {
  public:
@@ -87,6 +89,7 @@ class App {
 
   // Pages, each in its own file (page_*.cpp). `rect` is the area right of the sidebar.
   void PlayPage(const ImRect& rect);
+  void DlcPage(const ImRect& rect);
   void AchievementsPage(const ImRect& rect);
   void KeyboardPage(const ImRect& rect);
   void GamepadPage(const ImRect& rect);
@@ -206,6 +209,24 @@ class App {
   uint64_t rate_done_ = 0;
   double rate_ = 0.0;  // bytes per second, smoothed
   SDL_Window* window_ = nullptr;
+
+  // The DLC page (page_dlc.cpp, dlc.h): the packages found in a folder the player chooses (the folder dialog, or a
+  // folder dropped on the window), installed by the game; the ones installed, read when the page opens.
+  void BrowseDlc();
+  void ScanDlc(const std::string& path);  // UTF-8
+  void ListDlc();
+  void PollDlc();
+  void InstalledDlcCard(ImVec2 pos, float width);
+  std::shared_ptr<DialogResult> dlc_dialog_ = std::make_shared<DialogResult>();
+  std::string dlc_scanned_;  // the folder searched, UTF-8
+  std::future<std::vector<DlcPackage>> dlc_scan_;
+  std::optional<std::vector<DlcPackage>> dlc_found_;
+  std::future<std::vector<InstalledDlc>> dlc_listing_;
+  std::optional<std::vector<InstalledDlc>> dlc_installed_;
+  DlcInstall dlc_install_;
+  std::string dlc_confirm_;  // the installed folder whose Remove waits for a second press
+  bool dlc_listed_ = false;  // read once the page is first shown, and after each change
+  bool dlc_refresh_after_install_ = false;
 };
 
 }  // namespace launcher

@@ -53,6 +53,15 @@ OPTIONS IN GH Metallica Launcher
 - Graphics API: DirectX 12 (recommended) or Vulkan.
 
 
+DOWNLOADABLE CONTENT (DLC)
+
+Your own Xbox 360 DLC packages can be installed: Metallica's "Death Magnetic" album (the package made for
+Guitar Hero III, which this game also reads) adds 10 songs to Quickplay's song list (its blue button shows
+the downloaded content). In GH Metallica Launcher's DLC page, "Choose folder..." looks for packages in a
+folder and installs them; your files stay where they are. "Open the DLC folder" opens the folder where they
+go (userdata\0000000000000000\41560830\00000002), for copying a package's extracted files by hand.
+
+
 STEAM BIG PICTURE
 
 Add GHMetallicaRecomp.exe as a non-Steam game: it starts straight into the game with the options saved by

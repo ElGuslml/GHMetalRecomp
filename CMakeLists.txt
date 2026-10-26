@@ -126,6 +126,8 @@ if(WIN32)
         launcher/page_updates.cpp
         launcher/page_achievements.cpp
         launcher/page_install.cpp
+        launcher/page_dlc.cpp
+        launcher/dlc.cpp
         launcher/iso.cpp
         launcher/install.cpp
         launcher/achievements.cpp

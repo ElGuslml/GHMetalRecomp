@@ -95,6 +95,8 @@ enum class Icon : int {
   kPsCircle,
   kPsSquare,
   kPsTriangle,
+  kPackage,  // downloadable content
+  kTrash,
   kCount
 };
 

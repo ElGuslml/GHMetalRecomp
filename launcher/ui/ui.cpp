@@ -86,6 +86,12 @@ constexpr const char* kIconBodies[int(Icon::kCount)] = {
     /* kPsCircle */ "<circle cx='12' cy='12' r='6.5'/>",
     /* kPsSquare */ "<rect x='6' y='6' width='12' height='12' rx='1'/>",
     /* kPsTriangle */ "<path d='M12 5.5l7 12.5H5z'/>",
+    /* kPackage */
+    "<path d='M12 3l8.5 4.5v9L12 21l-8.5-4.5v-9z'/><path d='M3.5 7.5L12 12l8.5-4.5'/><path d='M12 12v9'/>"
+    "<path d='M7.8 5.3l8.5 4.6'/>",
+    /* kTrash */
+    "<path d='M4 7h16'/><path d='M10 11v6'/><path d='M14 11v6'/><path d='M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12'/>"
+    "<path d='M9 7V4h6v3'/>",
 };
 
 struct Picture {

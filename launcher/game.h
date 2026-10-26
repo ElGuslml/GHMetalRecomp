@@ -148,6 +148,14 @@ inline constexpr std::array<Toggle, 0> kToggles{};
 // The Settings group has a Game page (page_game.cpp) when the game has a language row or switches.
 inline constexpr bool kHasGamePage = !kLanguages.empty() || !kToggles.empty();
 
+// --- Downloadable content ---
+
+// The DLC page (page_dlc.cpp, dlc.h): Xbox 360 content packages, each installed by the game's --install_content tool
+// mode into its user data's content folder, where its system software lists them. On when the game takes
+// downloadable content: checked with Guitar Hero III's "Death Magnetic" album (title 415607F7), whose 10 songs the
+// game lists in Quickplay (docs/dlc.md).
+inline constexpr bool kHasDlcPage = true;
+
 // --- Texts of the game's own (game.cpp) ---
 
 struct GameTexts {
@@ -159,6 +167,8 @@ struct GameTexts {
   // The first run's last screen (the game installed), in the game's spirit; null: the launcher's own.
   const char* done_title = nullptr;
   const char* done_text = nullptr;
+  // The DLC page: where the game shows what was installed; null: nothing said.
+  const char* dlc_where = nullptr;
 };
 // In the language of the launcher's texts (an XLanguage); missing ones fall back to English.
 const GameTexts& GameTextsFor(uint32_t language);

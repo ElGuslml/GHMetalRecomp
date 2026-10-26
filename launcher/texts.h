@@ -273,6 +273,31 @@ struct Texts {
   const char* open_logs;
   const char* save_failed;  // %s: the options file
   const char* no_direct3d;  // %s: the launcher
+
+  // The DLC page.
+  const char* nav_dlc;
+  const char* dlc_title;
+  const char* dlc_subtitle;
+  const char* dlc_install_title;
+  const char* dlc_install_text;
+  const char* dlc_choose_folder;
+  const char* dlc_open_folder;
+  const char* dlc_searching;   // %s: the folder
+  const char* dlc_found;       // %s: the folder
+  const char* dlc_none_found;  // %s: the folder
+  const char* dlc_made_for;    // %s: the game the package was made for
+  const char* dlc_not_dlc;
+  const char* dlc_ready;
+  const char* dlc_already_installed;
+  const char* dlc_install;  // %d: how many
+  const char* dlc_nothing_new;
+  const char* dlc_installing;  // %s: the package, %d: which, %d: how many
+  const char* dlc_done;        // %d: how many
+  const char* dlc_failed;      // %s: their names
+  const char* dlc_installed_title;
+  const char* dlc_installed_none;
+  const char* dlc_remove;
+  const char* dlc_remove_confirm;
 };
 
 // The Windows display language as an XLanguage id, like the SDK's user_language: 1 English, 3 German,

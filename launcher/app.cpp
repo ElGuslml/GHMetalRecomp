@@ -44,6 +44,7 @@ struct NavEntry {
 
 constexpr NavEntry kNav[] = {
     {Page::kPlay, false, false, Icon::kPlay, 0},
+    {Page::kDlc, false, false, Icon::kPackage, 0},
     {Page::kAchievements, false, false, Icon::kTrophy, 0},
     {Page::kKeyboard, false, true, Icon::kGamepad, 10},
     {Page::kKeyboard, true, false, Icon::kNone, 0},
@@ -125,7 +126,8 @@ bool App::Busy() const {
   bool updating = update == Update::State::kDownloading || update == Update::State::kVerifying ||
                   update == Update::State::kInstalling;
   return listen_bind_ >= 0 || std::chrono::steady_clock::now() < notice_until_ || achievements_loading_.valid() ||
-         game_running_ || update_check_.valid() || updating ||
+         game_running_ || update_check_.valid() || updating || dlc_scan_.valid() || dlc_listing_.valid() ||
+         dlc_install_.Get().state == DlcInstall::State::kRunning ||
          (installing_ && (iso_check_.valid() || extraction_.Get().state == Extraction::State::kRunning));
 }
 
@@ -265,6 +267,7 @@ void App::Navigate(Page page, bool focus_sidebar) {
 void App::Frame(ImVec2 size) {
   PollAchievements();
   PollUpdates();
+  PollDlc();
   ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->Pos);
   ImGui::SetNextWindowSize(size);
@@ -301,6 +304,9 @@ void App::Frame(ImVec2 size) {
   switch (page_) {
     case Page::kPlay:
       PlayPage(main);
+      break;
+    case Page::kDlc:
+      DlcPage(main);
       break;
     case Page::kAchievements:
       AchievementsPage(main);
@@ -354,8 +360,9 @@ void App::Frame(ImVec2 size) {
     pad_release_wait_ = false;
   }
   if (!popup && !popup_was_open && !Listening() && !pad_release_wait_) {
-    constexpr Page kOrder[] = {Page::kPlay,     Page::kAchievements, Page::kKeyboard, Page::kGamepad,
-                               Page::kVideo,    Page::kGraphics,     Page::kGame,     Page::kUpdates};
+    constexpr Page kOrder[] = {Page::kPlay,     Page::kDlc,      Page::kAchievements, Page::kKeyboard,
+                               Page::kGamepad,  Page::kVideo,    Page::kGraphics,     Page::kGame,
+                               Page::kUpdates};
     int index = int(std::find(std::begin(kOrder), std::end(kOrder), page_) - std::begin(kOrder));
     int count = int(std::size(kOrder));
     // The next page in `step`'s direction that the game has.
@@ -363,7 +370,7 @@ void App::Frame(ImVec2 size) {
       int i = index;
       do {
         i = (i + count + step) % count;
-      } while (kOrder[i] == Page::kGame && !game::kHasGamePage);
+      } while ((kOrder[i] == Page::kGame && !game::kHasGamePage) || (kOrder[i] == Page::kDlc && !game::kHasDlcPage));
       return kOrder[i];
     };
     if (ImGui::IsKeyPressed(ImGuiKey_GamepadL1)) {
@@ -416,6 +423,10 @@ bool App::OnEvent(const SDL_Event& event) {
       if (installing_ && install_step_ == InstallStep::kChooseIso && event.drop.data) {
         ChooseIso(event.drop.data);
       }
+      // A folder (or a package) dropped on the DLC page: searched for packages.
+      if (!installing_ && page_ == Page::kDlc && event.drop.data) {
+        ScanDlc(event.drop.data);
+      }
       return true;
     default:
       break;
@@ -445,12 +456,13 @@ void App::Sidebar(const ImRect& rect) {
   y += Px(40.0f) + Px(28.0f);
 
   // The pages.
-  const char* labels[] = {t_.nav_play,     t_.nav_achievements, t_.nav_controls, t_.nav_keyboard, t_.nav_gamepad,
-                          t_.nav_settings, t_.nav_video,        t_.nav_graphics, t_.nav_game,     t_.nav_updates};
+  const char* labels[] = {t_.nav_play,     t_.nav_dlc,      t_.nav_achievements, t_.nav_controls,
+                          t_.nav_keyboard, t_.nav_gamepad,  t_.nav_settings,     t_.nav_video,
+                          t_.nav_graphics, t_.nav_game,     t_.nav_updates};
   ImGuiID current_id = 0;
   for (int i = 0; i < int(std::size(kNav)); ++i) {
     const NavEntry& entry = kNav[i];
-    if (entry.page == Page::kGame && !game::kHasGamePage) {
+    if ((entry.page == Page::kGame && !game::kHasGamePage) || (entry.page == Page::kDlc && !game::kHasDlcPage)) {
       continue;
     }
     if (i > 0) {
