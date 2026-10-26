@@ -14,6 +14,7 @@
 #include <native_x_renderer/native_x_renderer.h>
 
 #include "native_x_renderer_ghmetallica.h"
+#include "keyboard.h"
 #include "options.h"
 #include "project.h"
 #include "startup.h"
@@ -75,6 +76,7 @@ class GhmetallicaApp : public rex::ReXApp {
     if (window()) {
       ghmetallica::SetOutputSize(window()->GetActualPhysicalWidth(), window()->GetActualPhysicalHeight());
     }
+    ghmetallica::InitializeKeyboard();
   }
   void OnWindowPixelSizeChanged(uint32_t pixel_width, uint32_t pixel_height) override {
     ghmetallica::SetOutputSize(pixel_width, pixel_height);

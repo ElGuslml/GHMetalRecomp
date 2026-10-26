@@ -292,6 +292,10 @@ const Texts kEnglish = {
     .dlc_installed_none = "No downloadable content installed yet.",
     .dlc_remove = "Remove",
     .dlc_remove_confirm = "Remove it?",
+
+    .group_other = "Other controls",
+    .pad_guitar = "Guitar",
+    .pad_drums = "Drum kit",
 };
 
 const Texts kGerman = {
@@ -576,6 +580,10 @@ const Texts kGerman = {
     .dlc_installed_none = "Noch keine herunterladbaren Inhalte installiert.",
     .dlc_remove = "Entfernen",
     .dlc_remove_confirm = "Wirklich entfernen?",
+
+    .group_other = "Weitere Steuerelemente",
+    .pad_guitar = "Gitarre",
+    .pad_drums = "Schlagzeug",
 };
 
 const Texts kFrench = {
@@ -860,6 +868,10 @@ const Texts kFrench = {
     .dlc_installed_none = "Aucun contenu téléchargeable installé pour l'instant.",
     .dlc_remove = "Retirer",
     .dlc_remove_confirm = "Le retirer ?",
+
+    .group_other = "Autres commandes",
+    .pad_guitar = "Guitare",
+    .pad_drums = "Batterie",
 };
 
 const Texts kSpanish = {
@@ -1144,6 +1156,10 @@ const Texts kSpanish = {
     .dlc_installed_none = "Todavía no hay contenido descargable instalado.",
     .dlc_remove = "Quitar",
     .dlc_remove_confirm = "¿Quitarlo?",
+
+    .group_other = "Otros controles",
+    .pad_guitar = "Guitarra",
+    .pad_drums = "Batería",
 };
 
 const Texts kItalian = {
@@ -1428,6 +1444,10 @@ const Texts kItalian = {
     .dlc_installed_none = "Nessun contenuto scaricabile ancora installato.",
     .dlc_remove = "Rimuovi",
     .dlc_remove_confirm = "Rimuoverlo?",
+
+    .group_other = "Altri comandi",
+    .pad_guitar = "Chitarra",
+    .pad_drums = "Batteria",
 };
 
 // Every member is a string (or an array of them): a text a language lacks falls back to English.

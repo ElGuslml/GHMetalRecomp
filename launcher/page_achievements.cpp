@@ -29,7 +29,7 @@ void DrawAchievementIcon(ImTextureID texture, const ImRect& box, bool unlocked, 
               box.GetHeight());
   } else {
     draw->AddImageRounded(texture, box.Min, box.Max, ImVec2(0, 0), ImVec2(1, 1),
-                          unlocked ? IM_COL32_WHITE : IM_COL32(92, 96, 104, 255), Px(8.0f));
+                          unlocked ? IM_COL32_WHITE : IM_COL32(92, 96, 104, 255), Radius(8.0f));
   }
   StrokeRect(box, Fade(col::kText, 0.08f), 8.0f);
   if (!unlocked && !secret) {

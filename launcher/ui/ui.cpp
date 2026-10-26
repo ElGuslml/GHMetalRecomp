@@ -92,6 +92,13 @@ constexpr const char* kIconBodies[int(Icon::kCount)] = {
     /* kTrash */
     "<path d='M4 7h16'/><path d='M10 11v6'/><path d='M14 11v6'/><path d='M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12'/>"
     "<path d='M9 7V4h6v3'/>",
+    /* kGuitar */
+    "<path d='M14 10l6-6'/><path d='M18 2l4 4'/>"
+    "<path d='M11 9c-2-1-5 0-6 2-1 1.5 0 3-1.5 4.5S3 19 5 20.5c1.5 1.5 3.5 1.5 5 0s3 -.5 4.5-1.5c2-1 3-4 2-6z'/>"
+    "<circle cx='10' cy='15' r='1.5'/>",
+    /* kDrum */
+    "<ellipse cx='12' cy='9' rx='8' ry='3'/><path d='M4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9'/><path d='M3 2l7 6'/>"
+    "<path d='M21 2l-7 6'/>",
 };
 
 struct Picture {
@@ -160,6 +167,8 @@ ImU32 Brighten(ImU32 color) {
 
 void SetScale(float pixels_per_dp) { g_scale = pixels_per_dp; }
 float Scale() { return g_scale; }
+
+float Radius(float dp) { return Px(dp * col::kRoundness); }
 
 std::string_view Resource(int id) {
   HMODULE module = GetModuleHandleW(nullptr);
@@ -351,6 +360,23 @@ float DrawParagraph(const Type& type, ImVec2 pos, float width, float line_height
   return y - pos.y;
 }
 
+std::string Upper(std::string_view text) {
+  if (text.empty()) {
+    return {};
+  }
+  int length = MultiByteToWideChar(CP_UTF8, 0, text.data(), int(text.size()), nullptr, 0);
+  std::wstring wide(size_t(std::max(length, 0)), L'\0');
+  MultiByteToWideChar(CP_UTF8, 0, text.data(), int(text.size()), wide.data(), length);
+  // Windows' own mapping, which knows the accented letters ("é" -> "É").
+  CharUpperBuffW(wide.data(), DWORD(wide.size()));
+  int bytes = WideCharToMultiByte(CP_UTF8, 0, wide.data(), int(wide.size()), nullptr, 0, nullptr, nullptr);
+  std::string upper(size_t(std::max(bytes, 0)), '\0');
+  WideCharToMultiByte(CP_UTF8, 0, wide.data(), int(wide.size()), upper.data(), bytes, nullptr, nullptr);
+  return upper;
+}
+
+std::string Title(std::string_view text) { return launcher::game::kUppercaseTitles ? Upper(text) : std::string(text); }
+
 std::string Ellipsize(const Type& type, std::string_view text, float width) {
   if (MeasureText(type, text).x <= width) {
     return std::string(text);
@@ -404,9 +430,25 @@ void DrawIcon(Icon icon, ImVec2 pos, float size, ImU32 color, float stroke, bool
                    ImVec2(1, 1), color);
 }
 
+// The art's size in its own units: its SVG's viewBox, read once.
+static ImVec2 ArtSize(Art art, int id) {
+  static ImVec2 sizes[int(Art::kCount)] = {};
+  ImVec2& size = sizes[int(art)];
+  if (size.x <= 0.0f || size.y <= 0.0f) {
+    std::string svg(Resource(id));
+    if (NSVGimage* image = nsvgParse(svg.data(), "px", 96.0f)) {
+      size = ImVec2(image->width, image->height);
+      nsvgDelete(image);
+    }
+    if (size.x <= 0.0f || size.y <= 0.0f) {
+      size = ImVec2(1000.0f, 480.0f);
+    }
+  }
+  return size;
+}
+
 void DrawArt(Art art, const ImRect& rect, ImVec2 anchor, float rounding, ImDrawFlags corners) {
   constexpr int kIds[int(Art::kCount)] = {IDR_ART_HERO, IDR_ART_INSTALL};
-  constexpr float kViewBox[int(Art::kCount)][2] = {{1000.0f, 480.0f}, {440.0f, 760.0f}};
   int width = int(Snap(rect.GetWidth()));
   int height = int(Snap(rect.GetHeight()));
   if (width <= 0 || height <= 0) {
@@ -419,8 +461,9 @@ void DrawArt(Art art, const ImRect& rect, ImVec2 anchor, float rounding, ImDrawF
   if ((cache.picture.width != width || cache.picture.height != height) &&
       (cache.picture.texture == ImTextureID_Invalid || now - cache.drawn_at > std::chrono::milliseconds(100))) {
     Release(cache.picture);
-    float vw = kViewBox[int(art)][0];
-    float vh = kViewBox[int(art)][1];
+    ImVec2 view = ArtSize(art, kIds[int(art)]);
+    float vw = view.x;
+    float vh = view.y;
     float scale = std::max(float(width) / vw, float(height) / vh);
     float tx = (float(width) - vw * scale) * anchor.x;
     float ty = (float(height) - vh * scale) * anchor.y;
@@ -434,7 +477,7 @@ void DrawArt(Art art, const ImRect& rect, ImVec2 anchor, float rounding, ImDrawF
   ImVec2 b = Snap(rect.Max);
   if (rounding > 0.0f) {
     List()->AddImageRounded(cache.picture.texture, a, b, ImVec2(0, 0), ImVec2(1, 1), IM_COL32_WHITE,
-                            Px(rounding), corners);
+                            Radius(rounding), corners);
   } else {
     List()->AddImage(cache.picture.texture, a, b);
   }
@@ -498,14 +541,14 @@ ImGuiID CapturedFirstItem() {
 void FocusRing(const ImRect& rect, float rounding) {
   float offset = Px(3.0f);
   List()->AddRect(Snap(ImVec2(rect.Min.x - offset, rect.Min.y - offset)),
-                  Snap(ImVec2(rect.Max.x + offset, rect.Max.y + offset)), col::kAccent, Px(rounding + 2.0f), 0,
+                  Snap(ImVec2(rect.Max.x + offset, rect.Max.y + offset)), col::kAccent, Radius(rounding) + Px(2.0f), 0,
                   Px(2.0f));
 }
 
 // --- Shapes ---
 
 void FillRect(const ImRect& rect, ImU32 color, float rounding_dp, ImDrawFlags corners) {
-  List()->AddRectFilled(Snap(rect.Min), Snap(rect.Max), color, Px(rounding_dp), corners);
+  List()->AddRectFilled(Snap(rect.Min), Snap(rect.Max), color, Radius(rounding_dp), corners);
 }
 
 void StrokeRect(const ImRect& rect, ImU32 color, float rounding_dp, float thickness_dp) {
@@ -515,7 +558,7 @@ void StrokeRect(const ImRect& rect, ImU32 color, float rounding_dp, float thickn
   ImVec2 b = Snap(rect.Max);
   float h = t * 0.5f - 0.5f;
   List()->AddRect(ImVec2(a.x + h, a.y + h), ImVec2(b.x - h - 1.0f, b.y - h - 1.0f), color,
-                  std::max(0.0f, Px(rounding_dp) - h), 0, t);
+                  std::max(0.0f, Radius(rounding_dp) - h), 0, t);
 }
 
 void DashedRect(const ImRect& rect, ImU32 color, float rounding_dp, float dash_dp, float gap_dp) {
@@ -526,7 +569,7 @@ void DashedRect(const ImRect& rect, ImU32 color, float rounding_dp, float dash_d
   a.y += 0.5f;
   b.x -= 0.5f;
   b.y -= 0.5f;
-  list->PathRect(a, b, Px(rounding_dp));
+  list->PathRect(a, b, Radius(rounding_dp));
   std::vector<ImVec2> points(list->_Path.begin(), list->_Path.end());
   list->PathClear();
   if (points.size() < 2) {

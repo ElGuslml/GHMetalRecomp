@@ -134,10 +134,19 @@ int SystemGameLanguage() {
   return 0;
 }
 
+// A control's keys by default: the game's (game::kKeyboardDefaults), else the SDK's.
+const char* DefaultKeys(int bind) {
+  for (const game::KeyDefault& d : game::kKeyboardDefaults) {
+    if (std::string_view(d.cvar) == kBinds[bind].cvar) return d.keys;
+  }
+  return kBinds[bind].sdk_default;
+}
+
 void ResetKeyboard(Options& o) {
   for (int i = 0; i < int(Bind::kCount); ++i) {
-    o.binds[i] = kBinds[i].sdk_default;
+    o.binds[i] = DefaultKeys(i);
   }
+  o.keyboard_tap = false;
   o.mnk_mouse = false;
   o.mnk_sensitivity = 1.0f;
 }
@@ -315,8 +324,9 @@ Options OptionsFromConfig(const Config& c, unsigned primary_dpi) {
   o.mnk_sensitivity = float(std::clamp(GetDouble(c, "mnk_sensitivity", 1.0), 0.01, 10.0));
   for (int i = 0; i < int(Bind::kCount); ++i) {
     auto it = c.find(kBinds[i].cvar);
-    o.binds[i] = it != c.end() ? it->second : kBinds[i].sdk_default;
+    o.binds[i] = it != c.end() ? it->second : DefaultKeys(i);
   }
+  o.keyboard_tap = *game::kKeyboardTapTarget && !GetString(c, "mnk_tap_target").empty();
 
   o.gamepad_remap = GetString(c, "gamepad_remap");
 
@@ -679,6 +689,9 @@ bool SaveOptions(const Settings& s) {
        "# mouse, mnk_sensitivity its speed; keybind_*: each control's keys, comma-separated alternatives.\n";
   f << "mnk_mode = " << boolean(o.mnk) << "\n";
   f << "mnk_mouse = " << boolean(o.mnk_mouse) << "\n";
+  if (*game::kKeyboardTapTarget) {
+    f << "mnk_tap_target = \"" << (o.keyboard_tap ? game::kKeyboardTapTarget : "") << "\"\n";
+  }
   {
     char text[32];
     std::snprintf(text, sizeof(text), "%.2f", double(o.mnk_sensitivity));

@@ -65,6 +65,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${GHMETALLICA_SO
 # Sources
 set(GHMETALLICA_SOURCES
     src/framerate.cpp
+    src/keyboard.cpp
     src/main.cpp
     src/native_x_renderer_ghmetallica.cpp
     src/options.cpp

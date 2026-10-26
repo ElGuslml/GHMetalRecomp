@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 #include "project.h"
 #include "version.h"
@@ -35,18 +36,28 @@ inline constexpr const char* kVersion = RECOMP_VERSION_STR;
 inline constexpr const char* kArtKicker = "GUITAR HERO";
 inline constexpr const char* kArtTitle = "Metallica";
 // The mark in the logo beside it (the sidebar, the first run): an icon's SVG paths in a 24-unit box, stroked as the
-// launcher's icons are (ui.cpp). A disc, until the game has its own.
+// launcher's icons are (ui.cpp). A guitar pick with a lightning bolt (the mockup's, local_docs/launcher_design).
 inline constexpr const char* kBrandIcon =
-    "<circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='2.5'/><path d='M12 3a9 9 0 0 1 9 9'/>";
+    "<path d='M12 21c-4-4-8-9-8-13 0-3 4-5 8-5s8 2 8 5c0 4-4 9-8 13z'/><path d='M13 6l-3 5h4l-3 5'/>";
+// The sidebar's name beside the logo, and the words before "LAUNCHER" under it ("METALLICA · LAUNCHER"); null: the
+// art's title (kArtTitle) and "LAUNCHER" alone.
+inline constexpr const char* kSidebarTitle = "Guitar Hero";
+inline constexpr const char* kSidebarSubtitle = "Metallica";
 // Where the Play page crops its art (launcher\art\hero.svg) in a window of another shape: the point kept in view,
-// as fractions of the art's width and height.
-inline constexpr float kHeroFocusX = 0.7f;
-inline constexpr float kHeroFocusY = 0.4f;
+// as fractions of the art's width and height. The guitar's head, near the top.
+inline constexpr float kHeroFocusX = 0.5f;
+inline constexpr float kHeroFocusY = 0.1f;
 // The logo's mark on a disc instead of a rounded square.
 inline constexpr bool kBrandRound = false;
 // The first run's art panel: the game's name in a dark card over the art, with the tagline, instead of straight on
 // the art with the tagline at its foot.
-inline constexpr bool kInstallTitleCard = false;
+inline constexpr bool kInstallTitleCard = true;
+// The Play page's name and buttons in a black bar across the foot of the art, under a line of accent (the first run's
+// title card gets the same line), instead of straight on the art.
+inline constexpr bool kHeroTitleBar = true;
+// The titles in capitals, as the mockup draws them: the pages', the Play page's name, the sidebar's and the first
+// run's.
+inline constexpr bool kUppercaseTitles = true;
 
 // --- The disc ---
 
@@ -156,6 +167,67 @@ inline constexpr bool kHasGamePage = !kLanguages.empty() || !kToggles.empty();
 // game lists in Quickplay (docs/dlc.md).
 inline constexpr bool kHasDlcPage = true;
 
+// --- The keyboard ---
+
+// The Keyboard page's defaults where they are not the SDK's (its "Reset to defaults", and a control the files do not
+// set): keybind_* cvars and their keys, as src/startup.cpp writes them for the game. The keyboard as a guitar
+// (Gustavo's frets): D, F, J, K, L; the arrows strum; Space or Backspace Star Power; the sticks' other keys off, as
+// W A S D, F and K would move them with the frets.
+struct KeyDefault {
+  const char* cvar;
+  const char* keys;
+};
+inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
+    {"keybind_a", "D"},
+    {"keybind_b", "F"},
+    {"keybind_y", "J"},
+    {"keybind_x", "K"},
+    {"keybind_left_shoulder", "L"},
+    {"keybind_dpad_up", "Up"},
+    {"keybind_dpad_down", "Down"},
+    {"keybind_back", "Space,Backspace"},
+    {"keybind_start", "Return,X"},
+    {"keybind_rstick_right", "Right"},
+    {"keybind_rstick_up", ""},
+    {"keybind_rstick_down", ""},
+    {"keybind_rstick_left", ""},
+    {"keybind_rstick_press", ""},
+    {"keybind_lstick_up", ""},
+    {"keybind_lstick_down", ""},
+    {"keybind_lstick_left", ""},
+    {"keybind_lstick_right", ""},
+    {"keybind_lstick_press", ""},
+}};
+// The Keyboard page's switch that makes the keyboard's frets strum as they are pressed (the SDK's mnk_tap_target with
+// src/startup.cpp's mnk_tap_sources, the frets): the control it presses when on, the D-pad (strumming); "": no switch.
+// Its title and hint are game.cpp's (GameTexts::keyboard_tap_title, keyboard_tap_hint).
+inline constexpr const char* kKeyboardTapTarget = "dpad_down";
+
+// --- The controls in the game's words ---
+
+// A function of the game, as the Keyboard and Gamepad pages show it in place of the Xbox 360 control it is on (GH
+// Metallica's mockup: "Green fret" where the launcher said "A button"): its chip, a square of a fret's color or a
+// short text on grey, and its names.
+struct GameControl {
+  int bind;              // the Xbox 360 control: a Bind of settings.h
+  const char* chip;      // the chip's text (UTF-8; an up or down arrow draws one), or "": color only
+  uint32_t chip_color;   // 0xRRGGBB
+  uint32_t chip_text;    // 0xRRGGBB
+  const char* name;      // the function, in the launcher's language
+  // The Gamepad page's value for a control the controllers cannot move (the D-pad, a stick): on the game's guitar
+  // ("Whammy bar") and on any other controller ("Right stick"). On a guitar the moved buttons are named after the
+  // function they press by default ("Green fret").
+  const char* on_guitar = nullptr;
+  const char* on_pad = nullptr;
+};
+struct GameControlGroup {
+  const char* title;
+  std::vector<GameControl> controls;
+};
+// The game's functions in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls
+// (texts.cpp). The Keyboard page lists after them, under "Other controls", the ones no function is on.
+const std::vector<GameControlGroup>& GameControlsFor(uint32_t language);
+
 // --- Texts of the game's own (game.cpp) ---
 
 struct GameTexts {
@@ -169,6 +241,19 @@ struct GameTexts {
   const char* done_text = nullptr;
   // The DLC page: where the game shows what was installed; null: nothing said.
   const char* dlc_where = nullptr;
+  // The first run's extraction screen (while it runs), in the game's spirit; null: the launcher's own.
+  const char* extracting_title = nullptr;
+  const char* extracting_text = nullptr;
+  // The Gamepad page's name in the sidebar, its title and subtitle; null: the launcher's own ("Gamepad").
+  const char* gamepad_nav = nullptr;
+  const char* gamepad_title = nullptr;
+  const char* gamepad_subtitle = nullptr;
+  // The Keyboard and Gamepad pages' first column with GameControlsFor's functions ("Game function"); null: the
+  // launcher's own (the Xbox 360 control).
+  const char* functions_column = nullptr;
+  // The Keyboard page's switch for kKeyboardTapTarget.
+  const char* keyboard_tap_title = nullptr;
+  const char* keyboard_tap_hint = nullptr;
 };
 // In the language of the launcher's texts (an XLanguage); missing ones fall back to English.
 const GameTexts& GameTextsFor(uint32_t language);

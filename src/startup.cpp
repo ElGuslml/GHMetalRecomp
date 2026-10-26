@@ -100,6 +100,35 @@ gamepad_subtype = 6
 # signed in" message (sign in / continue without saving); the SDK default reported a sign-in change
 # and the game waited for that controller's profile forever on an empty screen.
 signin_ui_cancel = true
+# The keyboard as a guitar (with mnk_mode; GH Metallica Launcher's Keyboard page changes them): the frets
+# on D, F, J, K and L (green, red, yellow, blue, orange: A, B, Y, X, LB), strumming on the up and down
+# arrows (the D-pad), Star Power on Space or Backspace (Back), Start on Enter or X, the whammy bar on the
+# right arrow (the right stick). The sticks' other keys are off: W A S D, F and K would move them with the
+# frets.
+keybind_a = "D"
+keybind_b = "F"
+keybind_y = "J"
+keybind_x = "K"
+keybind_left_shoulder = "L"
+keybind_dpad_up = "Up"
+keybind_dpad_down = "Down"
+keybind_back = "Space,Backspace"
+keybind_start = "Return,X"
+keybind_rstick_right = "Right"
+keybind_rstick_up = ""
+keybind_rstick_down = ""
+keybind_rstick_left = ""
+keybind_rstick_press = ""
+keybind_lstick_up = ""
+keybind_lstick_down = ""
+keybind_lstick_left = ""
+keybind_lstick_right = ""
+keybind_lstick_press = ""
+# The keyboard's frets strum as they are pressed with mnk_tap_target = "dpad_down" (the launcher's switch),
+# frets pressed within mnk_tap_window_ms of each other making one chord: one strum. Empty: off, the
+# arrows strum.
+mnk_tap_sources = "a,b,y,x,lb"
+mnk_tap_target = ""
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

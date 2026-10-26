@@ -111,6 +111,8 @@ struct Options {
   // Keyboard and mouse: the SDK's controller emulation (mnk_mode, mnk_mouse, mnk_sensitivity, keybind_*).
   bool mnk = false;
   bool mnk_mouse = false;
+  // The keyboard's frets strum as they are pressed (game::kKeyboardTapTarget: the SDK's mnk_tap_target).
+  bool keyboard_tap = false;
   float mnk_sensitivity = 1.0f;
   std::array<std::string, int(Bind::kCount)> binds;
 

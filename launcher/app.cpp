@@ -443,22 +443,36 @@ void App::Sidebar(const ImRect& rect) {
   float width = rect.GetWidth() - Px(32.0f) - Snap(Px(1.0f));
   float y = rect.Min.y + Px(24.0f);
 
-  // The brand: the game's mark on accent and its name.
-  ImRect logo(ImVec2(x + Px(8.0f), y), ImVec2(x + Px(48.0f), y + Px(40.0f)));
+  // The brand: the game's mark on accent, its name and "LAUNCHER" (game.h: kSidebarTitle, kSidebarSubtitle), the
+  // second line wrapped when it is too long, the mark centered on the two.
+  constexpr Type kBrandTitle{Font::kCondensedBold, 20};
+  constexpr Type kBrandSubtitle{Font::kBold, 11, 0.14f};
+  std::string brand_title = Title(game::kSidebarTitle ? game::kSidebarTitle : game::kArtTitle);
+  std::string brand_subtitle =
+      game::kSidebarSubtitle ? std::string(game::kSidebarSubtitle) + " \xC2\xB7 " + t_.brand : std::string(t_.brand);
+  if (game::kUppercaseTitles) {
+    brand_subtitle = Upper(brand_subtitle);
+  }
+  float text_x = x + Px(8.0f) + Px(40.0f) + Px(12.0f);
+  float text_width = x + width - text_x;
+  float subtitle_height = DrawParagraph(kBrandSubtitle, ImVec2(0, 0), text_width, 1.3f, 0, brand_subtitle, false);
+  float block = Px(20.0f) + Px(5.0f) + subtitle_height;
+  float brand_height = std::max(Px(40.0f), block);
+  ImRect logo(ImVec2(x + Px(8.0f), y + (brand_height - Px(40.0f)) * 0.5f),
+              ImVec2(x + Px(48.0f), y + (brand_height + Px(40.0f)) * 0.5f));
   FillRect(logo, col::kAccent, game::kBrandRound ? 20.0f : 8.0f);
   DrawIcon(Icon::kBrand, ImVec2(logo.Min.x + Px(9.0f), logo.Min.y + Px(9.0f)), 22.0f, col::kOnAccent, 2.0f);
-  constexpr Type kBrandTitle{Font::kCondensedBold, 20};
-  constexpr Type kBrandSubtitle{Font::kSemiBold, 11, 0.12f};
-  float block = Px(20.0f) + Px(5.0f) + LineHeight(kBrandSubtitle);
-  float text_y = y + (Px(40.0f) - block) * 0.5f;
-  DrawLabel(kBrandTitle, ImVec2(logo.Max.x + Px(12.0f), text_y), col::kText, game::kArtTitle, Px(20.0f));
-  DrawLabel(kBrandSubtitle, ImVec2(logo.Max.x + Px(12.0f), text_y + Px(25.0f)), col::kLabel, t_.brand);
-  y += Px(40.0f) + Px(28.0f);
+  float text_y = y + (brand_height - block) * 0.5f;
+  DrawLabel(kBrandTitle, ImVec2(text_x, text_y), col::kText, brand_title, Px(20.0f));
+  DrawParagraph(kBrandSubtitle, ImVec2(text_x, text_y + Px(25.0f)), text_width, 1.3f, col::kLabel, brand_subtitle);
+  y += brand_height + Px(28.0f);
 
   // The pages.
-  const char* labels[] = {t_.nav_play,     t_.nav_dlc,      t_.nav_achievements, t_.nav_controls,
-                          t_.nav_keyboard, t_.nav_gamepad,  t_.nav_settings,     t_.nav_video,
-                          t_.nav_graphics, t_.nav_game,     t_.nav_updates};
+  const game::GameTexts& own = game::GameTextsFor(language_);
+  const char* gamepad = own.gamepad_nav ? own.gamepad_nav : t_.nav_gamepad;
+  const char* labels[] = {t_.nav_play,     t_.nav_dlc,     t_.nav_achievements, t_.nav_controls,
+                          t_.nav_keyboard, gamepad,        t_.nav_settings,     t_.nav_video,
+                          t_.nav_graphics, t_.nav_game,    t_.nav_updates};
   ImGuiID current_id = 0;
   for (int i = 0; i < int(std::size(kNav)); ++i) {
     const NavEntry& entry = kNav[i];
@@ -492,7 +506,15 @@ void App::Sidebar(const ImRect& rect) {
     }
     if (entry.sub) {
       constexpr Type kSub{Font::kMedium, 14};
-      DrawLabel(kSub, ImVec2(item.Min.x + Px(44.0f), item.Min.y), text, labels[i], height);
+      // A name too long for one line ("Instruments and gamepad") on two, in the same height.
+      float label_width = item.GetWidth() - Px(44.0f) - Px(12.0f);
+      if (MeasureText(kSub, labels[i]).x > label_width) {
+        float lines = DrawParagraph(kSub, ImVec2(0, 0), label_width, 1.3f, 0, labels[i], false);
+        DrawParagraph(kSub, ImVec2(item.Min.x + Px(44.0f), item.Min.y + (height - lines) * 0.5f), label_width, 1.3f,
+                      text, labels[i]);
+      } else {
+        DrawLabel(kSub, ImVec2(item.Min.x + Px(44.0f), item.Min.y), text, labels[i], height);
+      }
       // The keyboard and mouse are experimental: a badge after its name.
       if (entry.page == Page::kKeyboard) {
         ImVec2 size = BadgeSize(t_.experimental_badge, 9);
@@ -599,10 +621,11 @@ float App::Header(ImVec2 pos, const char* kicker, const char* title, const char*
     DrawLabel(kKicker, ImVec2(pos.x, y), col::kLabel, kicker);
     y += LineHeight(kKicker) + Px(4.0f);
   }
-  DrawLabel(kTitle, ImVec2(pos.x, y), col::kText, title, Px(40.0f));
+  std::string title_text = Title(title);
+  DrawLabel(kTitle, ImVec2(pos.x, y), col::kText, title_text, Px(40.0f));
   if (badge) {
     ImVec2 size = BadgeSize(badge, 12);
-    Badge(ImVec2(pos.x + MeasureText(kTitle, title).x + Px(14.0f), y + (Px(40.0f) - size.y) * 0.5f), badge,
+    Badge(ImVec2(pos.x + MeasureText(kTitle, title_text).x + Px(14.0f), y + (Px(40.0f) - size.y) * 0.5f), badge,
           col::kAccentTint, col::kAccentLight, 12);
   }
   y += Px(40.0f);

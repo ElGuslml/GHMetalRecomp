@@ -136,31 +136,47 @@ void App::PollInstall() {
 void App::InstallArt(const ImRect& rect) {
   FillRect(rect, col::kInstallArtFill);
   DrawArt(Art::kInstall, rect, ImVec2(0.5f, 1.0f));
-  constexpr Type kBrand{Font::kSemiBold, 11, 0.12f};
-  constexpr Type kKicker{Font::kBold, 12, 0.16f};
+  constexpr Type kBrand{game::kHeroTitleBar ? Font::kBold : Font::kSemiBold, 11, game::kHeroTitleBar ? 0.14f : 0.12f};
+  constexpr Type kKicker{Font::kBold, 12, game::kHeroTitleBar ? 0.2f : 0.16f};
   constexpr Type kFoot{Font::kRegular, 13};
-  float x = rect.Min.x + Px(40.0f);
-  float y = rect.Min.y + Px(40.0f);
-  float width = rect.GetWidth() - Px(80.0f);
+  // With kHeroTitleBar the card is the Play page's bar: higher, black under a line of accent, a smaller logo.
+  constexpr bool kBar = game::kHeroTitleBar;
+  float margin = kBar ? Px(32.0f) : Px(40.0f);
+  float x = rect.Min.x + margin;
+  float y = rect.Min.y + (kBar ? Px(56.0f) : Px(40.0f));
+  float width = rect.GetWidth() - margin * 2.0f;
+  float logo_size = kBar ? Px(36.0f) : Px(40.0f);
+  float logo_gap = kBar ? Px(20.0f) : Px(22.0f);
+  float name_size = kBar ? 46.0f : 48.0f;
   if (game::kInstallTitleCard) {
     float inner = width - Px(48.0f);
-    float height = Px(24.0f) + Px(40.0f) + Px(22.0f) + LineHeight(kKicker) + Px(4.0f) + Px(48.0f) * 0.95f + Px(10.0f) +
-                   DrawParagraph(kFoot, ImVec2(0, 0), inner, 1.2f, 0, t_.tagline, false) + Px(24.0f);
-    FillRect(ImRect(ImVec2(x, y), ImVec2(x + width, y + height)), Fade(col::kBackground, 0.88f), 12.0f);
+    float height = Px(24.0f) + logo_size + logo_gap + LineHeight(kKicker) + Px(4.0f) + Px(name_size) * 0.95f +
+                   Px(10.0f) + DrawParagraph(kFoot, ImVec2(0, 0), inner, 1.2f, 0, t_.tagline, false) + Px(24.0f);
+    ImRect card(ImVec2(x, y), ImVec2(x + width, y + height));
+    if (kBar) {
+      FillRect(card, col::kTitleBar, 8.0f);
+      FillRect(ImRect(card.Min, ImVec2(card.Max.x, card.Min.y + Snap(Px(3.0f)))), col::kAccent, 8.0f,
+               ImDrawFlags_RoundCornersTop);
+    } else {
+      FillRect(card, Fade(col::kBackground, 0.88f), 12.0f);
+    }
     x += Px(24.0f);
     y += Px(24.0f);
     width = inner;
   }
-  ImRect logo(ImVec2(x, y), ImVec2(x + Px(40.0f), y + Px(40.0f)));
+  ImRect logo(ImVec2(x, y), ImVec2(x + logo_size, y + logo_size));
   FillRect(logo, col::kAccent, game::kBrandRound ? 20.0f : 8.0f);
-  DrawIcon(Icon::kBrand, ImVec2(logo.Min.x + Px(9.0f), logo.Min.y + Px(9.0f)), 22.0f, col::kOnAccent, 2.0f);
-  DrawLabel(kBrand, ImVec2(logo.Max.x + Px(12.0f), y), col::kTextMuted, t_.brand, Px(40.0f));
-  y += Px(40.0f) + (game::kInstallTitleCard ? Px(22.0f) : Px(28.0f));
+  float icon_size = kBar ? 20.0f : 22.0f;
+  DrawIcon(Icon::kBrand, ImVec2(logo.GetCenter().x - Px(icon_size) * 0.5f, logo.GetCenter().y - Px(icon_size) * 0.5f),
+           icon_size, col::kOnAccent, 2.0f);
+  DrawLabel(kBrand, ImVec2(logo.Max.x + Px(12.0f), y), col::kTextMuted, t_.brand, logo_size);
+  y += logo_size + (game::kInstallTitleCard ? logo_gap : Px(28.0f));
   DrawLabel(kKicker, ImVec2(x, y), col::kAccent, game::kArtKicker);
   y += LineHeight(kKicker) + Px(4.0f);
-  DrawLabel(Type{Font::kCondensedBold, 48}, ImVec2(x, y), col::kText, game::kArtTitle, Px(48.0f) * 0.95f);
+  DrawLabel(Type{Font::kCondensedBold, name_size}, ImVec2(x, y), col::kText, Title(game::kArtTitle),
+            Px(name_size) * 0.95f);
   if (game::kInstallTitleCard) {
-    y += Px(48.0f) * 0.95f + Px(10.0f);
+    y += Px(name_size) * 0.95f + Px(10.0f);
     DrawParagraph(kFoot, ImVec2(x, y), width, 1.2f, col::kTextMuted, t_.tagline);
   } else {
     DrawParagraph(kFoot, ImVec2(x, rect.Max.y - Px(32.0f) - LineHeight(kFoot) * 2.0f), width, 1.2f, col::kTextMuted,
@@ -181,10 +197,10 @@ void App::Stepper(ImVec2 pos) {
     bool now = i == current;
     ImRect circle(ImVec2(x, pos.y), ImVec2(x + Px(28.0f), pos.y + Px(28.0f)));
     if (done) {
-      FillRect(circle, col::kAccent, 14.0f);
+      FillRect(circle, col::kAccent, col::kStepRadius);
       DrawIcon(Icon::kCheck, ImVec2(circle.Min.x + Px(7.0f), circle.Min.y + Px(7.0f)), 14.0f, col::kOnAccent, 3.0f);
     } else {
-      StrokeRect(circle, now ? col::kAccent : col::kDashed, 14.0f, 2.0f);
+      StrokeRect(circle, now ? col::kAccent : col::kDashed, col::kStepRadius, 2.0f);
       char number[4];
       std::snprintf(number, sizeof(number), "%d", i + 1);
       DrawLabel(kNumber, ImVec2(circle.Min.x + (Px(28.0f) - MeasureText(kNumber, number).x) * 0.5f, circle.Min.y),
@@ -243,7 +259,7 @@ void App::InstallScreen(ImVec2 size) {
       float height = Px(48.0f) + Px(14.0f) + lead + Px(32.0f) + card * 3.0f + Px(24.0f) + Px(20.0f) + LineHeight(kCardHint);
       float y = centered(height);
       float x = main.Min.x;
-      DrawLabel(kHeading, ImVec2(x, y), col::kText, welcome_title, Px(48.0f));
+      DrawLabel(kHeading, ImVec2(x, y), col::kText, Title(welcome_title), Px(48.0f));
       y += Px(48.0f) + Px(14.0f);
       DrawParagraph(kLead, ImVec2(x, y), width, 1.55f, col::kTextSecondary, welcome_text);
       y += lead + Px(32.0f);
@@ -340,7 +356,7 @@ void App::InstallScreen(ImVec2 size) {
       float height = Px(48.0f) + Px(14.0f) + lead + Px(28.0f) + body;
       float y = centered(height);
       float x = main.Min.x;
-      DrawLabel(kHeading, ImVec2(x, y), col::kText, t_.choose_title, Px(48.0f));
+      DrawLabel(kHeading, ImVec2(x, y), col::kText, Title(t_.choose_title), Px(48.0f));
       y += Px(48.0f) + Px(14.0f);
       DrawParagraph(kLead, ImVec2(x, y), width, 1.55f, col::kTextSecondary, text);
       y += lead + Px(28.0f);
@@ -472,10 +488,14 @@ void App::InstallScreen(ImVec2 size) {
       bool done = progress.state == Extraction::State::kDone;
       bool failed = progress.state == Extraction::State::kFailed;
       float width = std::min(main.GetWidth(), Px(640.0f));
-      const char* title = done ? t_.extracted_title : failed ? t_.extract_failed_title : t_.extracting_title;
+      // While it runs, the game's own words (game.cpp) if it has them.
+      const game::GameTexts& own = game::GameTextsFor(language_);
+      const char* extracting_title = own.extracting_title ? own.extracting_title : t_.extracting_title;
+      const char* extracting_text = own.extracting_text ? own.extracting_text : t_.extracting_text;
+      const char* title = done ? t_.extracted_title : failed ? t_.extract_failed_title : extracting_title;
       std::string text = done     ? std::string(t_.extracted_text)
                          : failed ? Format(t_.extract_failed_text, progress.error_path, progress.error)
-                                  : std::string(t_.extracting_text);
+                                  : std::string(extracting_text);
       float lead = DrawParagraph(kLead, ImVec2(0, 0), width, 1.55f, 0, text, false);
       constexpr Type kPercent{Font::kCondensedBold, 64};
       constexpr Type kLabelType{Font::kBold, 12, 0.1f};
@@ -485,7 +505,7 @@ void App::InstallScreen(ImVec2 size) {
       float height = Px(48.0f) + Px(14.0f) + lead + Px(32.0f) + card + Px(16.0f) + LineHeight(kCardHint);
       float y = centered(height);
       float x = main.Min.x;
-      DrawLabel(kHeading, ImVec2(x, y), failed ? col::kError : col::kText, title, Px(48.0f));
+      DrawLabel(kHeading, ImVec2(x, y), failed ? col::kError : col::kText, Title(title), Px(48.0f));
       y += Px(48.0f) + Px(14.0f);
       DrawParagraph(kLead, ImVec2(x, y), width, 1.55f, col::kTextSecondary, text);
       y += lead + Px(32.0f);
@@ -565,7 +585,7 @@ void App::InstallScreen(ImVec2 size) {
       FillRect(tile, col::kDoneTile, 16.0f);
       DrawIcon(Icon::kCheck, ImVec2(tile.Min.x + Px(18.0f), tile.Min.y + Px(18.0f)), 36.0f, col::kSuccess, 2.4f);
       y += Px(72.0f) + Px(28.0f);
-      DrawLabel(kHeading, ImVec2(x, y), col::kText, done_title, Px(48.0f));
+      DrawLabel(kHeading, ImVec2(x, y), col::kText, Title(done_title), Px(48.0f));
       y += Px(48.0f) + Px(14.0f);
       DrawParagraph(kLead, ImVec2(x, y), width, 1.55f, col::kTextSecondary, done_text);
       y += lead + Px(24.0f);

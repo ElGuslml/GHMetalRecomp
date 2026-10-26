@@ -5,6 +5,7 @@
 // and the order sections apply in are the SDK's, repeated here.
 
 #include <SDL3/SDL_gamepad.h>
+#include <SDL3/SDL_joystick.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_stdinc.h>
 
@@ -185,6 +186,7 @@ int PrimaryInput(uint64_t sources) {
 struct Pad {
   std::string name;
   SDL_GamepadType type = SDL_GAMEPAD_TYPE_UNKNOWN;
+  SDL_JoystickType kind = SDL_JOYSTICK_TYPE_GAMEPAD;  // a guitar or a drum kit (XInput's subtype, through SDL)
 };
 
 std::vector<Pad> ConnectedPads() {
@@ -196,6 +198,7 @@ std::vector<Pad> ConnectedPads() {
     const char* name = SDL_GetGamepadNameForID(ids[i]);
     pad.name = name && *name ? name : "";
     pad.type = SDL_GetGamepadTypeForID(ids[i]);
+    pad.kind = SDL_GetJoystickTypeForID(ids[i]);
     pads.push_back(std::move(pad));
   }
   SDL_free(ids);
@@ -327,6 +330,72 @@ constexpr int kRowControl[kRows] = {kA, kB, kX, kY, kLB, kRB, kLT, kRT, kLS, kRS
 constexpr const char* kRowGlyphs[kRows] = {"A",  "B",  "X",  "Y",     "LB",   "RB",    "LT",
                                            "RT", "LS", "RS", "START", "BACK", "D-PAD", "GUIDE"};
 
+// The control of gamepad_remap a keyboard Bind is (settings.h), or -1 for one it cannot move (the D-pad, a stick's
+// direction): the Gamepad page's rows with the game's functions (game.h, GameControlsFor).
+int ControlOf(int bind) {
+  switch (Bind(bind)) {
+    case Bind::kA:
+      return kA;
+    case Bind::kB:
+      return kB;
+    case Bind::kX:
+      return kX;
+    case Bind::kY:
+      return kY;
+    case Bind::kLeftShoulder:
+      return kLB;
+    case Bind::kRightShoulder:
+      return kRB;
+    case Bind::kLeftTrigger:
+      return kLT;
+    case Bind::kRightTrigger:
+      return kRT;
+    case Bind::kLStickPress:
+      return kLS;
+    case Bind::kRStickPress:
+      return kRS;
+    case Bind::kStart:
+      return kStart;
+    case Bind::kBack:
+      return kBack;
+    default:
+      return -1;
+  }
+}
+
+// On the game's guitar, a button is named after the function it presses in the standard layout ("Green fret" for
+// the button that is A), or "".
+const char* GuitarName(int input, const std::vector<game::GameControlGroup>& functions) {
+  for (const game::GameControlGroup& group : functions) {
+    for (const game::GameControl& control : group.controls) {
+      int c = ControlOf(control.bind);
+      if (c >= 0 && (kDefaultSources[size_t(c)] & Bit(input))) {
+        return control.on_guitar ? control.on_guitar : control.name;
+      }
+    }
+  }
+  return "";
+}
+
+// The chip of one of the game's functions (as the Keyboard page's): a fret's color, or a short text on grey.
+void DrawFunctionChip(ImVec2 pos, float row_height, const game::GameControl& control) {
+  constexpr Type kChipType{Font::kBold, 12};
+  bool up = std::string_view(control.chip) == "\xE2\x86\x91";
+  bool down = std::string_view(control.chip) == "\xE2\x86\x93";
+  bool text = *control.chip && !up && !down;
+  float width = text ? std::max(Px(44.0f), MeasureText(kChipType, control.chip).x + Px(16.0f)) : Px(44.0f);
+  ImRect chip(ImVec2(pos.x, pos.y + (row_height - Px(26.0f)) * 0.5f),
+              ImVec2(pos.x + width, pos.y + (row_height + Px(26.0f)) * 0.5f));
+  FillRect(chip, Hex(control.chip_color), 6.0f);
+  if (up || down) {
+    DrawIcon(up ? Icon::kArrowUp : Icon::kArrowDown,
+             ImVec2(chip.GetCenter().x - Px(7.0f), chip.GetCenter().y - Px(7.0f)), 14.0f, Hex(control.chip_text), 2.4f);
+  } else if (text) {
+    DrawLabel(kChipType, ImVec2(chip.Min.x + (width - MeasureText(kChipType, control.chip).x) * 0.5f, chip.Min.y),
+              Hex(control.chip_text), control.chip, chip.GetHeight());
+  }
+}
+
 // gamepad_remap's name for a type of controller (SDL's: "ps5", "xboxone"...).
 std::string TypeKey(SDL_GamepadType type) {
   const char* name = SDL_GetGamepadStringForType(type);
@@ -401,7 +470,9 @@ void App::AssignPad(int input) {
 
 void App::GamepadPage(const ImRect& rect) {
   ImRect content = PageContent(rect);
-  float y = Header(content.Min, t_.controls, t_.nav_gamepad, t_.gamepad_subtitle);
+  const game::GameTexts& own = game::GameTextsFor(language_);
+  float y = Header(content.Min, t_.controls, own.gamepad_title ? own.gamepad_title : t_.nav_gamepad,
+                   own.gamepad_subtitle ? own.gamepad_subtitle : t_.gamepad_subtitle);
   std::vector<Pad> pads = ConnectedPads();
   if (selected_pad_ >= int(pads.size())) {
     selected_pad_ = 0;
@@ -457,14 +528,19 @@ void App::GamepadPage(const ImRect& rect) {
       FillRect(r, state.hovered ? Brighten(on ? col::kSegment : col::kSidebar) : on ? col::kSegment : col::kSidebar,
                10.0f);
       StrokeRect(r, on ? col::kAccent : col::kSidebarBorder, 10.0f, 2.0f);
-      DrawIcon(Icon::kGamepad, ImVec2(r.Min.x + Px(14.0f), r.Min.y + (height - Px(28.0f)) * 0.5f), 28.0f,
+      const Pad& pad = pads[size_t(i)];
+      bool guitar = pad.kind == SDL_JOYSTICK_TYPE_GUITAR;
+      bool drums = pad.kind == SDL_JOYSTICK_TYPE_DRUM_KIT;
+      DrawIcon(guitar ? Icon::kGuitar : drums ? Icon::kDrum : Icon::kGamepad,
+               ImVec2(r.Min.x + Px(14.0f), r.Min.y + (height - Px(28.0f)) * 0.5f), 28.0f,
                on ? col::kAccent : col::kTextDim, 1.6f);
       float text_x = r.Min.x + Px(14.0f) + Px(28.0f) + Px(12.0f);
       float text_width = r.Max.x - Px(14.0f) - text_x;
-      const Pad& pad = pads[size_t(i)];
       std::string name = pad.name.empty() ? TypeName(pad.type, t_) : pad.name;
       DrawLabel(kName, ImVec2(text_x, r.Min.y + Px(14.0f)), col::kText, Ellipsize(kName, name, text_width));
-      std::string kind = std::string(TypeName(pad.type, t_)) + " · " + t_.connected;
+      std::string kind = std::string(TypeName(pad.type, t_)) + " · " +
+                         (guitar ? std::string(t_.pad_guitar) + " · " : drums ? std::string(t_.pad_drums) + " · " : "") +
+                         t_.connected;
       DrawLabel(kKind, ImVec2(text_x, r.Min.y + Px(14.0f) + LineHeight(kName) + Px(3.0f)), col::kTextMuted,
                 Ellipsize(kKind, kind, text_width));
       if (state.focused) {
@@ -492,9 +568,17 @@ void App::GamepadPage(const ImRect& rect) {
     for (char c : name) upper += (c >= 'a' && c <= 'z') ? char(c - 32) : c;
     constexpr Type kHint{Font::kRegular, 13};
     float hint_width = MeasureText(kHint, t_.mapping_hint).x;
-    float title_width = MeasureText(kSection, t_.mapping_title).x;
+    // With the game's functions (game.h), on any controller but a drum kit (whose pads are other functions): their
+    // names and chips in place of the Xbox 360 buttons, and on a guitar its buttons named after them.
+    const std::vector<game::GameControlGroup>& functions = game::GameControlsFor(language_);
+    bool selected_guitar = any && pads[size_t(selected_pad_)].kind == SDL_JOYSTICK_TYPE_GUITAR;
+    bool with_functions = !functions.empty() && !(any && pads[size_t(selected_pad_)].kind == SDL_JOYSTICK_TYPE_DRUM_KIT);
+    const char* functions_column = game::GameTextsFor(language_).functions_column;
+    std::string mapping_title =
+        with_functions && functions_column ? Upper(functions_column) : std::string(t_.mapping_title);
+    float title_width = MeasureText(kSection, mapping_title).x;
     float arrow = Px(14.0f);
-    DrawLabel(kSection, ImVec2(x, top), col::kLabel, t_.mapping_title);
+    DrawLabel(kSection, ImVec2(x, top), col::kLabel, mapping_title);
     DrawIcon(Icon::kArrowRight, ImVec2(x + title_width + Px(4.0f), top + (LineHeight(kSection) - arrow) * 0.5f), 14.0f,
              col::kLabel, 2.2f);
     float name_x = x + title_width + Px(4.0f) + arrow + Px(6.0f);
@@ -511,27 +595,50 @@ void App::GamepadPage(const ImRect& rect) {
     float column_gap = Px(16.0f);
     float column_width = (width - column_gap) * 0.5f;
     float row_height = Px(52.0f);
-    for (int row = 0; row < kRows; ++row) {
+    struct Row {
+      int control;  // -1: one the controllers cannot move
+      const game::GameControl* function;
+      int xbox_row;  // without functions: the row of kRowControl
+    };
+    std::vector<Row> rows;
+    if (with_functions) {
+      for (const game::GameControlGroup& group : functions) {
+        for (const game::GameControl& control : group.controls) rows.push_back({ControlOf(control.bind), &control, -1});
+      }
+    } else {
+      for (int row = 0; row < kRows; ++row) rows.push_back({kRowControl[row], nullptr, row});
+    }
+    for (int row = 0; row < int(rows.size()); ++row) {
       float cx = x + float(row % 2) * (column_width + column_gap);
       float cy = top + float(row / 2) * (row_height + Px(8.0f));
       if (cy + row_height > right.Max.y - Px(44.0f)) {
         break;  // a short window: the rest does not fit
       }
-      int control = kRowControl[row];
-      // The original button.
-      float glyph_width = std::max(Px(44.0f), MeasureText(kGlyph, kRowGlyphs[row]).x + Px(16.0f));
-      ImRect pill(ImVec2(cx + Px(4.0f), cy + (row_height - Px(28.0f)) * 0.5f),
-                  ImVec2(cx + Px(4.0f) + glyph_width, cy + (row_height + Px(28.0f)) * 0.5f));
-      FillRect(pill, col::kGlyph, 14.0f);
-      DrawLabel(kGlyph, ImVec2(pill.Min.x + (glyph_width - MeasureText(kGlyph, kRowGlyphs[row]).x) * 0.5f, pill.Min.y),
-                row < 4 ? kGlyphColors[row] : col::kTextSoft, kRowGlyphs[row], pill.GetHeight());
+      int control = rows[size_t(row)].control;
+      const game::GameControl* function = rows[size_t(row)].function;
+      int xbox_row = rows[size_t(row)].xbox_row;
+      // The original button, or the game's function.
+      float label_x = 0;
+      if (function) {
+        DrawFunctionChip(ImVec2(cx + Px(4.0f), cy), row_height, *function);
+        label_x = cx + Px(4.0f) + Px(44.0f) + Px(12.0f);
+      } else {
+        float glyph_width = std::max(Px(44.0f), MeasureText(kGlyph, kRowGlyphs[xbox_row]).x + Px(16.0f));
+        ImRect pill(ImVec2(cx + Px(4.0f), cy + (row_height - Px(28.0f)) * 0.5f),
+                    ImVec2(cx + Px(4.0f) + glyph_width, cy + (row_height + Px(28.0f)) * 0.5f));
+        FillRect(pill, col::kGlyph, 14.0f);
+        DrawLabel(kGlyph,
+                  ImVec2(pill.Min.x + (glyph_width - MeasureText(kGlyph, kRowGlyphs[xbox_row]).x) * 0.5f, pill.Min.y),
+                  xbox_row < 4 ? kGlyphColors[xbox_row] : col::kTextSoft, kRowGlyphs[xbox_row], pill.GetHeight());
+        label_x = pill.Max.x + Px(12.0f);
+      }
       // Its name and the button on the controller (the D-pad stays where it is).
       float button_width = std::min(Px(150.0f), column_width * 0.45f);
       ImRect button(ImVec2(cx + column_width - Px(4.0f) - button_width, cy + Px(7.0f)),
                     ImVec2(cx + column_width - Px(4.0f), cy + Px(45.0f)));
-      float label_x = pill.Max.x + Px(12.0f);
       DrawParagraph(kLabel, ImVec2(label_x, cy + (row_height - LineHeight(kLabel)) * 0.5f),
-                    button.Min.x - Px(12.0f) - label_x, 1.2f, col::kTextSoft, t_.pad_buttons[row]);
+                    button.Min.x - Px(12.0f) - label_x, 1.2f, col::kTextSoft,
+                    function ? function->name : t_.pad_buttons[xbox_row]);
       bool remappable = control >= 0 && any;
       ImGui::PushID(row);
       ItemState state = Item("button", button, remappable);
@@ -553,8 +660,18 @@ void App::GamepadPage(const ImRect& rect) {
         ImU32 background = remappable ? col::kField : col::kFieldDisabled;
         FillRect(button, state.hovered ? Brighten(background) : background, 8.0f);
         StrokeRect(button, remappable ? col::kFieldBorder : col::kSidebarBorder, 8.0f);
-        Label label = control >= 0 ? LabelOf(PrimaryInput(sources[size_t(control)]), type)
-                                   : Label{t_.pad_buttons[12], Icon::kNone, col::kLabel};
+        Label label;
+        if (control >= 0) {
+          int input = PrimaryInput(sources[size_t(control)]);
+          const char* on_guitar = function && selected_guitar ? GuitarName(input, functions) : "";
+          label = *on_guitar ? Label{on_guitar} : LabelOf(input, type);
+        } else if (function) {
+          // What the controllers cannot move: its name on the guitar, or on any other controller.
+          const char* fixed = selected_guitar ? function->on_guitar : function->on_pad;
+          label = Label{fixed ? fixed : function->name, Icon::kNone, col::kLabel};
+        } else {
+          label = Label{t_.pad_buttons[12], Icon::kNone, col::kLabel};
+        }
         float text_x = button.Min.x + Px(12.0f);
         if (!label.text.empty()) {
           DrawLabel(kButton, ImVec2(text_x, button.Min.y), remappable ? label.color : col::kLabel,

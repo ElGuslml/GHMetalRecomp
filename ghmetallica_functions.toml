@@ -168,6 +168,9 @@ name = "GHMetallicaButtonPollEndHook"
 # The whammy on a sustain is told by the frame (the bar's movement since the previous frame, a countdown of 5 frames,
 # 5 frames in a row to turn a star power sustain blue or back): above 60 Hz over a 60th of a second and 5 / 60 s.
 [[midasm_hook]]
+address = 0x82137F18   # mflr r12 (sub_82137F18: a player's update in a song, every frame; src/keyboard.cpp)
+name = "GHMetallicaSongFrameHook"
+[[midasm_hook]]
 address = 0x821436A0   # fsubs f13,f30,f13 (sub_82143530, a guitar: the bar's position minus the previous frame's)
 name = "GHMetallicaWhammyHook"
 registers = ["r30", "f30", "f13"]

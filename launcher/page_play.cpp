@@ -36,6 +36,27 @@ void App::PlayPage(const ImRect& rect) {
   float left = hero.Min.x + Px(40.0f);
   float right = hero.Max.x - Px(40.0f);
   float bottom = hero.Max.y - Px(36.0f);
+  // The name, its kicker and tagline: straight on the art, or in a black bar across its foot under a line of accent
+  // (game::kHeroTitleBar, smaller), the buttons centered in it.
+  constexpr Type kKicker{Font::kBold, 13, game::kHeroTitleBar ? 0.2f : 0.16f};
+  constexpr Type kName{Font::kCondensedBold, game::kHeroTitleBar ? 54.0f : 76.0f, game::kHeroTitleBar ? 0.02f : -0.01f};
+  constexpr Type kTagline{Font::kRegular, game::kHeroTitleBar ? 14.0f : 15.0f};
+  float name_box = Px(kName.size) * 0.92f;
+  float name_gap = game::kHeroTitleBar ? Px(6.0f) : Px(12.0f);
+  float kicker_gap = game::kHeroTitleBar ? Px(4.0f) : Px(6.0f);
+  float buttons_y = bottom - Px(60.0f);
+  if (game::kHeroTitleBar) {
+    float block = LineHeight(kKicker) + kicker_gap + name_box + name_gap + LineHeight(kTagline);
+    float bar_height = Px(24.0f) * 2.0f + std::max(block, Px(60.0f)) + Px(3.0f);
+    ImRect bar(ImVec2(hero.Min.x, hero.Max.y - bar_height), hero.Max);
+    FillRect(bar, col::kTitleBar, 12.0f, ImDrawFlags_RoundCornersBottom);
+    FillRect(ImRect(bar.Min, ImVec2(bar.Max.x, bar.Min.y + Snap(Px(3.0f)))), col::kAccent);
+    left = hero.Min.x + Px(32.0f);
+    right = hero.Max.x - Px(32.0f);
+    float middle = bar.Min.y + Px(3.0f) + (bar_height - Px(3.0f)) * 0.5f;
+    bottom = middle + block * 0.5f;
+    buttons_y = middle - Px(30.0f);
+  }
   // A notice across the top of the art: the game closed with an error, or the launcher was just updated.
   ImRect notice(ImVec2(hero.Min.x + Px(24.0f), hero.Min.y + Px(24.0f)),
                 ImVec2(hero.Max.x - Px(24.0f), hero.Min.y + Px(24.0f) + Px(52.0f)));
@@ -58,7 +79,6 @@ void App::PlayPage(const ImRect& rect) {
   quit.gap = 10;
   float play_width = ButtonWidth(play, t_.play);
   float quit_width = ButtonWidth(quit, t_.quit);
-  float buttons_y = bottom - Px(60.0f);
   float play_x = right - play_width;
   if (Button("quit", ImVec2(play_x - Px(12.0f) - quit_width, buttons_y), quit, t_.quit)) {
     result_ = Result::kQuit;
@@ -71,15 +91,11 @@ void App::PlayPage(const ImRect& rect) {
   ImGui::SetItemDefaultFocus();
   page_focus_ = ImGui::GetItemID();
 
-  constexpr Type kKicker{Font::kBold, 13, 0.16f};
-  constexpr Type kName{Font::kCondensedBold, 76, -0.01f};
-  constexpr Type kTagline{Font::kRegular, 15};
   float tagline_y = bottom - LineHeight(kTagline);
-  float name_box = Px(76.0f) * 0.92f;
-  float name_y = tagline_y - Px(12.0f) - name_box;
-  float kicker_y = name_y - Px(6.0f) - LineHeight(kKicker);
+  float name_y = tagline_y - name_gap - name_box;
+  float kicker_y = name_y - kicker_gap - LineHeight(kKicker);
   DrawLabel(kKicker, ImVec2(left, kicker_y), col::kAccent, game::kArtKicker);
-  DrawLabel(kName, ImVec2(left, name_y), col::kText, game::kArtTitle, name_box);
+  DrawLabel(kName, ImVec2(left, name_y), col::kText, Title(game::kArtTitle), name_box);
   DrawLabel(kTagline, ImVec2(left, tagline_y), col::kTextSecondary, t_.tagline);
 
   // The cards.

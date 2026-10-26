@@ -298,6 +298,11 @@ struct Texts {
   const char* dlc_installed_none;
   const char* dlc_remove;
   const char* dlc_remove_confirm;
+
+  // The Keyboard and Gamepad pages with the game's own functions (game.h, GameControlsFor).
+  const char* group_other;  // the controls no function is on
+  const char* pad_guitar;   // a controller's kind
+  const char* pad_drums;
 };
 
 // The Windows display language as an XLanguage id, like the SDK's user_language: 1 English, 3 German,

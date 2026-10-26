@@ -32,6 +32,8 @@ ImU32 Brighten(ImU32 color);
 void SetScale(float pixels_per_dp);
 float Scale();
 inline float Px(float dp) { return dp * Scale(); }
+// A corner's radius in pixels: the mockup's `dp` times the game's roundness (palette.h, col::kRoundness).
+float Radius(float dp);
 inline float Snap(float px) { return std::floor(px + 0.5f); }
 inline ImVec2 Snap(ImVec2 p) { return {Snap(p.x), Snap(p.y)}; }
 
@@ -62,6 +64,10 @@ float DrawParagraph(const Type& type, ImVec2 pos, float width, float line_height
                       std::string_view text, bool draw = true, float align = 0.0f);
 // The text cut with "…" to fit `width` pixels.
 std::string Ellipsize(const Type& type, std::string_view text, float width);
+// The text in capitals (UTF-8, accented letters too: "GRÁFICOS").
+std::string Upper(std::string_view text);
+// A title as the game draws them: in capitals when game::kUppercaseTitles.
+std::string Title(std::string_view text);
 
 // --- Pictures ---
 
@@ -97,6 +103,8 @@ enum class Icon : int {
   kPsTriangle,
   kPackage,  // downloadable content
   kTrash,
+  kGuitar,
+  kDrum,
   kCount
 };
 

@@ -250,6 +250,26 @@ Glyph GlyphOf(Bind bind) {
   return {"", Icon::kNone, col::kTextSoft};
 }
 
+// The chip of one of the game's functions (game.h, GameControl): a square of a fret's color, or a short text on grey;
+// an arrow is drawn as an icon (Barlow has none).
+void DrawChip(ImVec2 pos, float row_height, const game::GameControl& control) {
+  constexpr Type kChipType{Font::kBold, 12};
+  bool up = std::string_view(control.chip) == "\xE2\x86\x91";
+  bool down = std::string_view(control.chip) == "\xE2\x86\x93";
+  bool text = *control.chip && !up && !down;
+  float width = text ? std::max(Px(44.0f), MeasureText(kChipType, control.chip).x + Px(16.0f)) : Px(44.0f);
+  ImRect chip(ImVec2(pos.x, pos.y + (row_height - Px(26.0f)) * 0.5f),
+              ImVec2(pos.x + width, pos.y + (row_height + Px(26.0f)) * 0.5f));
+  FillRect(chip, Hex(control.chip_color), 6.0f);
+  if (up || down) {
+    DrawIcon(up ? Icon::kArrowUp : Icon::kArrowDown,
+             ImVec2(chip.GetCenter().x - Px(7.0f), chip.GetCenter().y - Px(7.0f)), 14.0f, Hex(control.chip_text), 2.4f);
+  } else if (text) {
+    DrawLabel(kChipType, ImVec2(chip.Min.x + (width - MeasureText(kChipType, control.chip).x) * 0.5f, chip.Min.y),
+              Hex(control.chip_text), control.chip, chip.GetHeight());
+  }
+}
+
 void DrawGlyph(ImVec2 pos, float row_height, const Glyph& glyph) {
   constexpr Type kGlyphType{Font::kBold, 13};
   float width = glyph.text ? std::max(Px(40.0f), MeasureText(kGlyphType, glyph.text).x + Px(16.0f)) : Px(40.0f);
@@ -390,14 +410,27 @@ void App::KeyboardPage(const ImRect& rect) {
   {
     constexpr Type kTitle{Font::kSemiBold, 15};
     constexpr Type kHint{Font::kRegular, 13};
-    float height = Px(20.0f) * 2.0f + LineHeight(kTitle) + Px(4.0f) + LineHeight(kHint);
+    float row = Px(20.0f) * 2.0f + LineHeight(kTitle) + Px(4.0f) + LineHeight(kHint);
+    // The game's own switch below it (game.h, kKeyboardTapTarget): the frets strum as they are pressed.
+    const game::GameTexts& own = game::GameTextsFor(language_);
+    bool tap = *game::kKeyboardTapTarget && own.keyboard_tap_title;
+    float height = tap ? row * 2.0f + Snap(Px(1.0f)) : row;
     ImRect card(ImVec2(content.Min.x, y), ImVec2(content.Max.x, y + height));
     FillRect(card, col::kCard, 12.0f);
-    DrawLabel(kTitle, ImVec2(card.Min.x + Px(28.0f), card.Min.y + Px(20.0f)), col::kText, t_.mnk);
-    DrawLabel(kHint, ImVec2(card.Min.x + Px(28.0f), card.Min.y + Px(20.0f) + LineHeight(kTitle) + Px(4.0f)),
-             col::kTextMuted, t_.mnk_hint);
-    if (Toggle("mnk", ImVec2(card.Max.x - Px(28.0f) - Px(52.0f), card.Min.y + (height - Px(30.0f)) * 0.5f), &o.mnk)) {
-      changed = true;
+    auto line = [&](float top, const char* title, const char* hint, const char* id, bool* value) {
+      DrawLabel(kTitle, ImVec2(card.Min.x + Px(28.0f), top + Px(20.0f)), col::kText, title);
+      DrawLabel(kHint, ImVec2(card.Min.x + Px(28.0f), top + Px(20.0f) + LineHeight(kTitle) + Px(4.0f)), col::kTextMuted,
+               Ellipsize(kHint, hint ? hint : "", card.GetWidth() - Px(28.0f) * 3.0f - Px(52.0f)));
+      if (Toggle(id, ImVec2(card.Max.x - Px(28.0f) - Px(52.0f), top + (row - Px(30.0f)) * 0.5f), value)) {
+        changed = true;
+      }
+    };
+    line(card.Min.y, t_.mnk, t_.mnk_hint, "mnk", &o.mnk);
+    if (tap) {
+      FillRect(ImRect(ImVec2(card.Min.x + Px(28.0f), card.Min.y + row),
+                      ImVec2(card.Max.x - Px(28.0f), card.Min.y + row + Snap(Px(1.0f)))),
+               col::kDivider);
+      line(card.Min.y + row + Snap(Px(1.0f)), own.keyboard_tap_title, own.keyboard_tap_hint, "tap", &o.keyboard_tap);
     }
     y += height + Px(20.0f);
   }
@@ -413,7 +446,10 @@ void App::KeyboardPage(const ImRect& rect) {
     float x = table.Min.x + Px(24.0f);
     float right = table.Max.x - Px(24.0f);
     float top = table.Min.y + Px(14.0f);
-    DrawLabel(kColumn, ImVec2(x, top), col::kLabel, t_.column_control);
+    const char* functions_column = game::GameTextsFor(language_).functions_column;
+    DrawLabel(kColumn, ImVec2(x, top), col::kLabel,
+              !game::GameControlsFor(language_).empty() && functions_column ? Upper(functions_column)
+                                                                            : std::string(t_.column_control));
     DrawLabel(kColumn, ImVec2(right - slot_width * 2.0f - gap, top), col::kLabel, t_.column_primary);
     DrawLabel(kColumn, ImVec2(right - slot_width, top), col::kLabel, t_.column_secondary);
     FillRect(ImRect(ImVec2(table.Min.x, table.Min.y + header_height),
@@ -433,21 +469,58 @@ void App::KeyboardPage(const ImRect& rect) {
     constexpr Type kGroup{Font::kBold, 13};
     constexpr Type kLabel{Font::kRegular, 15};
     float row_height = Px(48.0f);
+    // The rows: the game's functions in its groups (game.h, GameControlsFor), then the controls no function is on;
+    // or the Xbox 360 controls in theirs.
+    struct Row {
+      int bind;
+      const game::GameControl* function;  // null: the Xbox 360 control itself
+    };
     struct Group {
       const char* title;
-      Bind first, last;
+      std::vector<Row> rows;
     };
-    const Group groups[] = {{t_.group_movement, Bind::kLStickUp, Bind::kLStickPress},
-                            {t_.group_camera, Bind::kRStickUp, Bind::kRStickPress},
-                            {t_.group_buttons, Bind::kA, Bind::kRightTrigger},
-                            {t_.group_dpad, Bind::kDpadUp, Bind::kBack}};
+    std::vector<Group> groups;
+    const std::vector<game::GameControlGroup>& functions = game::GameControlsFor(language_);
+    if (functions.empty()) {
+      auto range = [](const char* title, Bind first, Bind last) {
+        Group group{title, {}};
+        for (int b = int(first); b <= int(last); ++b) group.rows.push_back({b, nullptr});
+        return group;
+      };
+      groups.push_back(range(t_.group_movement, Bind::kLStickUp, Bind::kLStickPress));
+      groups.push_back(range(t_.group_camera, Bind::kRStickUp, Bind::kRStickPress));
+      groups.push_back(range(t_.group_buttons, Bind::kA, Bind::kRightTrigger));
+      groups.push_back(range(t_.group_dpad, Bind::kDpadUp, Bind::kBack));
+    } else {
+      bool used[int(Bind::kCount)] = {};
+      for (const game::GameControlGroup& g : functions) {
+        Group group{g.title, {}};
+        for (const game::GameControl& control : g.controls) {
+          group.rows.push_back({control.bind, &control});
+          used[control.bind] = true;
+        }
+        groups.push_back(std::move(group));
+      }
+      Group other{t_.group_other, {}};
+      for (int b = 0; b < int(Bind::kCount); ++b) {
+        if (!used[b]) other.rows.push_back({b, nullptr});
+      }
+      if (!other.rows.empty()) groups.push_back(std::move(other));
+    }
     for (const Group& group : groups) {
-      DrawLabel(kGroup, ImVec2(x, y_list + Px(16.0f)), col::kAccent, group.title);
+      DrawLabel(kGroup, ImVec2(x, y_list + Px(16.0f)), col::kAccent, Title(group.title));
       y_list += Px(16.0f) + LineHeight(kGroup) + Px(6.0f);
-      for (int b = int(group.first); b <= int(group.last); ++b) {
-        DrawGlyph(ImVec2(x, y_list), row_height, GlyphOf(Bind(b)));
-        DrawLabel(kLabel, ImVec2(x + Px(52.0f), y_list), col::kText,
-                 Ellipsize(kLabel, t_.binds[b], slots_x - gap - x - Px(52.0f)), row_height);
+      for (const Row& row : group.rows) {
+        int b = row.bind;
+        if (row.function) {
+          DrawChip(ImVec2(x, y_list), row_height, *row.function);
+        } else {
+          DrawGlyph(ImVec2(x, y_list), row_height, GlyphOf(Bind(b)));
+        }
+        float label_x = x + (row.function ? Px(58.0f) : Px(52.0f));
+        DrawLabel(kLabel, ImVec2(label_x, y_list), col::kText,
+                 Ellipsize(kLabel, row.function ? row.function->name : t_.binds[b], slots_x - gap - label_x),
+                 row_height);
         std::vector<std::string> alternatives = Alternatives(o.binds[size_t(b)]);
         for (int slot = 0; slot < 2; ++slot) {
           std::string token = slot < int(alternatives.size()) ? alternatives[size_t(slot)] : std::string();
