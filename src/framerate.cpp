@@ -115,11 +115,35 @@ namespace {
 
 double FrameSeconds() { return 1.0 / VblankRate(); }
 
+// The script that drains star power (below), and the name of the script a wait belongs to (+48 of the wait).
+constexpr uint32_t kStarPowerDrainScript = 0x74B936AB;
+
+uint32_t WaitingScript(uint32_t wait) {
+  auto* kernel = rex::system::kernel_state();
+  const uint8_t* base = kernel && kernel->memory() ? kernel->memory()->virtual_membase() : nullptr;
+  if (!base) {
+    return 0;
+  }
+  uint32_t name;
+  std::memcpy(&name, base + wait + 48, 4);
+  return __builtin_bswap32(name);
+}
+
 }  // namespace
 
 // [[midasm_hook]] at the entry of sub_8242A018 and sub_82429FC8 (setting a game-frame wait): r3 = the wait, r4 = N.
 void GHMetallicaFrameWaitSetHook(PPCRegister& r3, PPCRegister& r4) {
   if (!HighRate()) {
+    return;
+  }
+  // A script that measures its own time runs every frame, as the game wrote it. The star power's drain (script
+  // 0x74B936AB) waits one game frame per pass and takes current_deltatime (the frame's time, sub_82195548) off the meter
+  // each pass, or GetFrameLength's in a band: held to 60 passes a second it drained 60 frames' time a second, and at
+  // 160 FPS star power lasted 160 / 60 times as long (Gustavo). It is the only script of the game's 7822 that waits in
+  // game frames and reads either. The waiting script's name is at +48 of its wait (+216 of the script).
+  if (WaitingScript(r3.u32) == kStarPowerDrainScript) {
+    std::lock_guard lock(g_frame_waits_mutex);
+    g_frame_waits.erase(r3.u32);
     return;
   }
   const auto now = std::chrono::steady_clock::now();

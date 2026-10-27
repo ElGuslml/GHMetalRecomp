@@ -31,7 +31,11 @@ Some of the game's timing counts frames instead of time, and ran twice as fast a
 targets). `ghmetallica_frame_rate_fix` (on) covers:
 - **script waits in game frames** (`Wait N gameframes`, about 300 in the game's scripts, used by loops that animate a
   little each frame): above 60 FPS each lasts what it lasts on the console, N / 60 s, and a loop of them keeps the
-  console's pace (the audio calibration's beeps: every 1.066 s at 60, 120 and 160 FPS, measured);
+  console's pace (the audio calibration's beeps: every 1.066 s at 60, 120 and 160 FPS, measured). Except the one
+  loop that measures its own time: star power's drain, which takes the frame's time (`current_deltatime`) off the
+  meter each frame. Held to 60 passes a second it took 60 frames' time a second, and star power lasted 160 / 60 times
+  as long at 160 FPS (Gustavo, 2026-10-27). It runs every frame again; no other script of the game's 7822 waits in game
+  frames and reads the frame's time;
 - **button presses polled by those scripts**: a press shows for one frame, and a script held to the console's pace
   skips frames, so the calibrations missed strums (3 of 7 at 160 FPS in a test). Each script is given, once, the
   presses of the frames it skipped (7 of 7);
