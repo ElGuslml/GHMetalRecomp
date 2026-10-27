@@ -1,110 +1,140 @@
-# GHMetalRecomp
+<p align="center">
+  <img src="res/icon.svg" width="200" alt="GHMetalRecomp icon">
+</p>
 
-A static recompilation of **Guitar Hero: Metallica** (Xbox 360) to native Windows, built on the
-[ReXGlue SDK](https://github.com/rexglue/rexglue-sdk). The game's PowerPC code is translated to C++ and
-compiled; the Xbox 360 GPU is emulated by ReXGlue's Xenos backend (derived from [Xenia](https://xenia.jp)).
+<h1 align="center">GHMetalRecomp</h1>
 
-> [!WARNING]
-> Early work in progress: the project has just been set up. There are no releases.
+<p align="center">
+  <a href="https://github.com/ElGuslml/GHMetalRecomp/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/ElGuslml/GHMetalRecomp?style=for-the-badge&label=Latest%20release&color=c5dc3a"></a>
+  <a href="https://discord.gg/XQtM5TmNs8"><img alt="Discord: join the server" src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white"></a>
+  <a href="https://github.com/ElGuslml/ElGusRecomps"><img alt="More games: ElGus Recomps" src="https://img.shields.io/badge/More%20games-ElGus%20Recomps-2f6b45?style=for-the-badge&logo=github"></a>
+</p>
 
-> This project is not affiliated with Microsoft or the game's developer and publisher. It contains no game files
-> and no game code: you need your own legally obtained copy of the game.
+🎸 **Play Guitar Hero: Metallica on your PC, natively.** The Xbox 360 game by Neversoft (2009), recompiled to run
+directly on Windows: no emulator to set up, sharp graphics, wide screens, high frame rates, and your Xbox 360
+guitar.
 
-## Status
+> [!IMPORTANT]
+> 💿 **You need your own original copy of the game.** This project does not include any of the game's files, and
+> never will.
+> - To play, you need an Xbox 360 copy of *Guitar Hero: Metallica* that you own (the USA / Europe disc).
+> - You make an image (ISO) of your own disc, and the launcher installs the game from it.
+> - Please do not ask for the game's files, and do not share them or links to them.
+>
+> This project is not affiliated with or endorsed by Microsoft, Activision, Neversoft or Metallica.
 
-- Set up on 2026-10-24 from [recomp-tools](https://github.com/ElGuslml/recomp-tools)' project template, the setup of
-  KameoRecomp, GRAWRecomp and POTCAWERecomp.
-- `default.xex` (title ID `41560830`, version 0.0.0.1, XDK 2.0.7978) is recompiled. Whether the game boots has not
-  been tested yet.
-- `ghmetallica.toml` starts with the GPU settings those three games share; whether this game needs each of them has
-  not been tested yet.
-- [`docs/`](docs/README.md) will have a short note on each problem found and what was done about it.
+> [!NOTE]
+> 🤘 **Beta.** Songs have been played from start to finish with an Xbox 360 guitar, on guitar and bass parts. Drums
+> have not been tested yet, and singing with a microphone is in development for the next version. If something goes
+> wrong, please [tell us](#-reporting-a-problem)!
 
-## Requirements
+## 🎮 How to play
 
-To build:
-- Git, [CMake](https://cmake.org/) 3.25 or newer, [Ninja](https://ninja-build.org/),
-  [LLVM/Clang](https://github.com/llvm/llvm-project/releases) (MSVC alone does not build this) and the Windows SDK.
-- Python 3 (glslang needs it to configure the Vulkan backend).
-- Your own copy of the game (see below).
+1. **Download** the latest version from [Releases](https://github.com/ElGuslml/GHMetalRecomp/releases/latest):
+   - **the installer** (`GHMetalRecomp-...-setup.exe`): installs for your Windows user, no administrator rights
+     needed, with a Start menu shortcut; or
+   - **the zip** (`GHMetalRecomp-win64.zip`): extract it into any folder you can write to (not `Program Files`).
+2. **Open GH Metallica Launcher.** The first time, it asks for the ISO of your game, checks it and installs the game
+   files (about 7.2 GB), then asks you to create your profile. You only do this once.
+3. **Pick your settings and press PLAY.** 🎉
+4. **Calibrate:** in the game's options, run the audio and video calibration once, so that the notes match what you
+   hear on your own speakers or headphones.
 
-To run:
-- Windows 10 or 11, 64-bit, with a GPU that supports Direct3D 12 (or Vulkan).
-- A CPU with x86-64-v2 support (SSE4.2 and POPCNT: practically any 64-bit CPU from 2009 on).
-- [Microsoft Visual C++ Redistributable 2015–2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+From then on, the launcher keeps itself up to date: when a new version comes out, it offers to install it for you.
 
-## Game files
+### 💻 What you need
 
-- **To play:** GH Metallica Launcher extracts them from the ISO of your disc on its first run (a full Redump image or a
-  trimmed one); it checks that it is this game and this version. `"GH Metallica Launcher.exe" --launcher_first_run` installs
-  them again.
-- **To build:** extract the content of your disc or ISO with
-  [extract-xiso](https://github.com/XboxDev/extract-xiso/releases) and copy all of it into `assets/` so that
-  `assets/default.xex` exists. The expected executable has CRC32 `A7C93B87`; `GHMetallicaRecomp.exe` warns you at startup if yours
-is a different version. See [`assets/README.md`](assets/README.md).
+- Windows 10 or 11 (64-bit).
+- A graphics card with up-to-date drivers that support Vulkan (practically any card from the last ten years).
+- The [Microsoft Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) (most PCs already
+  have it).
+- An Xbox 360 guitar. Any other controller works as a guitar too, and so does the keyboard.
 
-## Building from source
+## ✨ Features
 
-```powershell
-git clone --recursive <repository URL> GHMetalRecomp
-cd GHMetalRecomp
-# copy your game files into assets\ first: the build recompiles assets\default.xex
-cmake --preset win-amd64-release
-cmake --build --preset win-amd64-release
-```
+- 🎸 **Your guitar:** an Xbox 360 guitar plays as on the console, whammy bar and Star Power included. Any other
+  controller is a guitar too, and the keyboard can be one (experimental: turn it on in the launcher's Keyboard page;
+  frets on D F J K L).
+- 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
+  edges (antialiasing) and sharper textures.
+- ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
+  (experimental). The songs keep their speed and stay in sync.
+- 📺 **Wide and ultrawide screens:** the stage fills 16:9, 21:9 and wider screens, while the note highway, the HUD and
+  the menus keep their shape in the center.
+- 🎶 **Downloadable content:** install your own Xbox 360 DLC packages (the *Death Magnetic* album) from the launcher.
+- 👤 **Profiles:** your saves, achievements and playtime in a profile shared by all the ElGus Recomps launchers.
+- 👥 **Play together:** the controller that presses a button at the title screen plays with your profile; the other
+  controllers join as its guests, as on the Xbox 360.
+- 🏆 **Achievements:** a notification when you unlock one, and all 50 in the launcher or with F7 in the game.
+- 🌍 **Languages:** English, French, German, Italian and Spanish.
+- 🔄 **Automatic updates** from this page.
 
-- If you cloned without `--recursive`: `git submodule update --init --recursive`.
-- `thirdparty/rexglue-sdk` is the SDK with this project's changes (see below).
-- The first build translates `default.xex` into C++ (`generated/`) and builds the SDK: it takes a while.
-  If it stops with "precompiled header ... has been modified", run the build command again.
+## 🧭 GH Metallica Launcher
 
-## Running
+Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboard or a controller:
 
-```powershell
-.\out\build\win-amd64-release\"GH Metallica Launcher.exe"   # choose the options, then Play; it comes back when you quit
-.\out\build\win-amd64-release\GHMetallicaRecomp.exe          # or start the game directly with the saved options
-```
-
-- Game files are found in `assets\` next to `GHMetallicaRecomp.exe`, otherwise in the repository's `assets\`.
-  Use `--game_data_root=<folder>` to point somewhere else.
-- Saves, the profile and the shader cache go to `userdata\` next to `GHMetallicaRecomp.exe` (if that folder cannot be
-  written, for example under Program Files, they go to `Documents\ghmetallica`). Logs go to `logs\`.
-
-## Configuration
-
-| File (next to `GHMetallicaRecomp.exe`) | What it holds |
+| Page | What you find there |
 |---|---|
-| `ghmetallica.toml` | Base settings. Created with the defaults if it is missing; a default setting the file lacks is appended at startup. |
-| `ghmetallica_options.toml` | What GH Metallica Launcher saves (monitor, display, window size, render scale, anisotropic filtering, API, keyboard and gamepad controls, and the game's own options). Loaded after `ghmetallica.toml`. |
+| ▶️ **Play** | Start the game, and see your settings, achievements and updates at a glance. |
+| 👤 **Profile** | Your profile: hours played, streaks, your week, your games and your favorite achievements. |
+| 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
+| ⌨️ **Keyboard** | Play with the keyboard as a guitar (experimental), change any key, and make the frets strum as you press them. |
+| 🎮 **Instruments and gamepad** | What each button of your guitar or controller does. |
+| 🖥️ **Video** | Monitor, fullscreen or window, resolution, screen shape (fill a wide screen or keep 16:9). |
+| 🎨 **Graphics** | Renderer, frame rate, antialiasing, texture sharpness. |
+| 🌍 **Game** | The game's language. |
+| 🎶 **DLC** | Install your downloadable content packages, and see the installed ones. |
+| 🔄 **Updates** | Your version, and new ones when they come out. |
 
-Command-line options (`--name=value`, for example Steam launch options) win over both files:
-`--fullscreen=false --window_width=1920 --window_height=1080`,
-`--draw_resolution_scale_x=2 --draw_resolution_scale_y=2`, `--gpu_backend=vulkan`, `--anisotropic_override=0`
-(off; 5 = 16×), `--user_language=4` (French).
+Your choices are saved as soon as you make them. When you quit the game, the launcher comes back.
 
-## How the SDK is modified
+**Tips:**
+- 🚪 On the title screen or in the main menu, press **B** (the red fret) to quit the game.
+- 🎮 **Steam Big Picture:** add `GH Metallica Launcher.exe` as a non-Steam game and play from your couch.
+- 🛡️ **"Windows protected your PC":** the programs are not signed by a company, so Windows may warn you the first
+  time. Click **More info**, then **Run anyway**.
 
-`thirdparty/rexglue-sdk` is [ElGuslml/rexglue-sdk](https://github.com/ElGuslml/rexglue-sdk), branch `recomp`: the
-official ReXGlue SDK's nightly of 2026-10-02 (v0.10.0 and 24 later commits) with the changes KameoRecomp, GRAWRecomp
-(Ghost Recon Advanced Warfighter), POTCAWERecomp (Pirates of the Caribbean: At World's End) and
-[NativeXRenderer](native_x_renderer/README.md) need, one commit each. None of the general fixes is specific to one
-game, and the options they add are off by default; the ones for NativeXRenderer change nothing while it is off. The
-branch's `RECOMP.md` lists them, and each commit message explains its change.
+## 🐞 Reporting a problem
 
-The launcher is [RecompLauncher](https://github.com/ElGuslml/RecompLauncher) (`recomp_launcher/`, a submodule shared by
-these recompilations) with this game's profile, texts, colors and art in `launcher/`.
+Something looks wrong, sounds wrong, or crashes? Tell us on [Discord](https://discord.gg/XQtM5TmNs8) or open an
+[issue](https://github.com/ElGuslml/GHMetalRecomp/issues), with:
+- where in the game it happened, and a screenshot if you can;
+- the latest file in the `logs` folder next to the game.
 
-NativeXRenderer (`native_x_renderer/`, a submodule: a native renderer that hooks the game's Direct3D calls) is built
-and linked, and draws this game once its side is written (`src/native_x_renderer_ghmetallica.cpp`).
+If something looks wrong, try the other renderer: in the launcher, **Graphics → Xenos** (it emulates the Xbox 360's
+graphics instead), and tell us whether it happens there too.
 
-## Credits
+### Known issues
+
+- 🥁 Drums have not been tested yet: only guitar and bass parts are known to work.
+- 🎤 Vocals are not available yet. Singing with any microphone connected to the PC is in development for the next
+  version: the launcher will let you choose your microphone and which controller sings.
+- ⌨️ Playing with the keyboard is experimental.
+- 🔊 Some USB audio interfaces add delay in Windows' shared audio mode (a Focusrite Scarlett about 20 ms more than
+  a motherboard's audio): calibrate the audio in the game's options.
+- ⚡ Above 60 FPS is experimental: something may still run too fast.
+- 📺 In an ultrawide window, the second controller's "not signed in" screen shows a colored band at its right edge.
+- ✨ The first time an effect appears, it may show up a moment late.
+
+## 🛠️ For developers
+
+GHMetalRecomp is a *static recompilation*: the game's original Xbox 360 code is translated to C++ and compiled for
+Windows, on top of the [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk). It is drawn by
+[NativeXRenderer](https://github.com/ElGuslml/NativeXRenderer), a renderer that draws the game's graphics calls
+natively on Vulkan.
+
+- [Building and developing](docs/development.md): requirements, building from source, configuration, how the SDK is
+  modified.
+- [`docs/`](docs/README.md): a short note on each problem found and how it was solved.
+
+## 🙏 Credits
 
 - [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk), whose runtime is derived from [Xenia](https://xenia.jp).
-- [extract-xiso](https://github.com/XboxDev/extract-xiso), for extracting the game files.
+- [extract-xiso](https://github.com/XboxDev/extract-xiso), for extracting game files.
 - Developed by Gustavo Garcia with the help of Claude (Anthropic).
 
-## License
+## 📜 License
 
-MIT for this project's own code (see [`LICENSE`](LICENSE)). The ReXGlue SDK and its components keep their own
-licenses (see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)). Guitar Hero: Metallica, its code and its assets belong to their
-respective owners.
+MIT for this project's own code (see [`LICENSE`](LICENSE)). The ReXGlue SDK and the other components keep their
+own licenses (see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)). Guitar Hero: Metallica, its code and its
+assets belong to their respective owners.

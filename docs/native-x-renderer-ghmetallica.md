@@ -11,8 +11,8 @@ function against POTCAWE's library, XDK 5426, the nearest mapped version, then e
 observer matches 100 % of the draws on the title screen, the main menu and in songs (section 7). With
 `native_x_renderer = true` the menus, the career's opening cinematic and its songs draw as on the Xenos path at 60 FPS
 (since NativeXRenderer's D95), with SMAA or FXAA on the scene, filling ultrawide screens, at about half the GPU
-time of the Xenos path at 1440p and above. GH Metallica Launcher has the renderer row, with the Xenos path the
-default until a full play test (`kNativeXRendererDefault` in `launcher/game.h`).
+time of the Xenos path at 1440p and above. GH Metallica Launcher has the renderer row; NativeXRenderer is the default
+from the first release on (0.1.0, `kNativeXRendererDefault` in `launcher/game.h`), as in Kameo.
 
 **Main findings:**
 - **The device layout is Dante's Inferno's up to the end of the register shadow** (POTCAWE's + 128): six dirty
@@ -375,6 +375,12 @@ NativeXRenderer skips (it resolves level 0 only); its host texture has one level
   stage under a blocky pattern.
 - **The fix:** D96 keeps the resolved textures that still hold their resolve, up to 384 MB
   (`native_x_renderer_resolved_memory_mb`). This game's 22 take 117 MB at 3440×1440.
+
+**The first run** (2026-10-27, the released beta, NativeXRenderer D101). On a first run the pipeline storage is empty,
+and draws were skipped while their shaders and pipelines were created (D28). A skipped draw into the mask, or into the
+320×180 blurred copies of the scene, left them undefined when they were resolved: Gustavo saw the first song's intro in
+blocks, and an empty storage here covered the career's opening cinematic in stripes. Since D101 a draw into a target
+of another size than the game's output waits for its pipeline instead; the scene's draws are still skipped.
 
 ## 8. Open questions
 

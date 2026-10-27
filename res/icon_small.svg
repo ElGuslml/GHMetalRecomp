@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- icon.svg simplified for 16-32 px: no rivets, rays, sparkles or highlight; a thicker rim and a bigger pick. -->
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4f6f8"/>
+      <stop offset="0.5" stop-color="#a3aab1"/>
+      <stop offset="1" stop-color="#4a5057"/>
+    </linearGradient>
+    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e2ef77"/>
+      <stop offset="1" stop-color="#b2c82a"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="128" cy="128" r="122" fill="url(#steel)" stroke="#1b1d20" stroke-width="8"/>
+  <circle cx="128" cy="128" r="98" fill="#131316" stroke="#1b1d20" stroke-width="8"/>
+
+  <g transform="translate(128 130) scale(1.16) translate(-128 -131)">
+    <path d="M 128,204 C 100,178 66,140 66,104 C 66,74 98,58 128,58 C 158,58 190,74 190,104
+             C 190,140 156,178 128,204 Z" fill="url(#lime)" stroke="#0d0d0f" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M 140,74 L 102,138 L 126,138 L 114,184 L 156,116 L 132,116 L 151,74 Z" fill="#111113"
+          stroke="#111113" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+</svg>

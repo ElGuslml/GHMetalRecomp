@@ -3,6 +3,8 @@
 Short notes on each problem found while making the game run, and what was done about it. Each one gives
 the symptom, the cause, the fix and how to turn the fix off, so that you can check it on your own machine.
 
+To build the project and work on it: [Building and developing](development.md).
+
 | Note | Status |
 |---|---|
 | [Profiles shared by the launchers](profiles.md) | Working: a profile per player in %APPDATA%, the saves and achievements copied into it |
@@ -15,6 +17,6 @@ the symptom, the cause, the fix and how to turn the fix off, so that you can che
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar; the keyboard's frets on D F J K L, and a switch to strum on each fret |
 | [Downloadable content (DLC)](dlc.md) | Working: the player's Death Magnetic package plays in Quickplay; the launcher's DLC page installs packages |
-| [An empty screen after pressing a button on a second controller](second-controller.md) | Fixed: the game's "not signed in" message, as on the console; planned: one profile, the other controllers its guests |
+| [An empty screen after pressing a button on a second controller](second-controller.md) | Fixed: the controller that presses a button at the title screen plays with the profile, the others are its guests, as on the console |
 | [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |
 | [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace |

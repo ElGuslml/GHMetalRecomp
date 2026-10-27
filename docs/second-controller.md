@@ -1,6 +1,7 @@
 # An empty screen after pressing a button on a second controller
 
-**Status: fixed (2026-10-25).** The game shows its "not signed in" message, as on the console.
+**Status: fixed (2026-10-25), and since 2026-10-26 the profile follows the controller that starts the game.** The
+controller that presses a button at the title screen plays with the profile; the others are its guests.
 
 ## Symptom
 
@@ -26,22 +27,29 @@ are not signed in to a player profile. You will not be able to save any game con
 **Sign in** (it asks again, and comes back to the message) and **Continue without saving** (the main menu,
 playing with that controller and saving nothing).
 
-To play with your profile and its saves, press the button at the title screen on the first controller. The first
-controller is the one Windows connected first; the log says which one is in which slot ("New controller connected
-to slot 0").
+## One profile for the computer, the other controllers its guests (2026-10-26)
 
-## Planned: one profile for the computer, the other controllers its guests
+Whichever controller presses the button at the title screen now plays with the profile and its saves, as on the
+console, where the controller that starts the game signs in with its own profile:
+- **The profile follows that controller.** While the title screen is shown (`src/players.cpp`, from the frame hook
+  that finds the title's text, `src/quit_prompt.cpp`), the SDK swaps a controller that presses a button with the first
+  one before the game sees the press: the game sees it on player 1's controller, the profile's, and goes straight to
+  the main menu. The log says so: "The controller in slot 1 pressed first: it is now slot 0, the profile's". The
+  keyboard always goes with the profile.
+- **The other controllers are its guests** (`signin_guests = true` in `ghmetallica.toml`), as when guests sign in on
+  the Xbox 360: signed in, named after the profile ("Gus (1)", "Gus (2)"), with the game's default settings, which
+  are not kept, and no saves of their own (the SDK refuses to create or delete content for them, as every user's
+  content here is the profile's). The game knows them as guests (it reads the guest flag of `XUserGetSigninInfo`).
 
-Not done yet. The aim is to always play with the same profile, whichever controller presses the button:
-- the other controllers signed in as guests of the profile, as on the Xbox 360 ("Gus (1)", "Gus (2)"), so the game
-  does not ask them to sign in;
-- the profile follows the controller that presses the button at the title screen: that controller becomes player 1,
-  with the profile and its saves, and the others its guests. Guests alone would not do it: on the console a guest
-  who starts the game plays as a guest and does not save to the profile.
-
-Both are changes to the SDK's system software (its single profile and the controllers' slots), not to the game.
+Checked with the keyboard's pad made a second controller (a temporary SDK change, removed) and the guitar as the
+first: Enter on the keyboard at the title screen -> the main menu with the profile, no sign-in question. With the
+swap off, a guest who starts the game is offered the sign-in screen, which closes as cancelled, and goes on to the
+main menu as a guest (without the swap and without guests: the "not signed in" message, as before).
 
 ## Turning it off
 
-Set `signin_ui_cancel = false` in `ghmetallica.toml`, or start the game with `--signin_ui_cancel=false`: the SDK's
-old notifications, and the empty screen when a second controller presses the button.
+- `--ghmetallica_profile_follows_press=false`: the first controller connected plays with the profile, as before.
+- `signin_guests = false` in `ghmetallica.toml` (or `--signin_guests=false`): the other controllers have no profile,
+  and the game shows its "not signed in" message when one starts the game.
+- `signin_ui_cancel = false`: the SDK's old notifications, and the empty screen when a second controller presses
+  the button.

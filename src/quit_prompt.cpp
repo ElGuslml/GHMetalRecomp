@@ -17,6 +17,8 @@
 // element exists and no popup does (0x5F4DC94F, popupelement: a message box over the menu takes B itself).
 // quit_prompt = false (an SDK cvar) disables it.
 
+#include "players.h"
+
 #include <rex/logging.h>
 #include <rex/ppc/context.h>
 #include <rex/system/kernel_state.h>
@@ -94,6 +96,8 @@ void GHMetallicaQuitPromptHook() {
     REXLOG_DEBUG("[quit_prompt] title {} main menu {} popup {}", title, main_menu, popup);
     last_state = state;
   }
+  // The same frame's title screen: the controller pressing there gets the profile (src/players.cpp).
+  ghmetallica::SetTitleScreen(title && !popup);
   if ((title || main_menu) && !popup) {
     rex::ui::OfferQuitPrompt();
   }

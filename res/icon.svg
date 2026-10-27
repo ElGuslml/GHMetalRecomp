@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 256" width="256" height="256">
+  <!-- The GHMetalRecomp icon: a guitar pick with a lightning bolt on a riveted steel medallion, GH Metallica
+       Launcher's mark (launcher/game.h's kBrandIcon) in its colors (launcher/palette.h); generic rock imagery drawn
+       for this project (no art from the game or the band). res/make_icon.mjs builds res/icon.ico from this file
+       (40 px and up) and icon_small.svg (16-32 px). -->
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4f6f8"/>
+      <stop offset="0.45" stop-color="#9aa1a9"/>
+      <stop offset="1" stop-color="#3b4046"/>
+    </linearGradient>
+    <radialGradient id="stage" cx="0.5" cy="0.4" r="0.62">
+      <stop offset="0" stop-color="#2c2c33"/>
+      <stop offset="0.6" stop-color="#151518"/>
+      <stop offset="1" stop-color="#0a0a0c"/>
+    </radialGradient>
+    <linearGradient id="lime" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6f283"/>
+      <stop offset="0.5" stop-color="#c5dc3a"/>
+      <stop offset="1" stop-color="#8ea11b"/>
+    </linearGradient>
+    <radialGradient id="rivet" cx="0.35" cy="0.3" r="0.75">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#565c63"/>
+    </radialGradient>
+    <clipPath id="inside">
+      <circle cx="128" cy="128" r="88"/>
+    </clipPath>
+    <circle id="stud" r="4.6" fill="url(#rivet)" stroke="#202327" stroke-width="1.5"/>
+    <path id="ray" d="M 128,128 L 117,20 L 139,20 Z"/>
+    <path id="sparkle" d="M 0,-9 L 2,-2 L 9,0 L 2,2 L 0,9 L -2,2 L -9,0 L -2,-2 Z" fill="#e8e2d0"/>
+    <path id="pick" d="M 128,204 C 100,178 66,140 66,104 C 66,74 98,58 128,58 C 158,58 190,74 190,104
+                       C 190,140 156,178 128,204 Z"/>
+  </defs>
+
+  <!-- Medallion: a steel rim with eight rivets, the stage dark in the middle. -->
+  <circle cx="128" cy="128" r="106" fill="url(#steel)" stroke="#1b1d20" stroke-width="4"/>
+  <circle cx="128" cy="128" r="101" fill="none" stroke="#ffffff" stroke-opacity="0.4" stroke-width="1.5"/>
+  <use xlink:href="#stud" transform="translate(218.5 165.5)"/>
+  <use xlink:href="#stud" transform="translate(165.5 218.5)"/>
+  <use xlink:href="#stud" transform="translate(90.5 218.5)"/>
+  <use xlink:href="#stud" transform="translate(37.5 165.5)"/>
+  <use xlink:href="#stud" transform="translate(37.5 90.5)"/>
+  <use xlink:href="#stud" transform="translate(90.5 37.5)"/>
+  <use xlink:href="#stud" transform="translate(165.5 37.5)"/>
+  <use xlink:href="#stud" transform="translate(218.5 90.5)"/>
+  <circle cx="128" cy="128" r="90" fill="url(#stage)" stroke="#1b1d20" stroke-width="4"/>
+
+  <!-- Stage light: rays from the middle, as in the launcher's art. -->
+  <g clip-path="url(#inside)" fill="#ffffff" fill-opacity="0.05">
+    <use xlink:href="#ray"/>
+    <use xlink:href="#ray" transform="rotate(30 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(60 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(90 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(120 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(150 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(180 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(210 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(240 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(270 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(300 128 128)"/>
+    <use xlink:href="#ray" transform="rotate(330 128 128)"/>
+  </g>
+
+  <!-- The pick: a cream border around it, then the lime pick with a dark lightning bolt. -->
+  <use xlink:href="#pick" fill="none" stroke="#e8e2d0" stroke-width="16" stroke-linejoin="round"/>
+  <use xlink:href="#pick" fill="url(#lime)" stroke="#0d0d0f" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 84,100 C 86,82 104,70 126,68" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="5"
+        stroke-linecap="round"/>
+  <path d="M 140,74 L 104,136 L 126,136 L 116,182 L 154,118 L 132,118 L 150,74 Z" fill="#111113"
+        stroke="#111113" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Sparkles -->
+  <use xlink:href="#sparkle" transform="translate(70 70)"/>
+  <use xlink:href="#sparkle" transform="translate(190 178) scale(0.75)"/>
+</svg>

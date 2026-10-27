@@ -105,6 +105,10 @@ guitar_whammy_rest = true
 # signed in" message (sign in / continue without saving); the SDK default reported a sign-in change
 # and the game waited for that controller's profile forever on an empty screen.
 signin_ui_cancel = true
+# The other controllers are the profile's guests, as on the console (Name (1)): signed in, so the game
+# does not ask them to sign in, with no saves or settings of their own. The controller that presses a
+# button at the title screen is the profile's (ghmetallica_profile_follows_press, src/players.cpp).
+signin_guests = true
 # The keyboard as a guitar (with mnk_mode; GH Metallica Launcher's Keyboard page changes them): the frets
 # on D, F, J, K and L (green, red, yellow, blue, orange: A, B, Y, X, LB), strumming on the up and down
 # arrows (the D-pad), Star Power on Space or Backspace (Back), Start on Enter or X, the whammy bar on the

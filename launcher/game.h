@@ -79,11 +79,10 @@ inline constexpr int kFrameHeight = GAME_FRAME_HEIGHT;
 // --- Updates ---
 
 // This project's releases (updater.cpp): GitHub's API for them, newest first, and their page. Empty: the launcher
-// does not look for updates (a private repository), and its Updates page only shows the version. Once the repository
-// is public: "https://api.github.com/repos/<user>/GHMetalRecomp/releases?per_page=20" and
-// "https://github.com/<user>/GHMetalRecomp/releases".
-inline constexpr const char* kReleasesApi = "";
-inline constexpr const char* kReleasesPage = "";
+// does not look for updates, and its Updates page only shows the version. Set from the first release on, while the
+// repository is still private (the check fails until it is public, and the releases made then are found).
+inline constexpr const char* kReleasesApi = "https://api.github.com/repos/ElGuslml/GHMetalRecomp/releases?per_page=20";
+inline constexpr const char* kReleasesPage = "https://github.com/ElGuslml/GHMetalRecomp/releases";
 
 // --- The game's own options (a cvar each; empty: the game has no such option, and the launcher no row) ---
 
@@ -91,9 +90,9 @@ inline constexpr const char* kReleasesPage = "";
 // internal resolution, antialiasing and image format. False: the game is drawn by Xenos only, and the launcher says
 // nothing of NativeXRenderer.
 inline constexpr bool kHasNativeXRenderer = GAME_HAS_NATIVE_X_RENDERER;
-// The renderer chosen until the player picks one (an options file without native_x_renderer): NativeXRenderer once a
-// full play test has gone through it (as in POTCAWE, its D56), the Xenos path until then.
-inline constexpr bool kNativeXRendererDefault = false;
+// The renderer chosen until the player picks one (an options file without native_x_renderer): NativeXRenderer, as in
+// Kameo, since Gustavo's play at 3440x1440 up to 160 FPS went through it (the first release, 0.1.0).
+inline constexpr bool kNativeXRendererDefault = true;
 
 // The Graphics page's shadow quality row: NativeXRenderer draws the game's shadow maps at a scale of their own
 // (native_x_renderer_shadow_scale, its D92): at least twice or four times the game's resolution. Only where it
