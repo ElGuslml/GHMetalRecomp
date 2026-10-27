@@ -231,3 +231,7 @@ registers = ["f29"]
 address = 0x824C3260   # fadds f0,f13,f0 (sub_824C3028's mode 2: the other phase plus its step, f0)
 name = "GHMetallicaLoadingWaveHook"
 registers = ["f0"]
+[[midasm_hook]]
+address = 0x8239318C   # bne cr6 (sub_82392F58, the script function Wait, its seconds branch): r4 = the wait in ms, r30 = the script; src/crowd.cpp
+name = "GHMetallicaCrowdBeatWaitHook"
+registers = ["r4", "r30"]

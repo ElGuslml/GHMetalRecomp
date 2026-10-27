@@ -69,6 +69,7 @@ set(GHMETALLICA_SOURCES
     src/main.cpp
     src/native_x_renderer_ghmetallica.cpp
     src/options.cpp
+    src/crowd.cpp
     src/players.cpp
     src/quit_prompt.cpp
     src/startup.cpp
