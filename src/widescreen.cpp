@@ -2,17 +2,23 @@
 
 #include "widescreen.h"
 
+#include <imgui.h>
 #include <native_x_renderer/native_x_renderer.h>
 #include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc/context.h>
 #include <rex/system/kernel_state.h>
 #include <rex/system/xmemory.h>
+#include <rex/ui/imgui_dialog.h>
 
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 
+REXCVAR_DEFINE_BOOL(ghmetallica_menu_bars, true, "GHMetallica",
+                    "With ultrawide: black bars at the sides outside a song (the menus, the loading screens and the "
+                    "videos were made for 16:9); in a song the stage fills the screen");
 REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide, false, "GHMetallica",
                     "Ultrawide on the Xenos path: the game's 3D views see as much more at the sides as the window is "
                     "wider than 16:9 (anamorphic, the presenter stretches the 1280x720 image; needs "
@@ -33,6 +39,46 @@ uint8_t* GuestBase() {
   auto* kernel = rex::system::kernel_state();
   return kernel && kernel->memory() ? kernel->memory()->virtual_membase() : nullptr;
 }
+
+// When the note highway's board and a picture element (GHMetallicaElementQuadHook) were last drawn (steady clock ticks,
+// 0 if never). The board is drawn in every frame of a song from its first frame (the band's intro included) and while
+// it is paused, and never in the menus (run 264). The song's first frames run under the end of its loading screen
+// (run 266), a picture element, which a song and its pause menu never draw (run 269).
+std::atomic<int64_t> g_highway_drawn{0};
+std::atomic<int64_t> g_picture_drawn{0};
+
+bool DrawnRecently(const std::atomic<int64_t>& mark) {
+  int64_t last = mark.load(std::memory_order_relaxed);
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  return last != 0 && now.count() - last <
+                          std::chrono::duration_cast<std::chrono::steady_clock::duration>(std::chrono::milliseconds(250)).count();
+}
+
+bool InSong() { return DrawnRecently(g_highway_drawn) && !DrawnRecently(g_picture_drawn); }
+
+// Black over the sides of the image, where the 2D layer is not (the 16:9 area in the middle, as wide as the image over
+// the factor), while no song is drawn. The background draw list: under any dialog (the achievements' toasts).
+class MenuBarsDialog : public rex::ui::ImGuiDialog {
+ public:
+  explicit MenuBarsDialog(rex::ui::ImGuiDrawer* drawer) : ImGuiDialog(drawer) {}
+  bool WantsContinuousPaint() override { return false; }
+
+ protected:
+  void OnDraw(ImGuiIO& io) override {
+    double factor = g_aspect_factor.load(std::memory_order_relaxed);
+    if (factor <= 1.0 || !REXCVAR_GET(ghmetallica_menu_bars) || InSong()) {
+      return;
+    }
+    float width = io.DisplaySize.x, height = io.DisplaySize.y;
+    float bar = std::floor(float(width * (1.0 - 1.0 / factor) * 0.5));
+    if (bar <= 0.0f) {
+      return;
+    }
+    ImDrawList* draw = ImGui::GetBackgroundDrawList();
+    draw->AddRectFilled(ImVec2(0.0f, 0.0f), ImVec2(bar, height), IM_COL32(0, 0, 0, 255));
+    draw->AddRectFilled(ImVec2(width - bar, 0.0f), ImVec2(width, height), IM_COL32(0, 0, 0, 255));
+  }
+};
 
 }  // namespace
 
@@ -62,6 +108,10 @@ void SetOutputSize(uint32_t width, uint32_t height) {
   if (g_aspect_factor.exchange(factor) != factor) {
     REXLOG_INFO("[ultrawide] output {}x{}: aspect factor {:.4f}", width, height, factor);
   }
+}
+
+std::unique_ptr<rex::ui::ImGuiDialog> CreateMenuBars(rex::ui::ImGuiDrawer* drawer) {
+  return drawer ? std::make_unique<MenuBarsDialog>(drawer) : nullptr;
 }
 
 }  // namespace ghmetallica
@@ -155,6 +205,32 @@ void GHMetallicaSpriteHook(PPCRegister& r6, PPCRegister& r7) {
   }
 }
 
+// [[midasm_hook]] at 0x82465718 in sub_82465228, another screen element's quad (drawn by sub_82465870 for the loading
+// screen's layers, sub_824C3028, and for some menus' pictures, sub_82443570): r6 = its 4 vertices (28 bytes each, x
+// first), r7 = their stride, before DrawVerticesUP. Without it the loading screen was stretched over the whole screen.
+// While such pictures are drawn a song does not count as one for the bars (InSong): its loading screen gets them.
+void GHMetallicaElementQuadHook(PPCRegister& r6, PPCRegister& r7) {
+  ghmetallica::g_picture_drawn.store(std::chrono::steady_clock::now().time_since_epoch().count(),
+                                     std::memory_order_relaxed);
+  uint8_t* base = ghmetallica::GuestBase();
+  double factor = NarrowFactor(base);
+  if (factor != 1.0) {
+    NarrowVertices(base, factor, r6.u32, 4, r7.u32);
+  }
+}
+
+// [[midasm_hook]] at 0x821B7B44 in sub_821B79F8, a 2D particle (the sparks of a hit note at the strike line): r5 = its
+// 4 vertices (a quad list), r6 = their data (20 bytes each, x first, pixels of the 1280x720 canvas), r7 = the stride,
+// before DrawVerticesUP. Drawn only when notes are hit; left as they were, they sat outside their lanes (the green
+// one's to the left).
+void GHMetallicaParticleHook(PPCRegister& r5, PPCRegister& r6, PPCRegister& r7) {
+  uint8_t* base = ghmetallica::GuestBase();
+  double factor = NarrowFactor(base);
+  if (factor != 1.0) {
+    NarrowVertices(base, factor, r6.u32, r5.u32, r7.u32);
+  }
+}
+
 // [[midasm_hook]] at 0x82454A68 in sub_82454990, a batch of quads (the text): r5 = the vertex count, r6 = the vertices
 // (0x82C29CE0), r7 = their stride, before DrawVerticesUP.
 void GHMetallicaSpriteBatchHook(PPCRegister& r5, PPCRegister& r6, PPCRegister& r7) {
@@ -208,6 +284,8 @@ void GHMetallicaTailHook(PPCRegister& r5, PPCRegister& r6, PPCRegister& r7) {
 // [[midasm_hook]] at 0x821B3498 in sub_821B2ED8, a sprite drawn as a grid of quads (the highway's board): r3 = the
 // device, before EndVertices; the vertices BeginVertices handed out are 20 bytes each (x, y, color, u, v).
 void GHMetallicaMeshSpriteHook(PPCRegister& r3) {
+  ghmetallica::g_highway_drawn.store(std::chrono::steady_clock::now().time_since_epoch().count(),
+                                     std::memory_order_relaxed);
   uint8_t* base = ghmetallica::GuestBase();
   double factor = NarrowFactor(base);
   if (factor != 1.0) {

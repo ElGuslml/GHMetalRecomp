@@ -10,6 +10,7 @@
 #include <rex/logging.h>
 #include <rex/system/kernel_state.h>
 #include <rex/system/xthread.h>
+#include <rex/ui/imgui_dialog.h>
 
 #include <native_x_renderer/native_x_renderer.h>
 
@@ -84,6 +85,10 @@ class GhmetallicaApp : public rex::ReXApp {
     ghmetallica::SetOutputSize(pixel_width, pixel_height);
   }
 
+  // Ultrawide's black bars outside a song (src/widescreen.cpp): a dialog of the SDK's ImGui layer, gone before it.
+  void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override { menu_bars_ = ghmetallica::CreateMenuBars(drawer); }
+  void OnShutdown() override { menu_bars_.reset(); }
+
   // On exit, log whether the game asked to launch another executable.
   void OnGuestThreadExit(rex::system::XThread* thread) override {
     (void)thread;
@@ -95,4 +100,7 @@ class GhmetallicaApp : public rex::ReXApp {
     REXLOG_INFO("[ghmetallica] Title exited. launch_path='{}' flags=0x{:X} launch_data={} bytes",
                 ld.launch_path, ld.launch_flags, ld.launch_data.size());
   }
+
+ private:
+  std::unique_ptr<rex::ui::ImGuiDialog> menu_bars_;
 };

@@ -18,7 +18,7 @@ scene, so that nothing is drawn behind the highway; at 16:9 it lies exactly unde
 
 ## Fix
 
-`src/widescreen.cpp` with six `[[midasm_hook]]`s in `ghmetallica_functions.toml`, active only with
+`src/widescreen.cpp` with eight `[[midasm_hook]]`s in `ghmetallica_functions.toml`, active only with
 `ghmetallica_ultrawide` (GH Metallica Launcher's image format on a screen or window wider than 16:9) or, with
 NativeXRenderer, when it fills the screen. The 1280×720 frame is stretched over the screen (anamorphic), and the game
 is corrected by the same factor (screen aspect ratio ÷ 16:9, for example 1.34 on 3440×1440):
@@ -34,6 +34,26 @@ is corrected by the same factor (screen aspect ratio ÷ 16:9, for example 1.34 o
   rating's number in the score box) are narrowed with them; left as they were, they cut the number away. In the menus
   the 3D room behind them fills the sides.
 
+## The hit sparks (2026-10-26)
+
+Gustavo: the sparks of a hit note sat outside their lane at 21:9 (the green one's to the left). They are 2D particles,
+quads drawn by `sub_821B79F8` (DrawVerticesUP at 0x821B7B44, 4 vertices of 20 bytes, x in pixels of the 1280×720
+canvas) only when notes are hit, which no hook narrowed. `GHMetallicaParticleHook` narrows them like the sprites.
+Found with temporary probes on the engine's 2D draws during a song played on Easy with the keyboard (every fret press
+strums): the particles' quads came at up to 98 a second with x from 137 to 1011, unnarrowed.
+
+## Black bars outside a song (2026-10-26)
+
+The menus, the loading screens and the boot videos were made for 16:9: at their sides the 3D room behind the menus
+showed, or the loading screen was stretched over the whole screen (it is drawn by another element's quad,
+`sub_82465228`, which the 2D layer's hooks did not narrow). Now:
+- that quad is narrowed too (`GHMetallicaElementQuadHook`, 0x82465718), so the loading screen is 16:9 in the center;
+- outside a song black bars cover the sides (`ghmetallica_menu_bars`, on by default), drawn over the image by a dialog
+  of the SDK's ImGui layer, so with both renderers. A song is told by the note highway's board, drawn in every frame
+  of a song from the band's intro on and while it is paused, and never in the menus; while a picture element (the
+  loading screen) is drawn it does not count, as the song's first frames run under the end of its loading screen. In a
+  song, its intro and its pause menu the stage fills the screen as before.
+
 The first version (earlier the same day) narrowed only the screen elements under `root_window` and widened the
 `SetScreen` aspect ratio, which the cameras turned out not to use: the scene was stretched, and the highway's notes
 and a dark band around it (the depth quad, left at full width) did not match its board.
@@ -48,3 +68,4 @@ views and keep the 2D layer at 16:9 by its factor: the image is the same, withou
 
 Choose 16:9 in GH Metallica Launcher's image format (it writes `ghmetallica_ultrawide = false`), or start the game with
 `--ghmetallica_ultrawide=false`. With `ghmetallica_ultrawide_hud = false` the 2D layer is stretched with the image.
+With `ghmetallica_menu_bars = false` the menus show the room at their sides as before.

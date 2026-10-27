@@ -107,6 +107,10 @@ address = 0x82421D78   # bl DrawVerticesUP in sub_82421B60 (a sprite's quad: r6 
 name = "GHMetallicaSpriteHook"
 registers = ["r6", "r7"]
 [[midasm_hook]]
+address = 0x82465718   # bl DrawVerticesUP in sub_82465228 (another element's quad: the loading screen's layers)
+name = "GHMetallicaElementQuadHook"
+registers = ["r6", "r7"]
+[[midasm_hook]]
 address = 0x82454A68   # bl DrawVerticesUP in sub_82454990 (a batch of quads: r5 = vertices, r6 = data, r7 = stride)
 name = "GHMetallicaSpriteBatchHook"
 registers = ["r5", "r6", "r7"]
@@ -122,6 +126,10 @@ registers = ["r5", "r6", "r7"]
 address = 0x821B3498   # bl EndVertices in sub_821B2ED8 (a sprite drawn as a grid of quads, the highway's board: r3 = device)
 name = "GHMetallicaMeshSpriteHook"
 registers = ["r3"]
+[[midasm_hook]]
+address = 0x821B7B44   # bl DrawVerticesUP in sub_821B79F8 (a 2D particle's quad: r5 = vertices, r6 = data, r7 = stride)
+name = "GHMetallicaParticleHook"
+registers = ["r5", "r6", "r7"]
 
 
 # Frame rates above 60 (src/framerate.cpp, ghmetallica_frame_rate_fix): the engine's clocks counted in vertical blanks
