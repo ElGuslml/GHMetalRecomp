@@ -138,6 +138,18 @@ keybind_lstick_press = ""
 # arrows strum.
 mnk_tap_sources = "a,b,y,x,lb"
 mnk_tap_target = ""
+# The game's screen effects over the 3D image (src/screen_fx.cpp; the note highway and the HUD are drawn after
+# them): false turns one off. Bloom: the glow around lights. Depth of field: the background blurred in some camera
+# shots and behind the menus and the pause menu. Grain: the film grain. Color: the color correction (each venue's
+# look, fades to black, the image greyed while the rock meter is red); with it off the grain is off too (without the
+# color pass it is far stronger). Vignette: darkened corners, where a venue turns it on. Ink: the ink blotches a song
+# adds. true = as on the console.
+ghmetallica_fx_bloom = true
+ghmetallica_fx_depth_of_field = true
+ghmetallica_fx_grain = true
+ghmetallica_fx_color = true
+ghmetallica_fx_vignette = true
+ghmetallica_fx_ink = true
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

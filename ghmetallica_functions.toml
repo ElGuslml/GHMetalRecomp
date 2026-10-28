@@ -235,3 +235,10 @@ registers = ["f0"]
 address = 0x8239318C   # bne cr6 (sub_82392F58, the script function Wait, its seconds branch): r4 = the wait in ms, r30 = the script; src/crowd.cpp
 name = "GHMetallicaCrowdBeatWaitHook"
 registers = ["r4", "r30"]
+
+# The screen effects each turned off by an option (src/screen_fx.cpp, ghmetallica_fx_*): the effects' composite
+# (sub_8251EC80) picks its shader variant and sets each effect's constants by a mask, one bit per effect.
+[[midasm_hook]]
+address = 0x8251EEA8   # mr r11,r24 (sub_8251EC80), after lwz r31,12(r25): r31 = the effects' mask
+name = "GHMetallicaScreenFxMaskHook"
+registers = ["r31"]
