@@ -2,7 +2,8 @@
 
 **Status: working (2026-10-24).** Tested in Quickplay with a DualSense and with the keyboard's emulated controller:
 Guitar and Bass are offered and the songs play; an Xbox 360 guitar and the keyboard's keys (below) played by Gustavo
-(2026-10-25). Not checked yet: the whammy bar with a controller's stick.
+(2026-10-25). Not checked yet (2026-10-28, built but not run): the whammy bar at rest on a controller's stick and the
+keyboard's, and the strum on each fret on a controller.
 
 ## Symptom
 
@@ -25,7 +26,7 @@ it is:
 | Green, Red, Yellow, Blue frets | A, B, Y, X | Cross, Circle, Triangle, Square |
 | Orange fret | LB | L1 |
 | Strum | D-pad up / down | D-pad up / down |
-| Whammy bar | Right stick, sideways | Right stick, sideways |
+| Whammy bar | Right stick, to either side | Right stick, to either side |
 | Star Power | Back (View) | Create |
 | Start | Start (Menu) | Options |
 
@@ -69,7 +70,26 @@ moves, and SDL reports an axis only when it changes. A change in the SDK (change
 log says when (`whammy bar reported its first position`). Off in the SDK by default: in a game without guitars a
 guitar's bar at rest is its right stick held left.
 
+### The controller's frets strum as they are pressed (2026-10-28)
+
+The keyboard's switch for a controller too: GH Metallica Launcher's Controls page has "Strum when a fret is pressed"
+on each controller that plays guitar (not on a real guitar, a drum kit or a controller set to sing), one switch for
+all of them, off by default. The same timing and the same rule: only during a song. The SDK's `gamepad_tap_target`
+(the launcher writes `"dpad_down"` or `""`) and `gamepad_tap_sources` (`a,b,y,x,lb`, `src/startup.cpp`), change 57 of
+its `recomp` branch; `src/keyboard.cpp`'s song gate serves both.
+
+### The whammy bar half pressed with a controller or the keyboard (2026-10-28)
+
+With a controller or the keyboard the whammy bar acted 43 % pressed on every sustain: the same rest at -0.76 of the
+axis as above, and a centred stick is 0. A change in the SDK (change 57, `gamepad_whammy_rest`, set in
+`src/startup.cpp`): a controller or the keyboard played as a guitar has its bar at rest while the right stick is
+centred, and fully pressed with the stick pushed to either side (past a tenth of its travel, where a stick may drift).
+The keyboard's Right arrow presses it fully. With a controller and a real guitar, or the keyboard, in one player's
+hands, the bar pressed furthest counts.
+
 ## Turning it off
 
 Set `gamepad_subtype = 0` in `ghmetallica.toml`, or start the game with `--gamepad_subtype=0`: a controller is then
-the singer again. The keyboard's strum on each fret: the Keyboard page's switch, or `mnk_tap_target = ""`.
+the singer again. The keyboard's strum on each fret: the Keyboard page's switch, or `mnk_tap_target = ""`; a
+controller's: its switch on the Controls page, or `gamepad_tap_target = ""`. The whammy bar at rest on a controller's
+stick: `gamepad_whammy_rest = false`.

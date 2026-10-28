@@ -184,6 +184,7 @@ inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
 }};
 // The Keyboard page's switch that makes the keyboard's frets strum as they are pressed (the SDK's mnk_tap_target with
 // src/startup.cpp's mnk_tap_sources, the frets): the control it presses when on, the D-pad (strumming); "": no switch.
+// The same on each controller's page for the controllers playing guitar (gamepad_tap_target, gamepad_tap_sources).
 // Its title and hint are game.cpp's (GameTexts::keyboard_tap_title, keyboard_tap_hint).
 inline constexpr const char* kKeyboardTapTarget = "dpad_down";
 

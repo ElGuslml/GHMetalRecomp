@@ -64,8 +64,10 @@ when you press PLAY.
 - Achievements: the game's 50 achievements, unlocked or not. In the game, F7 shows the same list.
 - Controls: your guitars, controllers, the keyboard and the microphone.
   - A guitar or a controller: what each of its buttons does. A guitar's frets are A, B, Y, X and LB of an
-    Xbox controller, strum is the D-pad, the whammy bar the right stick and Star Power Back. A controller's
-    Instrument: Guitar, or Vocals for the singer (see SINGING).
+    Xbox controller, strum is the D-pad, the whammy bar the right stick (a controller's, pushed to either
+    side) and Star Power Back. A controller's Instrument: Guitar, or Vocals for the singer (see SINGING).
+    "Strum when a fret is pressed" makes the frets of every controller playing guitar strum as you press
+    them, in songs.
   - Keyboard (experimental): turn on "Play with keyboard and mouse" to play with the keyboard as a guitar
     (frets D F J K L, strum with the Up and Down arrows, Star Power with Space, Start with Enter), and change
     any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs.

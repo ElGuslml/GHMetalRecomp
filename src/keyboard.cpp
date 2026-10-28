@@ -1,10 +1,11 @@
-// ghmetallica - the keyboard's strum on each fret, only in a song.
+// ghmetallica - the keyboard's and the controllers' strum on each fret, only in a song.
 //
 // With mnk_tap_target = "dpad_down" (GH Metallica Launcher's switch on the Keyboard page; src/startup.cpp sets the
 // frets as mnk_tap_sources) the SDK's keyboard pad presses the D-pad, a strum, when a fret key is pressed, the frets
-// pressed within mnk_tap_window_ms of each other making one chord. The menus move their cursor with the D-pad, so
-// every fret pressed to confirm (green) or go back (red) would move it too: the strum is allowed only while a song
-// runs. A player's update in a song (sub_82137F18, every frame for each player, called by sub_82106DC8) marks the
+// pressed within mnk_tap_window_ms of each other making one chord; gamepad_tap_target and gamepad_tap_sources do the
+// same for a controller playing guitar (its switch on the controller's page), under the same gate. The menus move
+// their cursor with the D-pad, so every fret pressed to confirm (green) or go back (red) would move it too: the strum
+// is allowed only while a song runs. A player's update in a song (sub_82137F18, every frame for each player, called by sub_82106DC8) marks the
 // time; the gate is open while that mark is recent.
 
 #include "keyboard.h"

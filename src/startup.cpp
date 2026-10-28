@@ -100,6 +100,10 @@ audio_maxqframes = 4
 gamepad_subtype = 6
 # An Xbox 360 guitar reads its whammy bar half pressed until the bar first moves: at rest until then.
 guitar_whammy_rest = true
+# A controller or the keyboard playing guitar: the whammy bar at rest while the right stick is centred (or its keys
+# are up), and pressed as far as the stick goes from the centre, on either side. The stick's own value, 0 at rest,
+# is the bar held about half way for the game (its bar rests at -0.76 of the axis).
+gamepad_whammy_rest = true
 # A PC microphone 12 dB quieter than Windows records it (usb_microphone_1, off until GH Metallica
 # Launcher's Microphone chooses one): the game turns its own USB microphone down to the bottom of its
 # range for a song; a PC microphone at full level also hears the room and the speakers (the first test,
@@ -144,6 +148,10 @@ keybind_lstick_press = ""
 # arrows strum.
 mnk_tap_sources = "a,b,y,x,lb"
 mnk_tap_target = ""
+# The same for a controller playing guitar (its frets A, B, Y, X and LB) with gamepad_tap_target = "dpad_down" (the
+# launcher's switch on the controller's page), only in a song as the keyboard's (src/keyboard.cpp's gate).
+gamepad_tap_sources = "a,b,y,x,lb"
+gamepad_tap_target = ""
 # The game's screen effects over the 3D image (src/screen_fx.cpp; the note highway and the HUD are drawn after
 # them): false turns one off. Bloom: the glow around lights. Depth of field: the background blurred in some camera
 # shots and behind the menus and the pause menu. Grain: the film grain. Color: the color correction (each venue's
