@@ -1,5 +1,5 @@
 # Renders the installer's wizard images from this project's own art with a headless Chrome (or Edge):
-#   - wizard-<w>x<h>.png from launcher\art\install.svg (the launcher's first-run art), for the Welcome and Finished
+#   - wizard-<w>x<h>.png from launcher\art\background.svg (the launcher's art), for the Welcome and Finished
 #     pages' image area (164:314; 100 %, 150 % and 200 % of Inno Setup 6.6's sizes);
 #   - small-<n>.png from res\icon.svg (the icon) when there is one, otherwise from the same art, for the inner pages'
 #     top right (58, 97 and 124 px).
@@ -36,13 +36,13 @@ function Render([string]$svg, [int]$width, [int]$height, [string]$fit, [string]$
 }
 
 foreach ($size in @(@(202, 386), @(336, 643), @(430, 824))) {
-  Render "$repo\launcher\art\install.svg" $size[0] $size[1] "xMidYMax slice" "wizard-$($size[0])x$($size[1]).png"
+  Render "$repo\launcher\art\background.svg" $size[0] $size[1] "xMaxYMax slice" "wizard-$($size[0])x$($size[1]).png"
 }
 $icon = "$repo\res\icon.svg"
 foreach ($size in @(58, 97, 124)) {
   if (Test-Path $icon) {
     Render $icon $size $size "xMidYMid meet" "small-$size.png"
   } else {
-    Render "$repo\launcher\art\install.svg" $size $size "xMidYMid slice" "small-$size.png"
+    Render "$repo\launcher\art\background.svg" $size $size "xMaxYMax slice" "small-$size.png"
   }
 }

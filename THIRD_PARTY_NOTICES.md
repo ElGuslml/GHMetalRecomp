@@ -21,9 +21,12 @@ toml++ and stb_image's zlib decoder from the SDK (below), and JSON for Modern C+
 (https://github.com/nlohmann/json, Copyright 2013-2023 Niels Lohmann, MIT;
 `thirdparty/rexglue-sdk/thirdparty/inja/third_party/include/nlohmann/LICENSE.MIT`) to read GitHub's answer about
 updates. It also contains:
-- **Barlow and Barlow Condensed** (`recomp_launcher/fonts/`, embedded in `GH Metallica Launcher.exe`):
-  https://github.com/jpt/barlow, Copyright 2017 The Barlow Project Authors, SIL Open Font License 1.1
-  (`recomp_launcher/fonts/OFL.txt`). The TTF files are the ones Google Fonts distributes, unchanged.
+- **Oswald** (`recomp_launcher/fonts/Oswald-*.ttf`, embedded in `GH Metallica Launcher.exe`: the titles):
+  https://github.com/googlefonts/OswaldFont, Copyright 2016 The Oswald Project Authors, SIL Open Font License 1.1
+  (`recomp_launcher/fonts/OFL-Oswald.txt`). Static instances (weights 500, 600, 700) of Google Fonts' variable font.
+- **Source Sans 3** (`recomp_launcher/fonts/SourceSans3-*.ttf`, embedded likewise: the text):
+  https://github.com/adobe-fonts/source-sans, Copyright 2010-2020 Adobe, with Reserved Font Name 'Source', SIL Open
+  Font License 1.1 (`recomp_launcher/fonts/OFL-SourceSans3.txt`). Adobe's own TTF files of release 3.052R, unmodified.
 - **nanosvg** (`recomp_launcher/thirdparty/nanosvg/`): https://github.com/memononen/nanosvg, Copyright (c) 2013-14
   Mikko Mononen, zlib license (`recomp_launcher/thirdparty/nanosvg/LICENSE.txt`). It draws the launcher's icons and
   art.

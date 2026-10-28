@@ -64,6 +64,11 @@ When NativeXRenderer draws the game (GH Metallica Launcher's renderer row), it r
 itself with its image format "fill the screen" (`native_x_renderer_fill_screen`), and the same hooks widen the 3D
 views and keep the 2D layer at 16:9 by its factor: the image is the same, without the stretched 1280×720 frame.
 
+It can also render another aspect ratio than the screen's (2026-10-28, NativeXRenderer D104,
+`native_x_renderer_aspect`): the launcher's image format offers 16:9, 21:9, 32:9 and the screen's own on any screen,
+so 21:9 on a 16:9 screen (bars above and below) or 32:9 on a 21:9 one. The menus' black bars are drawn at the sides
+of the image, not of the screen.
+
 ## Turning it off
 
 Choose 16:9 in GH Metallica Launcher's image format (it writes `ghmetallica_ultrawide = false`), or start the game with

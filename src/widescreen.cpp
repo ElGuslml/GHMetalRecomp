@@ -11,6 +11,7 @@
 #include <rex/system/xmemory.h>
 #include <rex/ui/imgui_dialog.h>
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -69,8 +70,12 @@ class MenuBarsDialog : public rex::ui::ImGuiDialog {
     if (factor <= 1.0 || !REXCVAR_GET(ghmetallica_menu_bars) || InSong()) {
       return;
     }
+    // The image as the presentation places it: as wide as the factor says, as large as fits the window (NativeXRenderer
+    // may draw another aspect ratio than the window's, native_x_renderer_aspect, with bars of its own); the bars cover
+    // everything beside its 16:9 middle.
     float width = io.DisplaySize.x, height = io.DisplaySize.y;
-    float bar = std::floor(float(width * (1.0 - 1.0 / factor) * 0.5));
+    double image_height = std::min(double(height), double(width) / (kGuestAspect * factor));
+    float bar = std::floor(float((double(width) - image_height * kGuestAspect) * 0.5));
     if (bar <= 0.0f) {
       return;
     }
