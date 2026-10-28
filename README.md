@@ -7,6 +7,8 @@
 <p align="center">
   <a href="https://github.com/ElGuslml/GHMetalRecomp/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/ElGuslml/GHMetalRecomp?style=for-the-badge&label=Latest%20release&color=c5dc3a"></a>
   <a href="https://discord.gg/XQtM5TmNs8"><img alt="Discord: join the server" src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white"></a>
+  <a href="https://ko-fi.com/elguslml"><img alt="Ko-fi: support me" src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white"></a>
+  <a href="https://x.com/ElGuslml"><img alt="X: follow @ElGuslml" src="https://img.shields.io/badge/X-Follow%20%40ElGuslml-000000?style=for-the-badge&logo=x&logoColor=white"></a>
   <a href="https://github.com/ElGuslml/ElGusRecomps"><img alt="More games: ElGus Recomps" src="https://img.shields.io/badge/More%20games-ElGus%20Recomps-2f6b45?style=for-the-badge&logo=github"></a>
 </p>
 
@@ -165,6 +167,13 @@ graphics instead), and tell us whether it happens there too.
 - 📺 In an ultrawide window, the second controller's "not signed in" screen shows a colored band at its right edge.
 - ✨ The first time an effect appears, it may show up a moment late.
 
+## ❤️ Support
+
+If you enjoy rocking out with Metallica on your PC, you can support the work on [Ko-fi](https://ko-fi.com/elguslml) ☕.
+For news about the next updates, follow [@ElGuslml on X](https://x.com/ElGuslml) and join the
+[Discord](https://discord.gg/XQtM5TmNs8). And if you'd like more Xbox 360 classics running natively, the other
+recompiled games are at [ElGus Recomps](https://github.com/ElGuslml/ElGusRecomps).
+
 ## 🛠️ For developers
 
 GHMetalRecomp is a *static recompilation*: the game's original Xbox 360 code is translated to C++ and compiled for
@@ -182,7 +191,7 @@ New features on the way:
 - 🎵 **Custom songs:** play songs made by the community.
 - 🐧 **Linux and Steam Deck:** a port to play there too.
 
-Follow along on [Discord](https://discord.gg/XQtM5TmNs8).
+Follow along on [Discord](https://discord.gg/XQtM5TmNs8) and on [X](https://x.com/ElGuslml).
 
 ## 🤖 A note about AI
 
