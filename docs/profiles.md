@@ -28,6 +28,9 @@ Now:
 - The time played counts from Play to the game's exit, only when the game starts from its launcher (not the
   computer's sleep): hours per game, the streaks of days with play and the week's activity on the profile's page.
 - Play or Continue on another game's card closes this launcher and opens that game's.
+- The launcher's logo and each game's tile in the profile's pages show the game's own icon, the one the Xbox 360
+  dashboard shows (launcher 2.5.0), once the game is installed; before that, or for a game whose launcher has not run
+  with 2.5.0 yet, the game's mark as before.
 
 ## How it works
 
@@ -36,10 +39,14 @@ the settings in each game and the unlocks go there), and `profile_name`, the nam
 at start from the launchers' current profile (`src/startup.cpp`, `ConfigureProfile`, with RecompLauncher's
 `profile_store.h`). Every profile has the same Xbox 360 user ID, so a save works in any profile.
 
-Each launcher writes its game into `%APPDATA%\ElGuslml Recomps\games\<title ID>\` (`game.toml`: name, color, icon,
-the launcher's path, the version, when it last ran; and a copy of the game's achievement list), which is how the
-other launchers show it. The playtime is in each profile's `games\<title ID>.toml` (seconds, sessions, seconds per
-day), written by the game's launcher each minute while the game runs.
+Each launcher writes its game into `%APPDATA%\ElGuslml Recomps\games\<title ID>\` (`game.toml`: name, color, mark,
+the launcher's path, the version, when it last ran; `icon.png`, the game's icon; and a copy of the game's achievement
+list), which is how the other launchers show it. The icon is never carried by the launcher: it is read from the
+player's game files, the disc's `nxeart` package (the dashboard's art for the game, whose header has the icon), or,
+for a disc without it, the icon the game writes with its achievement list
+(`userdata\achievements\<title ID>\title.png`, the SDK's change 52: the executable's own, the same picture). The
+playtime is in each profile's `games\<title ID>.toml` (seconds, sessions, seconds per day), written by the game's
+launcher each minute while the game runs.
 
 ## Turning it off
 
