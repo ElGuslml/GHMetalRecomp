@@ -46,9 +46,8 @@ guitar.
    hear on your own speakers or headphones.
 
 <p align="center">
-  <img src="docs/images/launcher-welcome.png" width="32%" alt="The first run: welcome">
-  <img src="docs/images/launcher-iso.png" width="32%" alt="The first run: your ISO, checked">
-  <img src="docs/images/launcher-profile.png" width="32%" alt="Creating your profile">
+  <img src="docs/images/launcher-welcome.png" width="49%" alt="The first run: welcome">
+  <img src="docs/images/launcher-profile.png" width="49%" alt="Creating your profile">
 </p>
 <p align="center"><sub>The first run: the launcher checks your ISO, installs the game from it, and asks for your profile.</sub></p>
 
@@ -176,6 +175,14 @@ natively on Vulkan.
 - [Building and developing](docs/development.md): requirements, building from source, configuration, how the SDK is
   modified.
 - [`docs/`](docs/README.md): a short note on each problem found and how it was solved.
+
+## 🚧 In the works
+
+New features on the way:
+- 🎵 **Custom songs:** play songs made by the community.
+- 🐧 **Linux and Steam Deck:** a port to play there too.
+
+Follow along on [Discord](https://discord.gg/XQtM5TmNs8).
 
 ## 🙏 Credits
 
