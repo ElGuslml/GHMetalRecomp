@@ -187,6 +187,17 @@ inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
 // Its title and hint are game.cpp's (GameTexts::keyboard_tap_title, keyboard_tap_hint).
 inline constexpr const char* kKeyboardTapTarget = "dpad_down";
 
+// --- Singing ---
+
+// The Controls tab's microphone and each controller's part (page_controls.cpp): a recording device of the PC as each of
+// the game's two USB microphones (the SDK's usb_microphone_1 and _2, recomp change 55), and a controller playing the
+// game's instrument (gamepad_subtype's guitar, src/startup.cpp) or singing (a plain gamepad, XInput subtype 1, which the
+// game gives the vocals; the SDK's gamepad_device_subtypes, change 56). Real guitars and drum kits keep their own.
+// Their names are GameTexts::part_instrument and part_vocals.
+inline constexpr bool kHasMicrophones = true;
+// The microphone's gain (usb_microphone_1_gain) until the player changes it, and the Microphone's Reset: src/startup.cpp's.
+inline constexpr int kMicrophoneGainDefault = -12;
+
 // --- The controls in the game's words ---
 
 // The game's functions (game_types.h's GameControl) in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls
@@ -214,6 +225,9 @@ struct GameTexts {
   // The Controls tab's keyboard switch for kKeyboardTapTarget, and its tip in the help.
   const char* keyboard_tap_title = nullptr;
   const char* keyboard_tap_hint = nullptr;
+  // kHasMicrophones: a controller's two parts, the game's instrument and the singer's; null: the launcher's words.
+  const char* part_instrument = nullptr;
+  const char* part_vocals = nullptr;
 };
 // In the language of the launcher's texts (an XLanguage); missing ones fall back to English.
 const GameTexts& GameTextsFor(uint32_t language);

@@ -24,9 +24,9 @@ guitar.
 > This project is not affiliated with or endorsed by Microsoft, Activision, Neversoft or Metallica.
 
 > [!NOTE]
-> 🤘 **Beta.** Songs have been played from start to finish with an Xbox 360 guitar, on guitar and bass parts. Drums
-> have not been tested yet, and singing with a microphone is in development for the next version. If something goes
-> wrong, please [tell us](#-reporting-a-problem)!
+> 🤘 **Beta.** Songs have been played from start to finish with an Xbox 360 guitar, on guitar and bass parts, and sung
+> with a PC microphone (new and experimental). Drums have not been tested yet. If something goes wrong, please
+> [tell us](#-reporting-a-problem)!
 
 ## 🎮 How to play
 
@@ -49,12 +49,15 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - The [Microsoft Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) (most PCs already
   have it).
 - An Xbox 360 guitar. Any other controller works as a guitar too, and so does the keyboard.
+- To sing (experimental): any microphone connected to the PC, and a controller for the singer.
 
 ## ✨ Features
 
 - 🎸 **Your guitar:** an Xbox 360 guitar plays as on the console, whammy bar and Star Power included. Any other
   controller is a guitar too, and the keyboard can be one (experimental: turn it on in the launcher's Keyboard page;
   frets on D F J K L).
+- 🎤 **Sing (experimental):** any microphone on your PC is the game's USB microphone. Choose it in the launcher, and
+  choose which controller sings.
 - 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
   edges (antialiasing) and sharper textures.
 - ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
@@ -73,22 +76,22 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 
 Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboard or a controller:
 
-| Page | What you find there |
+| Tab | What you find there |
 |---|---|
 | ▶️ **Play** | Start the game, and see your settings, achievements and updates at a glance. |
-| 👤 **Profile** | Your profile: hours played, streaks, your week, your games and your favorite achievements. |
-| 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
-| ⌨️ **Keyboard** | Play with the keyboard as a guitar (experimental), change any key, and make the frets strum as you press them. |
-| 🎮 **Instruments and gamepad** | What each button of your guitar or controller does. |
-| 🖥️ **Video** | Monitor, fullscreen or window, resolution, screen shape (fill a wide screen or keep 16:9). |
-| 🎨 **Graphics** | Renderer, frame rate, antialiasing, texture sharpness. |
-| 🌍 **Game** | The game's language. |
 | 🎶 **DLC** | Install your downloadable content packages, and see the installed ones. |
+| 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
+| 🎮 **Controls** | Your guitars, controllers and keyboard: what each button or key does, and which controller sings. The keyboard as a guitar (experimental), with frets that strum as you press them. Your microphone (experimental): device, gain and level. |
+| ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9). **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
 | 🔄 **Updates** | Your version, and new ones when they come out. |
+| 👤 **Profile** | Your picture at the top right: hours played, streaks, your week, your games and your favorite achievements. |
 
 Your choices are saved as soon as you make them. When you quit the game, the launcher comes back.
 
 **Tips:**
+- 🎤 **To sing:** in **Controls → Microphone**, choose your microphone and sing as loud as in a song: the level bar
+  should reach the yellow without touching the red (change **Gain** if not). Then choose the singer's controller and
+  set its **Instrument** to **Vocals**. Headphones help: with speakers, the microphone hears the song too.
 - 🚪 On the title screen or in the main menu, press **B** (the red fret) to quit the game.
 - 🎮 **Steam Big Picture:** add `GH Metallica Launcher.exe` as a non-Steam game and play from your couch.
 - 🛡️ **"Windows protected your PC":** the programs are not signed by a company, so Windows may warn you the first
@@ -107,8 +110,9 @@ graphics instead), and tell us whether it happens there too.
 ### Known issues
 
 - 🥁 Drums have not been tested yet: only guitar and bass parts are known to work.
-- 🎤 Vocals are not available yet. Singing with any microphone connected to the PC is in development for the next
-  version: the launcher will let you choose your microphone and which controller sings.
+- 🎤 Singing is experimental (tested with one microphone): if the pitch line jumps around, lower the microphone's
+  **Gain** in the launcher; if the game does not hear you, raise it. While a microphone is chosen, Windows shows that
+  the game is using it.
 - ⌨️ Playing with the keyboard is experimental.
 - 🔊 Some USB audio interfaces add delay in Windows' shared audio mode (a Focusrite Scarlett about 20 ms more than
   a motherboard's audio): calibrate the audio in the game's options.

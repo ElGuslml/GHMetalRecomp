@@ -38,6 +38,8 @@ const GameTexts& GameTextsFor(uint32_t language) {
       .extracting_text = "The game is being extracted. It can take a few minutes; do not close the launcher.",
       .keyboard_tap_title = "Strum when a fret is pressed",
       .keyboard_tap_hint = "Each fret key strums as you press it; frets pressed within 20 ms of each other are one chord, one strum.",
+      .part_instrument = "Guitar",
+      .part_vocals = "Vocals",
   };
   static const GameTexts kGerman{
       .welcome_title = "Willkommen im Backstage",
@@ -67,6 +69,8 @@ const GameTexts& GameTextsFor(uint32_t language) {
       .extracting_text = "Das Spiel wird entpackt. Das kann ein paar Minuten dauern; schließe den Launcher nicht.",
       .keyboard_tap_title = "Anschlag beim Drücken eines Bunds",
       .keyboard_tap_hint = "Jede Bundtaste schlägt an, wenn du sie drückst; Bünde, die du innerhalb von 20 ms drückst, sind ein Akkord, ein Anschlag.",
+      .part_instrument = "Gitarre",
+      .part_vocals = "Gesang",
   };
   static const GameTexts kFrench{
       .welcome_title = "Bienvenue en coulisses",
@@ -97,6 +101,8 @@ const GameTexts& GameTextsFor(uint32_t language) {
                          "launcher.",
       .keyboard_tap_title = "Gratter en appuyant sur une frette",
       .keyboard_tap_hint = "Chaque touche de frette gratte quand vous l'appuyez ; les frettes appuyées à moins de 20 ms d'intervalle forment un accord, un seul grattage.",
+      .part_instrument = "Guitare",
+      .part_vocals = "Chant",
   };
   static const GameTexts kSpanish{
       .welcome_title = "Bienvenido al backstage",
@@ -127,6 +133,8 @@ const GameTexts& GameTextsFor(uint32_t language) {
       .extracting_text = "Estamos extrayendo el juego. Puede tardar unos minutos; no cierres el launcher.",
       .keyboard_tap_title = "Activar rasgueo al presionar botón",
       .keyboard_tap_hint = "Cada tecla de traste rasguea al presionarla; los trastes que presiones con menos de 20 ms de diferencia cuentan como un acorde: un solo rasgueo.",
+      .part_instrument = "Guitarra",
+      .part_vocals = "Voz",
   };
   static const GameTexts kItalian{
       .welcome_title = "Benvenuto nel backstage",
@@ -156,6 +164,8 @@ const GameTexts& GameTextsFor(uint32_t language) {
       .extracting_text = "Stiamo estraendo il gioco. Può richiedere qualche minuto; non chiudere il launcher.",
       .keyboard_tap_title = "Plettrata alla pressione di un tasto",
       .keyboard_tap_hint = "Ogni tasto della chitarra plettra quando lo premi; i tasti premuti a meno di 20 ms l'uno dall'altro sono un accordo, una sola plettrata.",
+      .part_instrument = "Chitarra",
+      .part_vocals = "Voce",
   };
   switch (language) {
     case 3:

@@ -17,6 +17,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [The crowd claps out of time on star power](crowd-claps.md) | Fixed: the claps follow the audio calibration, as the music does |
 | [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
+| [Singing with a PC microphone](microphone.md) | Experimental: a PC microphone as the game's USB microphone, a controller's instrument (guitar or vocals) in the launcher |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar; the keyboard's frets on D F J K L, and a switch to strum on each fret |
 | [Downloadable content (DLC)](dlc.md) | Working: the player's Death Magnetic package plays in Quickplay; the launcher's DLC page installs packages |
 | [An empty screen after pressing a button on a second controller](second-controller.md) | Fixed: the controller that presses a button at the title screen plays with the profile, the others are its guests, as on the console |

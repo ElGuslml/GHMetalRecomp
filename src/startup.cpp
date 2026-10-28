@@ -100,6 +100,12 @@ audio_maxqframes = 4
 gamepad_subtype = 6
 # An Xbox 360 guitar reads its whammy bar half pressed until the bar first moves: at rest until then.
 guitar_whammy_rest = true
+# A PC microphone 12 dB quieter than Windows records it (usb_microphone_1, off until GH Metallica
+# Launcher's Microphone chooses one): the game turns its own USB microphone down to the bottom of its
+# range for a song; a PC microphone at full level also hears the room and the speakers (the first test,
+# a condenser microphone at 0 dB: the pitch line jumped). The launcher's Gain row changes it.
+usb_microphone_1_gain = -12
+usb_microphone_2_gain = -12
 # Start pressed on a second controller: the game asks that controller to sign in, and only the first
 # has a profile. The sign-in UI closes as when the player cancels it, and the game shows its "not
 # signed in" message (sign in / continue without saving); the SDK default reported a sign-in change

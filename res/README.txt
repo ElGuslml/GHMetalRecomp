@@ -19,6 +19,7 @@ REQUIREMENTS
   https://aka.ms/vs/17/release/vc_redist.x64.exe
 - Your Guitar Hero: Metallica disc as an ISO file (the USA / Europe disc; about 7.2 GB once installed).
 - An Xbox 360 guitar. Any other controller works as a guitar too, and so does the keyboard.
+- To sing (experimental): any microphone connected to the PC, and a controller for the singer.
 
 
 INSTALLATION
@@ -58,16 +59,18 @@ The launcher works with the mouse, the keyboard or a controller. Changes are sav
 when you press PLAY.
 
 - Play: starts the game, with your current settings, achievements and updates at a glance.
-- Your profile (its card in the sidebar): hours played, streaks, the week's activity, your games
+- Your profile (your picture at the top right): hours played, streaks, the week's activity, your games
   and your favorite achievements; edit your name, picture and color, or switch profiles.
 - Achievements: the game's 50 achievements, unlocked or not. In the game, F7 shows the same list.
-- Controls:
+- Controls: your guitars, controllers, the keyboard and the microphone.
+  - A guitar or a controller: what each of its buttons does. A guitar's frets are A, B, Y, X and LB of an
+    Xbox controller, strum is the D-pad, the whammy bar the right stick and Star Power Back. A controller's
+    Instrument: Guitar, or Vocals for the singer (see SINGING).
   - Keyboard (experimental): turn on "Play with keyboard and mouse" to play with the keyboard as a guitar
     (frets D F J K L, strum with the Up and Down arrows, Star Power with Space, Start with Enter), and change
-    any key. "Strum when a fret is pressed" makes each fret
-    strum as you press it, in songs.
-  - Instruments and gamepad: what each button of your guitar or controller does. A guitar's frets are A, B,
-    Y, X and LB of an Xbox controller, strum is the D-pad, the whammy bar the right stick and Star Power Back.
+    any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs.
+  - Microphone (experimental): the microphone you sing with, its channel and gain, and its level (see
+    SINGING).
 - Settings:
   - Video: the monitor, fullscreen, borderless or window, the resolution, the image format (fill a screen
     wider than 16:9, where the stage is seen wider while the note highway, the HUD and the menus stay 16:9
@@ -76,7 +79,8 @@ when you press PLAY.
     default) draws the game natively with Vulkan; Xenos emulates the Xbox 360 GPU instead (DirectX 12 or
     Vulkan): choose it if something looks wrong with NativeXRenderer, and tell us where. Frame rate: 60 FPS
     (original), and 120, 144, 160, 165 or 240 FPS where your monitor reaches them (experimental). The songs
-    keep their speed and stay in sync at every frame rate.
+    keep their speed and stay in sync at every frame rate. The game's screen effects can be turned off one by
+    one.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
     own).
 - DLC: install your own Xbox 360 downloadable content. "Choose folder..." looks for packages in a folder and
@@ -85,6 +89,19 @@ when you press PLAY.
   the downloaded content).
 - Updates: the launcher checks for a new version when it starts (you can turn that off) and installs it
   for you, keeping your saves, settings and game files.
+
+
+SINGING (EXPERIMENTAL)
+
+Any microphone connected to the PC works as the game's Xbox 360 USB microphone:
+1. In the launcher's Controls tab, choose Microphone (under the keyboard) and pick your microphone, or the
+   Windows default. With an audio interface, pick the channel of the input your microphone is on.
+2. Sing as loud as you will in a song and watch the Level bar: it should reach the yellow without touching
+   the red. Change the Gain if it does not (it starts at -12 dB).
+3. Choose the controller that sings and set its Instrument to Vocals. In Quickplay, that controller sings.
+If the pitch line jumps around, lower the Gain; if the game does not hear you, raise it. Headphones help: with
+speakers, the microphone hears the song too. While a microphone is chosen, Windows shows that the game is using
+it.
 
 
 MORE THAN ONE CONTROLLER
@@ -128,9 +145,10 @@ game it happened, a screenshot if you can, and the latest file in the logs folde
 
 KNOWN ISSUES
 
-- Songs have been played with an Xbox 360 guitar on guitar and bass parts. Drums have not been tested yet.
-- Vocals are not available yet. Singing with any microphone connected to the PC is in development for the
-  next version: the launcher will let you choose your microphone and which controller sings.
+- Songs have been played with an Xbox 360 guitar on guitar and bass parts, and sung with a PC microphone.
+  Drums have not been tested yet.
+- Singing is experimental (tested with one microphone): if the pitch line jumps or the game misses your
+  voice, change the microphone's Gain in the launcher.
 - Some USB audio interfaces add delay in Windows' shared audio mode (a Focusrite Scarlett about 20 ms more
   than a motherboard's audio): calibrate the audio in the game's options.
 - Above 60 FPS is experimental: something may still run too fast. Tell us what and where.
