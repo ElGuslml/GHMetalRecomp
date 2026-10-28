@@ -184,11 +184,30 @@ New features on the way:
 
 Follow along on [Discord](https://discord.gg/XQtM5TmNs8).
 
+## 🤖 A note about AI
+
+This project is developed with the help of AI ([Claude](https://claude.ai), by Anthropic). I know it's a touchy
+subject for many people, so I want to be open about it and explain how the work is done:
+
+- 🎮 **The game is still the original game.** Its code is translated by the ReXGlue recompiler, not written by an
+  AI, so it plays as it did on the Xbox 360: the same songs, the same charts, the same scoring.
+- 🧪 **Every change is tested by hand.** I play each fix and improvement myself, with an Xbox 360 guitar, before it
+  is released, and check it against how the game behaves on the console: the notes in time with the music, its
+  graphics, its sound and how it feels to play.
+- ⚡ **Performance is measured, not guessed.** CPU use, frame times, GPU time and the sync between the notes and the
+  music are measured on real hardware before and after each change, so that the game runs smoothly and doesn't
+  waste your computer's resources.
+- 🙌 **Claude helps with the research and the code;** the decisions, the testing and the care for the game are mine.
+
+If something doesn't run as well as it should, it's a bug like any other: tell us on
+[Discord](https://discord.gg/XQtM5TmNs8) or open an [issue](https://github.com/ElGuslml/GHMetalRecomp/issues), and
+it will get fixed. Thanks for giving this game a try! 💜
+
 ## 🙏 Credits
 
 - [ReXGlue SDK](https://github.com/rexglue/rexglue-sdk), whose runtime is derived from [Xenia](https://xenia.jp).
 - [extract-xiso](https://github.com/XboxDev/extract-xiso), for extracting game files.
-- Developed by Gustavo Garcia with the help of Claude (Anthropic).
+- Developed by Gustavo Garcia with the help of Claude (Anthropic): see [the note about AI](#-a-note-about-ai).
 
 ## 📜 License
 
