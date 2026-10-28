@@ -28,6 +28,11 @@ guitar.
 > with a PC microphone (new and experimental). Drums have not been tested yet. If something goes wrong, please
 > [tell us](#-reporting-a-problem)!
 
+> [!WARNING]
+> ⚠️ **Not tested yet:** AMD graphics cards, and Wii or PS3 instruments (guitars and drum kits). If you play with any
+> of them and something goes wrong, please report it in [issues](https://github.com/ElGuslml/GHMetalRecomp/issues) or
+> on [Discord](https://discord.gg/XQtM5TmNs8).
+
 ## 🎮 How to play
 
 1. **Download** the latest version from [Releases](https://github.com/ElGuslml/GHMetalRecomp/releases/latest):
@@ -39,6 +44,13 @@ guitar.
 3. **Pick your settings and press PLAY.** 🎉
 4. **Calibrate:** in the game's options, run the audio and video calibration once, so that the notes match what you
    hear on your own speakers or headphones.
+
+<p align="center">
+  <img src="docs/images/launcher-welcome.png" width="32%" alt="The first run: welcome">
+  <img src="docs/images/launcher-iso.png" width="32%" alt="The first run: your ISO, checked">
+  <img src="docs/images/launcher-profile.png" width="32%" alt="Creating your profile">
+</p>
+<p align="center"><sub>The first run: the launcher checks your ISO, installs the game from it, and asks for your profile.</sub></p>
 
 From then on, the launcher keeps itself up to date: when a new version comes out, it offers to install it for you.
 
@@ -72,9 +84,32 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - 🌍 **Languages:** English, French, German, Italian and Spanish.
 - 🔄 **Automatic updates** from this page.
 
+## 🔧 Better than the original
+
+Some problems come from the game itself and happen on an Xbox 360 too. They are fixed here, and each fix can be
+turned off (the [notes](docs/README.md) say how):
+
+- ⏱️ **Songs drifting out of sync.** On the later Xbox 360 models the music slowly falls behind the notes during a
+  song, about 150 ms a minute, until you pause: the game corrects its clock for the first consoles' timer, which
+  runs 0.25 % slow, and the later ones' does not. Here the game's clock runs at the right rate, and whole songs stay
+  in sync ([details](docs/song-sync.md)).
+- 👏 **Crowd claps out of time.** With Star Power on, the crowd claps on the beat, but the claps ignored your audio
+  calibration and came late by it. They follow the calibration now, as the music does ([details](docs/crowd-claps.md)).
+- 🎛️ **Screen effects you can turn off.** Bloom, depth of field, film grain, color correction, vignette and the ink
+  blotches each have a switch in the launcher's **Settings → Graphics** (all on by default, as on the console; with
+  the color correction off, the grain is off too) ([details](docs/screen-effects.md)).
+
+<p align="center">
+  <img src="docs/images/launcher-screen-effects.png" width="70%" alt="Settings, Graphics: the screen effects' switches">
+</p>
+
 ## 🧭 GH Metallica Launcher
 
 Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboard or a controller:
+
+<p align="center">
+  <img src="docs/images/launcher-play.png" width="100%" alt="GH Metallica Launcher: the Play tab">
+</p>
 
 | Tab | What you find there |
 |---|---|
@@ -85,6 +120,17 @@ Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboar
 | ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9). **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
 | 🔄 **Updates** | Your version, and new ones when they come out. |
 | 👤 **Profile** | Your picture at the top right: hours played, streaks, your week, your games and your favorite achievements. |
+
+<p align="center">
+  <img src="docs/images/launcher-controls.png" width="49%" alt="Controls: a guitar's frets">
+  <img src="docs/images/launcher-microphone.png" width="49%" alt="Controls: the microphone">
+</p>
+<p align="center"><sub>Controls: what each fret of your guitar does, and the microphone you sing with.</sub></p>
+<p align="center">
+  <img src="docs/images/launcher-video.png" width="49%" alt="Settings: Video">
+  <img src="docs/images/launcher-achievements.png" width="49%" alt="Achievements">
+</p>
+<p align="center"><sub>Settings (Video: your screen, window or fullscreen, the image format) and the achievements.</sub></p>
 
 Your choices are saved as soon as you make them. When you quit the game, the launcher comes back.
 

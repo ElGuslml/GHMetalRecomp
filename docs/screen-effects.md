@@ -1,6 +1,7 @@
 # Turning off the game's screen effects
 
-**Status: options in `ghmetallica.toml` (2026-10-28), all on by default.** Not in GH Metallica Launcher yet.
+**Status: options (2026-10-28), all on by default:** switches in GH Metallica Launcher's Settings → Graphics (since
+launcher 3.0), or `ghmetallica.toml`.
 
 ## What the game applies
 
@@ -28,8 +29,9 @@ passes that prepare the bloom and the blurred image still run.
 
 ## Turning one off
 
-`ghmetallica_fx_<name> = false` in `ghmetallica.toml` (or `--ghmetallica_fx_<name>=false`); they also show, and apply
-at once, in the F4 settings overlay (the GHMetallica category).
+The launcher's switch (Settings → Graphics), or `ghmetallica_fx_<name> = false` in `ghmetallica.toml` (or
+`--ghmetallica_fx_<name>=false`); they also show, and apply at once, in the F4 settings overlay (the GHMetallica
+category).
 
 The grain depends on the color correction: with the color correction on, the grain can be on or off; with the color
 correction off, the grain is off too, whatever `ghmetallica_fx_grain` says, because that pass also tones the grain down
