@@ -2,8 +2,8 @@
 
 **Status: working (2026-10-24).** Tested in Quickplay with a DualSense and with the keyboard's emulated controller:
 Guitar and Bass are offered and the songs play; an Xbox 360 guitar and the keyboard's keys (below) played by Gustavo
-(2026-10-25). Not checked yet (2026-10-28, built but not run): the whammy bar at rest on a controller's stick and the
-keyboard's, and the strum on each fret on a controller.
+(2026-10-25). The whammy bar at rest on a controller's stick and the keyboard's, and the strum on each fret on a
+controller: confirmed by Gustavo (2026-10-29).
 
 ## Symptom
 
