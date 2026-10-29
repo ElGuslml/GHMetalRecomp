@@ -40,7 +40,7 @@ guitar.
 1. **Download** the latest version from [Releases](https://github.com/ElGuslml/GHMetalRecomp/releases/latest):
    - **the installer** (`GHMetalRecomp-...-setup.exe`): installs for your Windows user, no administrator rights
      needed, with a Start menu shortcut; or
-   - **the zip** (`GHMetalRecomp-win64.zip`): extract it into any folder you can write to (not `Program Files`).
+   - **the zip** (`GHMetalRecomp-...-win64.zip`): extract it into any folder you can write to (not `Program Files`).
 2. **Open GH Metallica Launcher.** The first time, it asks for the ISO of your game, checks it and installs the game
    files (about 7.2 GB), then asks you to create your profile. You only do this once.
 3. **Pick your settings and press PLAY.** 🎉
@@ -69,6 +69,9 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - 🎸 **Your guitar:** an Xbox 360 guitar plays as on the console, whammy bar and Star Power included. Any other
   controller is a guitar too, and the keyboard can be one (experimental: turn it on in the launcher's Keyboard page;
   frets on D F J K L).
+- 🎮 **Auto-strum, GH2 / GH3 style:** on a controller or the keyboard, each fret strums as you press it, so you play
+  with the frets alone (a chord is one strum). Turn it on in the launcher's Controls tab; it only acts during a song,
+  so the menus work as usual. The whammy bar is the right stick, pushed to either side.
 - 🎤 **Sing (experimental):** any microphone on your PC is the game's USB microphone. Choose it in the launcher, and
   choose which controller sings.
 - 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
