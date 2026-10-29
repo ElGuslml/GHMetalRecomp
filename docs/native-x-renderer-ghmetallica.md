@@ -382,6 +382,12 @@ and draws were skipped while their shaders and pipelines were created (D28). A s
 blocks, and an empty storage here covered the career's opening cinematic in stripes. Since D101 a draw into a target
 of another size than the game's output waits for its pipeline instead; the scene's draws are still skipped.
 
+**The instruments** (2026-10-28, NativeXRenderer D105, found in Guitar Hero: Van Halen). The band's guitars and bass
+were plain white in a song (James's guitar, Rob's bass): their color textures are k_1_5_5_5, a format NativeXRenderer
+had no host format for, so they sampled its white placeholder (18-28 placeholder bindings a frame in The Forum's
+first song). D105 loads them as B5G5R5A1 (with its DiligentCore patch 0008, Vulkan's A1R5G5B5): the same song with 0
+placeholders, James's guitar black with its graphics. The Xenos path never had it.
+
 ## 8. Open questions
 
 1. **Inline draws.** The profile relies on D77 (`inline_draw_end = 13444`) for both DrawIndexedVerticesUP (no
