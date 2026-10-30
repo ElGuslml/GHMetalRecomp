@@ -101,6 +101,12 @@ audio_thread_priority = true
 # meanwhile is made up by dropping as many of its next frames: a short skip, and the music stays with the notes (the
 # SDK default, false, plays the rest of the song that much late, until a pause).
 audio_keep_time = true
+# GH Metallica Launcher's "Low latency audio" (audio_wasapi_exclusive, off by default) takes the output device in
+# exclusive mode, past Windows' audio engine. With it, 10 ms kept in the device's buffer and 2 of the game's frames
+# queued instead of 4: on a Focusrite Scarlett 2i2, 20 ms from the game's frame to the driver playing it, where the
+# shared output takes 77 ms (docs/audio-latency.md). Without it these do nothing.
+audio_wasapi_exclusive_buffer_ms = 10
+audio_wasapi_exclusive_queue = 2
 # V-Sync (GH Metallica Launcher's row writes both; docs/vsync.md): NativeXRenderer presents with FIFO, each frame
 # shown once and never torn, and the game's vertical blank follows the monitor's where the frame rate is its refresh
 # rate or a whole fraction of it, so the game never runs ahead of the display. Measured at 160 FPS on a 160 Hz

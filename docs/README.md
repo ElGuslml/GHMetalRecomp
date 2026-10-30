@@ -17,6 +17,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [The crowd claps out of time on star power](crowd-claps.md) | Fixed: the claps follow the audio calibration, as the music does |
 | [The audio drifts out of sync during a song](song-sync.md) | Fixed: the game's clock at the timebase's real rate; 21 ms less audio delay |
 | [The music falls behind the notes after stutters](song-stutters.md) | Fixed: FMOD mixes on the audio thread, the silence of a late frame is made up, the audio threads at "Pro Audio" priority |
+| [Low latency audio](audio-latency.md) | Added, off by default: the launcher's Settings > Game row, the device in exclusive mode (77 -> 20 ms on a USB interface) |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
 | [Singing with a PC microphone](microphone.md) | Experimental: a PC microphone as the game's USB microphone, a controller's instrument (guitar or vocals) in the launcher |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar; the keyboard's frets on D F J K L, a switch to strum on each fret; assignments per controller, a whammy bar's calibration |

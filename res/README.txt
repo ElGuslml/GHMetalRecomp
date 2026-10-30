@@ -86,7 +86,9 @@ when you press PLAY.
     keep their speed and stay in sync at every frame rate. V-Sync (on by default): no tearing; turn it off for
     a G-Sync or FreeSync monitor. The game's screen effects can be turned off one by one.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
-    own).
+    own), and Low latency audio (off by default): the game takes your audio device in exclusive mode and the
+    sound comes sooner (about 55 ms on a USB audio interface); other programs cannot play on that device
+    while the game runs. Calibrate the audio again after changing it.
 - DLC: install your own Xbox 360 downloadable content. "Choose folder..." looks for packages in a folder and
   installs them; your files stay where they are. Metallica's "Death Magnetic" album (the package made for
   Guitar Hero III, which this game also reads) adds 10 songs to Quickplay's song list (its blue button shows

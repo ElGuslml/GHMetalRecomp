@@ -78,8 +78,10 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
   edges (antialiasing) and sharper textures.
 - ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
-  (experimental). The songs keep their speed and stay in sync. V-Sync is on by default (no tearing); turn it off for
-  a G-Sync or FreeSync monitor.
+  (experimental). The songs keep their speed and stay in sync. V-Sync is on by default (no tearing, the game in step
+  with your monitor); turn it off for a G-Sync or FreeSync monitor.
+- 🔊 **Low latency audio:** optional, in the launcher's Settings: the game takes your audio device in exclusive mode,
+  and the sound comes up to about 55 ms sooner (measured on a USB audio interface).
 - 📺 **Wide and ultrawide screens:** the stage fills 16:9, 21:9 and wider screens, while the note highway, the HUD and
   the menus keep their shape in the center.
 - 🎶 **Downloadable content:** install your own Xbox 360 DLC packages (the *Death Magnetic* album) from the launcher.
