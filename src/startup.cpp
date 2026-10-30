@@ -93,6 +93,13 @@ audio_callback_min_interval_us = 3000
 # delay between a strum and its sound than the SDK's 8. With the calls spaced the queue stays full
 # (no gap in a whole song, measured); the game's calibration covers what is left. 8 = the SDK default.
 audio_maxqframes = 4
+# V-Sync (GH Metallica Launcher's row writes both; docs/vsync.md): NativeXRenderer presents with FIFO, each frame
+# shown once and never torn, and the game's vertical blank follows the monitor's where the frame rate is its refresh
+# rate or a whole fraction of it, so the game never runs ahead of the display. Measured at 160 FPS on a 160 Hz
+# display: 4 ms from present to display, no frame dropped (MAILBOX with the SDK's timer: 16-19 ms, NVIDIA queuing
+# three frames). "immediate" and false = V-Sync off (tearing, or a G-Sync / FreeSync display following the game).
+native_x_renderer_present_mode = "vsync"
+vblank_follows_display = true
 # Report a controller (and the keyboard's emulated one) as a guitar: the game gives a plain gamepad
 # the vocals, which need a microphone. Frets on A (green), B (red), Y (yellow), X (blue) and LB
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real
