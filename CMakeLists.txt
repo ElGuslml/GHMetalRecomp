@@ -70,6 +70,7 @@ set(GHMETALLICA_SOURCES
     src/native_x_renderer_ghmetallica.cpp
     src/options.cpp
     src/crowd.cpp
+    src/fmod_mix.cpp
     src/players.cpp
     src/screen_fx.cpp
     src/quit_prompt.cpp

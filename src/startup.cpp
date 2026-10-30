@@ -93,6 +93,14 @@ audio_callback_min_interval_us = 3000
 # delay between a strum and its sound than the SDK's 8. With the calls spaced the queue stays full
 # (no gap in a whole song, measured); the game's calibration covers what is left. 8 = the SDK default.
 audio_maxqframes = 4
+# The SDK's audio threads (its audio worker runs the game's sound callback and, with ghmetallica_fmod_on_audio_thread,
+# FMOD's mixing) in Windows' multimedia class "Pro Audio", as the sound device's thread: a busy PC holds them up less.
+# false = normal priority (the SDK default).
+audio_thread_priority = true
+# When the game's sound still comes late (its audio thread held up longer than the 21 ms queue), the silence played
+# meanwhile is made up by dropping as many of its next frames: a short skip, and the music stays with the notes (the
+# SDK default, false, plays the rest of the song that much late, until a pause).
+audio_keep_time = true
 # V-Sync (GH Metallica Launcher's row writes both; docs/vsync.md): NativeXRenderer presents with FIFO, each frame
 # shown once and never torn, and the game's vertical blank follows the monitor's where the frame rate is its refresh
 # rate or a whole fraction of it, so the game never runs ahead of the display. Measured at 160 FPS on a 160 Hz
