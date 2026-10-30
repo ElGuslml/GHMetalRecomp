@@ -187,6 +187,9 @@ inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
 // The same on each controller's page for the controllers playing guitar (gamepad_tap_target, gamepad_tap_sources).
 // Its title and hint are game.cpp's (GameTexts::keyboard_tap_title, keyboard_tap_hint).
 inline constexpr const char* kKeyboardTapTarget = "dpad_down";
+// The whammy bar's row on each controller playing guitar (page_controls.cpp): how far the game reads the bar, and its
+// calibration (the SDK's gamepad_whammy_calibration, recomp change 60: the axis it is on, at rest and all the way).
+inline constexpr bool kHasWhammy = true;
 
 // --- Singing ---
 

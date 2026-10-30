@@ -87,9 +87,28 @@ centred, and fully pressed with the stick pushed to either side (past a tenth of
 The keyboard's Right arrow presses it fully. With a controller and a real guitar, or the keyboard, in one player's
 hands, the bar pressed furthest counts.
 
+### A guitar whose frets cannot be assigned, or whose whammy bar is always pressed (2026-10-29)
+
+Reported with CRKD guitars, whose Xbox 360 mode is an XInput controller (vendor 0x3651 or 0x0351), not yet confirmed
+with one:
+
+- **Assigning frets in GH Metallica Launcher.** While it waited for a button the launcher also took a trigger pressed
+  past half. An Xbox 360 Guitar Hero guitar's accelerometer is on its triggers, at half when still, so moving the
+  guitar assigned a trigger before the fret was pressed. Now a trigger counts only if it was released when the wait
+  began and is then pressed past 90 %, and only the controller being edited is listened to (RecompLauncher 3.4).
+- **Assignments per controller.** They were kept per type of controller, so a guitar and an Xbox 360 controller (both
+  SDL's `xbox360`) shared one layout: swapping a guitar's yellow and blue swapped the controller's Y and X. They are
+  now each controller's own, by its serial number or GUID (the SDK's `gamepad_device_remap`, change 59).
+- **The whammy bar always pressed.** A guitar that reports itself as a gamepad rests its bar at -32768, which change 57
+  read as the stick pushed all the way. The SDK now judges where the right stick's X rests (still for a second, the
+  first time): at -32768 it is a bar and keeps its value; the log says which (`right stick's X rests at`). And the
+  launcher's Controls page has a Whammy bar row on each guitar and each controller playing guitar: how far the game
+  reads it now, and a calibration (push the bar all the way and hold it, then let it go) for a bar that rests or moves
+  elsewhere: the axis, its value at rest and all the way (`gamepad_whammy_calibration`, change 60).
+
 ## Turning it off
 
 Set `gamepad_subtype = 0` in `ghmetallica.toml`, or start the game with `--gamepad_subtype=0`: a controller is then
 the singer again. The keyboard's strum on each fret: the Keyboard page's switch, or `mnk_tap_target = ""`; a
 controller's: its switch on the Controls page, or `gamepad_tap_target = ""`. The whammy bar at rest on a controller's
-stick: `gamepad_whammy_rest = false`.
+stick: `gamepad_whammy_rest = false`. A calibration: X (or Delete) on the Whammy bar row's Calibrate, or Reset.

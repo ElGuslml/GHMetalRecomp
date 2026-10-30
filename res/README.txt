@@ -67,7 +67,9 @@ when you press PLAY.
     Xbox controller, strum is the D-pad, the whammy bar the right stick (a controller's, pushed to either
     side) and Star Power Back. A controller's Instrument: Guitar, or Vocals for the singer (see SINGING).
     "Strum when a fret is pressed" makes the frets of every controller playing guitar strum as you press
-    them, in songs.
+    them, in songs. Each controller keeps its own assignments. Whammy bar: how far the game reads the bar.
+    If it reads pressed with the bar at rest, or does nothing (some third-party guitars), press Calibrate,
+    push the bar all the way and hold it, then let it go; X clears the calibration.
   - Keyboard (experimental): turn on "Play with keyboard and mouse" to play with the keyboard as a guitar
     (frets D F J K L, strum with the Up and Down arrows, Star Power with Space, Start with Enter), and change
     any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs.
@@ -81,8 +83,8 @@ when you press PLAY.
     default) draws the game natively with Vulkan; Xenos emulates the Xbox 360 GPU instead (DirectX 12 or
     Vulkan): choose it if something looks wrong with NativeXRenderer, and tell us where. Frame rate: 60 FPS
     (original), and 120, 144, 160, 165 or 240 FPS where your monitor reaches them (experimental). The songs
-    keep their speed and stay in sync at every frame rate. The game's screen effects can be turned off one by
-    one.
+    keep their speed and stay in sync at every frame rate. V-Sync (on by default): no tearing; turn it off for
+    a G-Sync or FreeSync monitor. The game's screen effects can be turned off one by one.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
     own).
 - DLC: install your own Xbox 360 downloadable content. "Choose folder..." looks for packages in a folder and
