@@ -191,6 +191,7 @@ natively on Vulkan.
 - [Building and developing](docs/development.md): requirements, building from source, configuration, how the SDK is
   modified.
 - [`docs/`](docs/README.md): a short note on each problem found and how it was solved.
+- [macOS](docs/macos.md) (experimental): building the app and disk image, what differs from Windows, known issues.
 
 ## 🚧 In the works
 

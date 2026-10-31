@@ -33,6 +33,12 @@ cmake --build --preset win-amd64-release
   with "precompiled header ... has been modified", run the build command again.
 - Presets: `win-amd64-release`, `win-amd64-relwithdebinfo`, `win-amd64-debug`.
 
+### macOS (experimental)
+
+`installer/macos/make_dmg.sh` builds the game and GH Metallica Launcher (presets `mac-arm64-release`,
+`mac-amd64-release`) and packages them as an app in a disk image. Requirements, layout, what differs from Windows and
+the known issues: [`macos.md`](macos.md).
+
 ## Running
 
 ```powershell

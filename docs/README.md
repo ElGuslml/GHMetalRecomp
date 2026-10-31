@@ -7,6 +7,7 @@ To build the project and work on it: [Building and developing](development.md).
 
 | Note | Status |
 |---|---|
+| [macOS](macos.md) | Experimental: the game, NativeXRenderer and the launcher as an app; Kirk's hair and the renderer's speed open |
 | [Profiles shared by the launchers](profiles.md) | Working: a profile per player in %APPDATA%, the saves and achievements copied into it |
 | [NativeXRenderer in Guitar Hero: Metallica](native-x-renderer-ghmetallica.md) | Working: draws the game as the Xenos path does, with SMAA and ultrawide, at about half the GPU time (off by default) |
 | [Game language](language.md) | Working: launcher language row (German, English, Spanish, French, Italian) |

@@ -19,6 +19,10 @@
 #include <cstdint>
 #include <mutex>
 
+#ifdef __APPLE__
+#include <pthread/qos.h>
+#endif
+
 REXCVAR_DEFINE_BOOL(ghmetallica_fmod_on_audio_thread, true, "GHMetallica",
                     "FMOD mixes each block of sound on the SDK's audio worker as soon as the sound device has read "
                     "the one before, so FMOD's own thread coming late loses nothing; false: FMOD's thread mixes, as on "
@@ -35,8 +39,20 @@ std::mutex g_mix;
 REX_EXTERN(__imp__sub_82280600);
 REX_EXTERN(__imp__sub_82228A38);
 
+// macOS: the sound's threads (the SDK's audio worker, FMOD's mixer) at the highest quality of service, on the
+// performance cores and ahead of the game's other work, as Windows' "Pro Audio" class does for audio_thread_priority
+// (a Windows-only switch in the SDK). Default, they could run on the efficiency cores and come late: the sound
+// device then plays silence (audio_keep_time's skips). Once per thread.
+static inline void AudioThreadQos() {
+#ifdef __APPLE__
+  thread_local bool set = (pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0), true);
+  (void)set;
+#endif
+}
+
 // The render client (sub_82228A38), on the SDK's audio worker for each frame the sound device plays.
 REX_HOOK_RAW(sub_82228A38) {
+  AudioThreadQos();
   __imp__sub_82228A38(ctx, base);
   const uint32_t output = g_output.load(std::memory_order_acquire);
   if (!output || !REXCVAR_GET(ghmetallica_fmod_on_audio_thread)) {
@@ -55,6 +71,7 @@ REX_HOOK_RAW(sub_82228A38) {
 
 // FMOD's polled output's update (sub_82280600, r3 the output), on FMOD's mixer thread.
 REX_HOOK_RAW(sub_82280600) {
+  AudioThreadQos();
   g_output.store(ctx.r3.u32, std::memory_order_release);
   if (g_on_worker.load(std::memory_order_acquire)) {
     ctx.r3.u64 = 0;  // FMOD_OK

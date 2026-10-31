@@ -5,8 +5,14 @@
 #pragma once
 
 #define GAME_TITLE "Guitar Hero: Metallica"
+#ifdef _WIN32
 #define GAME_EXE "GHMetallicaRecomp.exe"
+#else
+#define GAME_EXE "GHMetallicaRecomp"
+#endif
 #define GAME_LAUNCHER "GH Metallica Launcher"
+// macOS: the folder of the game's own files in ~/Library/Application Support (the app bundle is not written to).
+#define GAME_DATA_FOLDER "GHMetalRecomp"
 // The game's executable in the game files (assets/): the code is recompiled from it.
 #define GAME_XEX "default.xex"
 // Next to GAME_EXE: the base settings (src/startup.cpp writes the defaults) and what the launcher saves.

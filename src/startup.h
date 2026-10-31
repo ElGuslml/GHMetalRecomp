@@ -6,6 +6,12 @@
 
 namespace ghmetallica {
 
+// The folder for this installation's own files: settings (ghmetallica.toml, ghmetallica_options.toml), logs\,
+// userdata\ and assets\. The executable's folder, so that the whole game lives in one folder; but on macOS, inside
+// an app bundle (GHMetalRecomp.app/Contents/MacOS), ~/Library/Application Support/GHMetalRecomp: a bundle is signed
+// and may be read-only (/Applications), so nothing is written into it.
+std::filesystem::path DataFolder();
+
 // Game files folder when --game_data_root is not given: assets/ next to GHMetallicaRecomp.exe (release
 // layout) if it holds the game, otherwise the repository's assets/ (GHMETALLICA_DEFAULT_GAME_ROOT, set in
 // CMake); if neither does, assets/ next to the executable, so the "files not found" message names

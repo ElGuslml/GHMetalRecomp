@@ -22,7 +22,13 @@ namespace launcher::game {
 inline constexpr const char* kName = GAME_TITLE;
 // The recompiled executable and the launcher, side by side; the launcher's name is its window's title.
 inline constexpr const char* kRecompExecutable = GAME_EXE;
+#ifdef _WIN32
 inline constexpr const char* kLauncherExecutable = GAME_LAUNCHER ".exe";
+#else
+inline constexpr const char* kLauncherExecutable = GAME_LAUNCHER;
+// macOS: ~/Library/Application Support/<this> holds the settings, user data and game files (platform.h, DataFolder).
+inline constexpr const char* kDataFolder = GAME_DATA_FOLDER;
+#endif
 inline constexpr const char* kLauncherName = GAME_LAUNCHER;
 // The game's settings next to it: its base file (src/startup.cpp writes the defaults) and what the launcher saves.
 inline constexpr const char* kConfigFile = GAME_CONFIG;
