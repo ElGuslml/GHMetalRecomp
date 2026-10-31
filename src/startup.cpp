@@ -25,7 +25,12 @@
 #include <windows.h>
 #endif
 
-#include "profile_store.h"
+#ifdef __APPLE__
+#include <CoreFoundation/CoreFoundation.h>
+#include <cstdlib>
+#endif
+
+#include "profile_store.h"  // RecompLauncher's
 #include "project.h"
 
 namespace ghmetallica {
@@ -206,6 +211,29 @@ uint32_t Crc32(const std::vector<char>& data) {
   return crc ^ 0xFFFFFFFFu;
 }
 
+#ifdef __APPLE__
+// A native alert (CoreFoundation, no Objective-C): the game has no window yet when it is shown. True for the default
+// button, false for the alternate one (or when the alert could not be shown).
+bool ShowAlert(const std::string& text, const char* default_button, const char* alternate_button = nullptr) {
+  auto cf = [](const std::string& s) {
+    return CFStringCreateWithCString(kCFAllocatorDefault, s.c_str(), kCFStringEncodingUTF8);
+  };
+  CFStringRef title = cf(GAME_TITLE);
+  CFStringRef message = cf(text);
+  CFStringRef ok = cf(default_button);
+  CFStringRef alternate = alternate_button ? cf(alternate_button) : nullptr;
+  CFOptionFlags response = kCFUserNotificationCancelResponse;
+  SInt32 result = CFUserNotificationDisplayAlert(0, kCFUserNotificationStopAlertLevel, nullptr, nullptr, nullptr,
+                                                 title, message, ok, alternate, nullptr, &response);
+  for (CFStringRef s : {title, message, ok, alternate}) {
+    if (s) {
+      CFRelease(s);
+    }
+  }
+  return result == 0 && response == kCFUserNotificationDefaultResponse;
+}
+#endif
+
 #ifdef _WIN32
 // MB_* flags; returns the button pressed.
 int ShowMessage(const std::wstring& text, UINT flags) {
@@ -221,8 +249,26 @@ std::wstring Hex32(uint32_t value) {
 
 }  // namespace
 
+std::filesystem::path DataFolder() {
+  std::filesystem::path exe_dir = rex::filesystem::GetExecutableFolder();
+#ifdef __APPLE__
+  if (exe_dir.filename() == "MacOS" && exe_dir.parent_path().filename() == "Contents") {
+    if (const char* home = std::getenv("HOME"); home && *home) {
+      std::filesystem::path folder =
+          std::filesystem::path(home) / "Library" / "Application Support" / GAME_DATA_FOLDER;
+      std::error_code ec;
+      std::filesystem::create_directories(folder, ec);
+      if (!ec) {
+        return folder;
+      }
+    }
+  }
+#endif
+  return exe_dir;
+}
+
 std::filesystem::path DefaultGameRoot() {
-  std::filesystem::path next_to_exe = rex::filesystem::GetExecutableFolder() / "assets";
+  std::filesystem::path next_to_exe = DataFolder() / "assets";
   if (std::filesystem::exists(next_to_exe / GAME_XEX)) {
     return next_to_exe;
   }
@@ -242,7 +288,7 @@ void ConfigureUserData(std::filesystem::path& user_data_root, std::filesystem::p
   if (!rex::cvar::Query<std::string>("user_data_root").empty()) {
     return;  // chosen on the command line
   }
-  std::filesystem::path portable = rex::filesystem::GetExecutableFolder() / "userdata";
+  std::filesystem::path portable = DataFolder() / "userdata";
   std::error_code ec;
   std::filesystem::create_directories(portable, ec);
   // Writable? Logging is not set up yet: the folder in use is logged later
@@ -348,6 +394,8 @@ bool CheckGameFiles(const std::filesystem::path& game_root) {
                 L"Copy the files of your " GAME_TITLE " (Xbox 360) disc into:\n" +
                     game_root.wstring() + L"\n\nso that this file exists:\n" + exe.wstring(),
                 MB_OK | MB_ICONERROR);
+#elif defined(__APPLE__)
+    ShowAlert("The game is not installed yet. Open " GAME_LAUNCHER " to install it from the ISO of your disc.", "Quit");
 #endif
     return false;
   }
@@ -365,6 +413,10 @@ bool CheckGameFiles(const std::filesystem::path& game_root) {
                                L").\nThe game will most likely crash.\n\nStart anyway?",
                            MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
   return answer == IDYES;
+#elif defined(__APPLE__)
+  return ShowAlert("This copy of the game is not the USA / Europe version this game was made from. It will most "
+                   "likely not work.\n\nStart anyway?",
+                   "Start anyway", "Quit");
 #else
   return true;
 #endif

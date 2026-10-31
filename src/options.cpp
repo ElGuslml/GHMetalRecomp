@@ -6,6 +6,7 @@
 #include <rex/filesystem.h>
 #include <rex/logging.h>
 
+#include <cstdlib>
 #include <string>
 
 #ifdef _WIN32
@@ -16,6 +17,20 @@
 #endif
 
 #include "project.h"
+#ifdef __APPLE__
+#include "macos_vulkan_driver.h"
+#endif
+
+#ifdef __APPLE__
+namespace {
+// Before main (and SDL_Init): fullscreen in its own Space (options.cpp, LoadLauncherOptions). SDL reads hints from
+// the environment; one already set (by the player) is kept.
+const bool g_fullscreen_spaces = [] { return setenv("SDL_VIDEO_MAC_FULLSCREEN_SPACES", "1", 0) == 0; }();
+// CoreAudio's buffer: one console frame (256 samples, 5.3 ms) instead of SDL's default, so the device asks for sound
+// in steps as small as the game makes it.
+const bool g_audio_frames = [] { return setenv("SDL_AUDIO_DEVICE_SAMPLE_FRAMES", "256", 0) == 0; }();
+}  // namespace
+#endif
 
 namespace ghmetallica {
 namespace {
@@ -55,6 +70,25 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
       rex::cvar::SetFlagByName("video_mode_refresh_rate", std::to_string(frame_rate));
     }
   }
+
+#ifdef __APPLE__
+  // macOS: MoltenVK reports what Metal lacks (primitive restart cannot be disabled) through the debug messenger at
+  // every pipeline, thousands of lines a minute; logging them on the GPU thread costs frames. Off unless Vulkan
+  // validation is on (vulkan_validation_enabled).
+  if (!rex::cvar::Query<bool>("vulkan_validation_enabled")) {
+    rex::cvar::SetFlagByName("vulkan_log_debug_messages", "false");
+  }
+  // Fullscreen as macOS has it: the game in a Space of its own (SDL's desktop fullscreen with
+  // SDL_VIDEO_MAC_FULLSCREEN_SPACES, set below before SDL starts). An exclusive mode switch would cover the current
+  // desktop instead; the Retina display is drawn at its own pixels either way.
+  rex::cvar::SetFlagByName("fullscreen_exclusive", "false");
+  macos::SelectVulkanDriver();
+  // ghmetallica.toml's 4-frame (21 ms) queue is made for Windows' low-latency output; macOS's shared output takes
+  // its sound in larger bursts and drained it about ten times a second (audio_keep_time's skips): 6 frames (32 ms).
+  if (rex::cvar::Query<int32_t>("audio_maxqframes") < 6) {
+    rex::cvar::SetFlagByName("audio_maxqframes", "6");
+  }
+#endif
 
   // NativeXRenderer draws through its own Vulkan device (DiligentCore), and the SDK's backend only keeps the
   // GPU in sync then. Its Vulkan backend keeps the process on one graphics API: no idle D3D12 device next

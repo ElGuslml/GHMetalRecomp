@@ -41,16 +41,25 @@
 #include <rex/system/xmemory.h>
 #include <rex/thread.h>
 
-#include <immintrin.h>
-
 #include <algorithm>
 #include <chrono>
 #include <cstring>
 
+#if defined(__x86_64__) || defined(_M_X64)
+#include <immintrin.h>
+#define GHMETALLICA_CPU_PAUSE() _mm_pause()
+#elif defined(__aarch64__) || defined(_M_ARM64)
+#define GHMETALLICA_CPU_PAUSE() __asm__ __volatile__("yield")
+#else
+#define GHMETALLICA_CPU_PAUSE() ((void)0)
+#endif
+
+#ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <windows.h>
+#endif
 
 REXCVAR_DEFINE_INT32(ghmetallica_wait_sleep_us, 200, "GHMetallica",
                      "Game threads waiting for work: sleep this many microseconds per check once the wait "
@@ -102,7 +111,7 @@ void SpinOrSleep(WaitState& state) {
   state.last = now;
   const int32_t spin_us = std::max(0, REXCVAR_GET(ghmetallica_wait_spin_us));
   if (now - state.start < std::chrono::microseconds(spin_us)) {
-    _mm_pause();
+    GHMETALLICA_CPU_PAUSE();
     return;
   }
   rex::thread::PreciseSleep(std::chrono::microseconds(sleep_us));
@@ -122,13 +131,15 @@ constexpr uint32_t kJobEventHandle = 0x82A8D574;
 constexpr auto kJobEventTimeout = 1ms;
 
 struct JobWait {
-  HANDLE timer = nullptr;  // high resolution: a plain wait's timeout has the system timer's 15.6 ms steps
   int immediate = 0;       // waits the event ended at once in a row
+#ifdef _WIN32
+  HANDLE timer = nullptr;  // high resolution: a plain wait's timeout has the system timer's 15.6 ms steps
   ~JobWait() {
     if (timer) {
       CloseHandle(timer);
     }
   }
+#endif
 };
 thread_local JobWait t_job_event;
 
@@ -157,6 +168,7 @@ bool WaitForJob(JobWait& state) {
   if (!wait) {
     return false;
   }
+#ifdef _WIN32
   if (!state.timer) {
     state.timer = CreateWaitableTimerExW(nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
     if (!state.timer) {
@@ -177,6 +189,18 @@ bool WaitForJob(JobWait& state) {
     state.immediate = 0;
   }
   return result == WAIT_OBJECT_0 || result == WAIT_OBJECT_0 + 1;
+#else
+  // POSIX: the SDK's wait, whose timeout has no 15.6 ms steps to work around.
+  const Clock::time_point start = Clock::now();
+  const rex::thread::WaitResult result =
+      rex::thread::Wait(wait, false, std::chrono::duration_cast<std::chrono::milliseconds>(kJobEventTimeout));
+  if (result == rex::thread::WaitResult::kSuccess && Clock::now() - start < 5us) {
+    ++state.immediate;
+  } else {
+    state.immediate = 0;
+  }
+  return result == rex::thread::WaitResult::kSuccess || result == rex::thread::WaitResult::kTimeout;
+#endif
 }
 
 // A vertical blank counter's last advance seen while the render thread was checking it closely, the anchor of
@@ -270,7 +294,7 @@ void GHMetallicaJobGroupWaitHook(PPCRegister& r29, PPCRegister& r30) {
   }
   const Clock::time_point start = Clock::now();
   while (LoadWord(base, pending_address) == pending && Clock::now() - start < 20us) {
-    _mm_pause();
+    GHMETALLICA_CPU_PAUSE();
   }
 }
 
