@@ -72,7 +72,9 @@ when you press PLAY.
     push the bar all the way and hold it, then let it go; X clears the calibration.
   - Keyboard (experimental): turn on "Play with keyboard and mouse" to play with the keyboard as a guitar
     (frets D F J K L, strum with the Up and Down arrows, Star Power with Space, Start with Enter), and change
-    any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs.
+    any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs. Shift, Ctrl
+    and Alt can be keys of their own (press and release one alone): each side is a separate key, so Left
+    Alt can be Star Power. F1 to F12 can be assigned too: a key on a control only presses that control.
   - Microphone (experimental): the microphone you sing with, its channel and gain, and its level (see
     SINGING).
 - Settings:
@@ -88,7 +90,8 @@ when you press PLAY.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
     own), and Low latency audio (off by default): the game takes your audio device in exclusive mode and the
     sound comes sooner (about 55 ms on a USB audio interface); other programs cannot play on that device
-    while the game runs. Calibrate the audio again after changing it.
+    while the game runs. Calibrate the audio again after changing it. Debug keys (off by default): F3, F4
+    and ` open the developer's windows in the game (frame times, settings, console).
 - DLC: install your own Xbox 360 downloadable content. "Choose folder..." looks for packages in a folder and
   installs them; your files stay where they are. Metallica's "Death Magnetic" album (the package made for
   Guitar Hero III, which this game also reads) adds 10 songs to Quickplay's song list (its blue button shows

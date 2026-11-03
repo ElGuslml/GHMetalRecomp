@@ -169,6 +169,11 @@ keybind_lstick_press = ""
 # arrows strum.
 mnk_tap_sources = "a,b,y,x,lb"
 mnk_tap_target = ""
+# The SDK's developer keys (F3 the debug overlay, F4 its settings window, ` the console) do nothing, so that
+# the keyboard can play with them (a player's request, 2026-11-02); GH Metallica Launcher's Settings > Game >
+# Debug keys turns them on. A key on one of the keyboard's controls plays only that control either way, F7
+# (the achievements) included.
+debug_hotkeys = false
 # The same for a controller playing guitar (its frets A, B, Y, X and LB) with gamepad_tap_target = "dpad_down" (the
 # launcher's switch on the controller's page), only in a song as the keyboard's (src/keyboard.cpp's gate).
 gamepad_tap_sources = "a,b,y,x,lb"
