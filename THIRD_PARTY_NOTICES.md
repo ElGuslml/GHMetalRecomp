@@ -7,10 +7,12 @@ folder.
 
 ## NativeXRenderer
 
-The renderer, [NativeXRenderer](https://github.com/ElGuslml/NativeXRenderer) (`native_x_renderer/`, a
-submodule), is MIT. It brings DiligentCore (Apache 2.0), SPIRV-Cross (Apache 2.0), volk (MIT), NVIDIA DLSS
-and NGX (NVIDIA RTX SDKs License; `nvngx_dlss.dll` is shipped only when the game offers a DLSS mode) and SMAA
-(MIT-style). Their notices: [`native_x_renderer/THIRD_PARTY_NOTICES.md`](https://github.com/ElGuslml/NativeXRenderer/blob/main/THIRD_PARTY_NOTICES.md).
+The renderer, [NativeXRenderer](https://github.com/ElGuslml/NativeXRenderer) (`native_x_renderer/`, a submodule),
+is MIT. It brings DiligentCore (Apache 2.0), SPIRV-Cross (Apache 2.0), volk (MIT), NVIDIA DLSS and NGX (NVIDIA RTX
+SDKs License; `nvngx_dlss.dll` is shipped only when the game offers a DLSS mode), SMAA (MIT-style), AMD FidelityFX
+FSR 1 and CAS and NVIDIA Image Scaling (MIT), and the AMD FidelityFX API (MIT; `amd_fidelityfx_vk.dll` is shipped
+only when the game offers AMD FSR 3.1). Their notices:
+[`native_x_renderer/THIRD_PARTY_NOTICES.md`](https://github.com/ElGuslml/NativeXRenderer/blob/main/THIRD_PARTY_NOTICES.md).
 
 NVIDIA and DLSS are trademarks or registered trademarks of NVIDIA Corporation in the U.S. and other countries.
 
