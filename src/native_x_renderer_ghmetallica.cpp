@@ -82,6 +82,11 @@ const native_x_renderer::Profile& NativeXRendererProfile() {
     // return address 0x8251F04C, called from 0x824B80C0, once a frame) and draws it back with the bloom, then the
     // HUD over it. In the menus the same copy is their 3D background, before the 2D layer.
     p.scene_resolve_caller = 0x8251F04C;
+    // DLSS and FSR 3.1 without view hooks (D119): the main 3D view from its first depth-writing draw of 1280x720 with a
+    // perspective matrix (the stage and the band) to that same copy, the scene's only one: the note highway and the HUD
+    // are drawn after it, outside the view (no jitter, no temporal history for the notes). The camera from the vote of
+    // the draws (D118).
+    p.upscale_resolve_caller = 0x8251F04C;
     // The ultrawide hooks (src/widescreen.cpp) widen the 16:9 cameras by AspectFactor() and keep the 2D layer at
     // 16:9 in the center: NativeXRenderer may fill a wider output (native_x_renderer_fill_screen).
     p.widens_cameras = true;
