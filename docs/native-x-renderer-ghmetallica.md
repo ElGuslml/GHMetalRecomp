@@ -399,7 +399,9 @@ camera's motion (287-306 motion draws a frame -> 3-8). A song at 3440x1440 and 1
 with DLAA, 6.25 with SMAA (8.8-9.7 before D120). The upscaling modes (D121): the output-size targets are the reduced
 ones from the frame's start; the 640x360 4x MSAA resolve of the scene (D95) finds the reduced target. DLSS Quality
 draws the view at 2293x960; GPU per frame SMAA 2.5-3.3 ms, DLAA 3.95-4.23, DLSS Quality 3.67-3.92, FSR 3.1 Quality
-3.22-3.56.
+3.22-3.56. D122: in the busiest venue DLAA's renderer CPU 5.69 -> 5.3 ms a frame (SMAA 4.5); DLSS itself is 1.2 ms
+of GPU (preset K) or 1.55 ms (Performance's M) at 3440x1440, SMAA 0.17, more than the whole 3D view costs: no DLSS
+mode draws this game for less GPU time than SMAA.
 
 ## 8. Open questions
 
