@@ -388,15 +388,18 @@ had no host format for, so they sampled its white placeholder (18-28 placeholder
 first song). D105 loads them as B5G5R5A1 (with its DiligentCore patch 0008, Vulkan's A1R5G5B5): the same song with 0
 placeholders, James's guitar black with its graphics. The Xenos path never had it.
 
-**DLAA without view hooks** (2026-11-03, NativeXRenderer D118-D120; not offered by the launcher yet: the options
-file's `native_x_renderer_antialiasing = dlaa`, or `fsr_native`). The game has no hooks marking its 3D view, so the
+**DLAA without view hooks** (2026-11-03, NativeXRenderer D118-D121; the launcher's Upscaling row offers FSR 3.1 and
+DLSS, `game::kHasDlaa`). The game has no hooks marking its 3D view, so the
 profile names the upscale point instead (`upscale_resolve_caller`, the same `0x8251F04C`): the view runs from the first
 depth-writing perspective draw of the output size to that copy, and DLSS / FSR 3.1 run just before it; the note
 highway and the HUD are drawn after it, outside the view. The camera's motion comes from a vote of the draws (about 300
 offers a view in a song, 98 % for the winner). Every object has its own world-view-projection and the camera never
 stops, so nearly every draw counts as moved for D48: D120 leaves those whose matrix moved as the camera did to the
 camera's motion (287-306 motion draws a frame -> 3-8). A song at 3440x1440 and 160 FPS: frame interval 6.50-6.77 ms
-with DLAA, 6.25 with SMAA (8.8-9.7 before D120).
+with DLAA, 6.25 with SMAA (8.8-9.7 before D120). The upscaling modes (D121): the output-size targets are the reduced
+ones from the frame's start; the 640x360 4x MSAA resolve of the scene (D95) finds the reduced target. DLSS Quality
+draws the view at 2293x960; GPU per frame SMAA 2.5-3.3 ms, DLAA 3.95-4.23, DLSS Quality 3.67-3.92, FSR 3.1 Quality
+3.22-3.56.
 
 ## 8. Open questions
 

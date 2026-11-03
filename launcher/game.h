@@ -85,10 +85,10 @@ inline constexpr bool kHasNativeXRenderer = GAME_HAS_NATIVE_X_RENDERER;
 // The renderer chosen until the player picks one (an options file without native_x_renderer): NativeXRenderer, as in
 // Kameo, since Gustavo's play at 3440x1440 up to 160 FPS went through it (the first release, 0.1.0).
 inline constexpr bool kNativeXRendererDefault = true;
-// The antialiasing row's DLAA (NativeXRenderer's D47: NVIDIA DLSS on the main 3D view, jittered): only for a game whose
-// hooks mark its views (native_x_renderer::BeginView and EndViewGeometry, as POTCAWE's). This one does not: DLAA would
-// turn SMAA and FXAA off and DLSS never run. The row offers SMAA, FXAA and none.
-inline constexpr bool kHasDlaa = false;
+// The upscaling row's AMD FSR 3.1 and NVIDIA DLSS (NativeXRenderer's D47-D49, D116: the main 3D view rebuilt from
+// several frames). This game marks no views: NativeXRenderer finds the view from its draws, up to the profile's upscale
+// point (D118-D121, src/native_x_renderer_ghmetallica.cpp); the note highway and the HUD are drawn after it.
+inline constexpr bool kHasDlaa = true;
 
 // The Graphics page's shadow quality row: NativeXRenderer draws the game's shadow maps at a scale of their own
 // (native_x_renderer_shadow_scale, its D92): at least twice or four times the game's resolution. Only where it

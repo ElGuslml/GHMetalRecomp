@@ -20,8 +20,8 @@ Settings > Video (RecompLauncher 3.9, NativeXRenderer only):
 
 - **Upscaling**: Off (the image at the internal resolution you choose, stretched as before), AMD FSR 1 or NVIDIA NIS.
   FSR 1 and NVIDIA Image Scaling enlarge the finished image keeping edges and text sharp. Both work on any graphics
-  card. (AMD FSR 3.1 and NVIDIA DLSS appear only in games that mark their 3D view for NativeXRenderer; this one does
-  not.)
+  card. AMD FSR 3.1 (any graphics card) and NVIDIA DLSS (RTX) rebuild the 3D stage from several frames, which also
+  antialiases it: see "FSR 3.1 and DLSS" below.
 - **Quality**: how much smaller the image is drawn: Ultra Quality 77 % of the screen's lines, Quality 67 %, Balanced
   59 %, Performance 50 %, Ultra Performance 33 %, never below the game's own 720 lines (a 1080p screen offers Ultra
   Quality and Quality). Each value shows the size it draws at; the Internal resolution row then shows it, locked.
@@ -36,6 +36,27 @@ In `ghmetallica_options.toml`: `native_x_renderer_scaling` (`bilinear`, `fsr`, `
 Measured at 3440x1440 from a 1720x720 image (RTX 4070 Ti): the menu's text about twice as sharp with FSR 1 or NIS
 as with the stretch; the GPU's time per frame +0.14 ms with FSR 1, +0.20 ms with NIS, +0.04 ms with CAS.
 
+## FSR 3.1 and DLSS
+
+**Status: added (2026-11-03), off by default. NativeXRenderer's D118-D121.**
+
+The game does not tell NativeXRenderer where its 3D stage begins and ends, so NativeXRenderer finds it from the
+draws: from the first 3D draw of the screen's size to the copy of the finished stage the game makes before its note
+highway and HUD (`upscale_resolve_caller` in `src/native_x_renderer_ghmetallica.cpp`). The camera's movement comes
+from a vote of those draws. FSR 3.1 and DLSS then work on the stage only: the highway, the notes and the HUD are drawn
+after them, at the screen's resolution, never rebuilt from earlier frames.
+
+- **Quality: Native** (FSR 3.1 Native AA, NVIDIA DLAA): the stage at the screen's resolution, antialiased; it replaces
+  the Antialiasing row's SMAA or FXAA (locked while one of them is chosen).
+- **Ultra Quality to Ultra Performance** (experimental): the stage drawn smaller and rebuilt at the screen's size
+  (DLSS Quality at 3440x1440: 2293x960); the highway and HUD stay at the screen's.
+
+Measured in a song at 3440x1440 and 160 FPS (RTX 4070 Ti): the GPU's time per frame 2.5-3.3 ms with SMAA, 3.95-4.23 with
+DLAA, 3.67-3.92 with DLSS Quality, 3.22-3.56 with FSR 3.1 Quality. This game is light for the graphics card: DLSS and
+FSR 3.1 cost more than drawing the stage smaller saves, so they are for the image, not for speed. In
+`ghmetallica_options.toml`: `native_x_renderer_antialiasing` = `dlaa`, `fsr_native`, `dlss_quality`, `fsr_quality`
+(and `_balanced`, `_performance`, `_ultra_performance`).
+
 ## Turning it off
 
 Upscaling: Off and Sharpness: Off in the launcher, or in `ghmetallica_options.toml`:
@@ -44,4 +65,5 @@ Upscaling: Off and Sharpness: Off in the launcher, or in `ghmetallica_options.to
 native_x_renderer_scaling = "bilinear"
 native_x_renderer_resolution_scale = 0
 native_x_renderer_sharpness = 0
+native_x_renderer_antialiasing = "smaa"
 ```

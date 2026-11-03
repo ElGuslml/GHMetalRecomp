@@ -125,7 +125,7 @@ Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboar
 | 🎶 **DLC** | Install your downloadable content packages, and see the installed ones. |
 | 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
 | 🎮 **Controls** | Your guitars, controllers and keyboard: what each button or key does, and which controller sings. The keyboard as a guitar (experimental). Frets that strum as you press them, on a controller or the keyboard. Your microphone (experimental): device, gain and level. |
-| ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9), upscaling (AMD FSR 1, NVIDIA NIS) and sharpness. **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
+| ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9), upscaling (AMD FSR 1, NVIDIA NIS; AMD FSR 3.1 and NVIDIA DLSS on the 3D stage) and sharpness. **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
 | 🔄 **Updates** | Your version, and new ones when they come out. |
 | 👤 **Profile** | Your picture at the top right: hours played, streaks, your week, your games and your favorite achievements. |
 
