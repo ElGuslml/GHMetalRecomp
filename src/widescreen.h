@@ -23,6 +23,10 @@ namespace ghmetallica {
 // Size of the game window in pixels (from ReXApp::OnWindowPixelSizeChanged).
 void SetOutputSize(uint32_t width, uint32_t height);
 
+// Whether the note highway was drawn in the last 250 ms: a song from its first frame (the end of its loading screen
+// included) and its pause menu.
+bool SongShown();
+
 // The bars outside a song, a dialog that stays for the session (ReXApp::OnCreateDialogs; destroyed in OnShutdown).
 std::unique_ptr<rex::ui::ImGuiDialog> CreateMenuBars(rex::ui::ImGuiDrawer* drawer);
 

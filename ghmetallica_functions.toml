@@ -94,6 +94,13 @@ registers = ["r6"]
 address = 0x822E45F4   # stfd f0,3072(r7) (sub_822E4588: the main thread's frame, before its wait)
 name = "GHMetallicaQuitPromptHook"
 
+# A slot's kind of controller (a guitar, the drums, the singer) follows the controller played (src/players.cpp): the
+# game asks for it only when the port's controller connects, and the keyboard shares slot 0 with the first controller.
+[[midasm_hook]]
+address = 0x8239DFB8   # mflr r12 (entry of sub_8239DFB8: a controller port's update, each frame; r3 = the port)
+name = "GHMetallicaControllerPortHook"
+registers = ["r3"]
+
 # Ultrawide (src/widescreen.cpp), with ghmetallica_ultrawide: the projection of every 16:9 view is widened (Hor+: the
 # 3D views see more at the sides; their aspect ratio is the view's size, not the SetScreen aspect), and the screen
 # elements' vertices (pixels of the 1280x720 canvas) are narrowed around the center just before they are drawn to the

@@ -20,6 +20,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [Low latency audio](audio-latency.md) | Added, off by default: the launcher's Settings > Game row, the device in exclusive mode (77 -> 20 ms on a USB interface) |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
 | [Singing with a PC microphone](microphone.md) | Experimental: a PC microphone as the game's USB microphone, a controller's instrument (guitar or vocals) in the launcher |
+| [The keyboard playing guitar taken for the singer](controller-kind.md) | Fixed: each player's kind of controller (guitar, drums, singer) follows the controller they play with, outside a song |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar; the keyboard's frets on D F J K L, a switch to strum on each fret; assignments per controller, a whammy bar's calibration |
 | [V-Sync](vsync.md) | Added: the launcher's V-Sync row, on by default: FIFO and the game's vertical blank on the monitor's (4 ms from present to display at 160 Hz), or each frame as it is ready |
 | [Downloadable content (DLC)](dlc.md) | Working: the player's Death Magnetic package plays in Quickplay; the launcher's DLC page installs packages |

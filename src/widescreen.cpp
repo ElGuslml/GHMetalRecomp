@@ -87,6 +87,8 @@ class MenuBarsDialog : public rex::ui::ImGuiDialog {
 
 }  // namespace
 
+bool SongShown() { return DrawnRecently(g_highway_drawn); }
+
 void SetOutputSize(uint32_t width, uint32_t height) {
   double factor = 1.0;
   if (native_x_renderer::Renders()) {
