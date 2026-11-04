@@ -221,6 +221,16 @@ registers = ["r11"]
 address = 0x8214686C   # cmpwi cr6,r11,5 (sub_82146590: frames in a row of not whammying)
 name = "GHMetallicaWhammyStateHook"
 registers = ["r11"]
+# The guitars' strings vibrate at 62 Hz, which 60 FPS shows as a 2 Hz wobble, and fade 0.99 a frame: above 60 Hz the
+# wobble 60 FPS shows and the fade per 60th of a second.
+[[midasm_hook]]
+address = 0x821221B8   # lis r11,-32254 (sub_82122138, after the call returning the strings' frequency, 62 Hz)
+name = "GHMetallicaStringFrequencyHook"
+registers = ["f1"]
+[[midasm_hook]]
+address = 0x8211D00C   # lwz r11,252(r31) (sub_8211CFD0, after the call returning the strings' fade, 0.99 a frame)
+name = "GHMetallicaStringFadeHook"
+registers = ["f1"]
 # Havok's world is stepped by a fixed 1/60 s each frame (the guitars' strings swung wildly above 60 FPS): above 60 Hz by
 # the frame's own time.
 [[midasm_hook]]

@@ -426,8 +426,8 @@ void GHMetallicaLoadingWaveHook(PPCRegister& step) {
 // scale (sub_822D0EA0: 0x82838F20, last frame's 0x82838F24, 1 while the game runs) times a fixed 1/60 s (0x82022BBC), not
 // by the frame's time, as GH Aerosmith's engine does (its src/framerate.cpp; there the bodies that follow the animated
 // bones, by velocity = (target - position) / the frame's time, overshot 2.67 times at 160 and the hair and cables
-// stretched in spikes). Here the guitars' strings swung wildly above 60 FPS (Gustavo, 2026-11-04), and the world ran
-// 2.67 times as fast at 160. Above 60 Hz the world is stepped by the frame's own time when it is shorter than 1/60 s:
+// stretched in spikes). Here the world ran 2.67 times as fast at 160 (found while looking for the guitars' strings,
+// which were not this: GHMetallicaStringFrequencyHook below). Above 60 Hz the world is stepped by the frame's own time when it is shorter than 1/60 s:
 // the measured frame time sub_822D1148 keeps at +52 of the timer block 0x82A92458 (clamped as the game clamps it), so
 // the physics keeps real time.
 // [[midasm_hook]] 0x823B77E4 (sub_823B7798: after "lfs f31,11196(r11)", the step's 1/60 s, before "fmuls f1,f1,f31" and
@@ -443,5 +443,29 @@ void GHMetallicaPhysicsStepHook(PPCRegister& f31) {
   std::memcpy(&frame, &bits, 4);
   if (frame > 0.0f && frame < f31.f64) {
     f31.f64 = frame;
+  }
+}
+
+// The guitars' strings (Gustavo, 2026-11-04: his character's strings shook wildly above 60 FPS when he hit notes; the
+// other musicians', barely plucked, looked right). Each musician's strings (the band manager's entries, 328 bytes from
+// [0x829457B0] + 24): a note's strum plucks them (sub_8211F328: amplitude 0.002 at +264 + 4 i, timer at +288 + 4 i set
+// to 0); each frame sub_8211CFD0 multiplies each amplitude by 0.99 (the script global 0xB70CCCA3) and adds the frame's
+// time to its timer; sub_82122138 draws each string displaced by amplitude * sin(2 pi * 62 Hz (0xFD146572) * timer).
+// At 60 FPS a 62 Hz vibration sampled 60 times a second shows as a slow wobble of 62 - 60 = 2 Hz, what the console
+// shows; at 160 the real 62 Hz showed, and the 0.99 a frame faded it 2.67 times as fast. Above 60 Hz the frequency is
+// the one 60 FPS shows (the same at the 60 FPS frames' times, smooth between them) and the fade 0.99 per 60th of a
+// second.
+// [[midasm_hook]] 0x821221B8 (sub_82122138: after the call returning the frequency, before "fmr f29,f1"): f1 = Hz.
+void GHMetallicaStringFrequencyHook(PPCRegister& f1) {
+  if (HighRate()) {
+    f1.f64 -= 60.0 * std::round(f1.f64 / 60.0);
+  }
+}
+
+// [[midasm_hook]] 0x8211D00C (sub_8211CFD0: after the call returning the fade, before the strings' loop): f1 = the
+// amplitude's factor each frame.
+void GHMetallicaStringFadeHook(PPCRegister& f1) {
+  if (HighRate() && f1.f64 > 0.0) {
+    f1.f64 = double(float(std::pow(f1.f64, 60.0 / VblankRate())));
   }
 }
