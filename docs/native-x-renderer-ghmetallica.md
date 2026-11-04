@@ -403,6 +403,18 @@ draws the view at 2293x960; GPU per frame SMAA 2.5-3.3 ms, DLAA 3.95-4.23, DLSS 
 of GPU (preset K) or 1.55 ms (Performance's M) at 3440x1440, SMAA 0.17, more than the whole 3D view costs: no DLSS
 mode draws this game for less GPU time than SMAA.
 
+**Frame generation** (2026-11-03, NativeXRenderer D123, D124; `docs/frame-generation.md`). With DLAA or an upscaling
+mode and `native_x_renderer_frame_generation`, at `ghmetallica_frame_rate = 80` on the 160 Hz display: 160 FPS shown.
+After the view, the bloom composite (a rectangle list in clip space) and 63-80 inline draws into the output: the
+board's grid (1600 vertices, x, y, color, u, v), the strings, the beat lines, the notes, the strike buttons and the HUD,
+all in pixels of the 1280x720 canvas (`overlay_motion`); the sustain tails are a strip placed by its shader, left to the
+board's motion under them. The board's grid and texture coordinates never change: the texture it shows is drawn each
+frame (into a 768x1024 target, resolved with its mips at the frame's start) with the scroll in it, so the profile's
+`overlay_motion_adjust` moves the board as the beat lines moved at each height (vertex shader hashes
+0x2083ccdca7046959, the board, and 0x73eff373b3e69dbd, the beat lines). The camera for FidelityFX from the view's
+first draw: near 0.1, far 400, 44.5 degrees. The scene resolve (0x8251F04C) is before the bloom composite: not a
+HUD-less picture.
+
 ## 8. Open questions
 
 1. **Inline draws.** The profile relies on D77 (`inline_draw_end = 13444`) for both DrawIndexedVerticesUP (no

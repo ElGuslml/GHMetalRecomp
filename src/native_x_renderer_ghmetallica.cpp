@@ -12,6 +12,9 @@
 
 #include <native_x_renderer/hooks.h>
 
+#include <algorithm>
+#include <vector>
+
 // Draws. DrawVerticesUP and DrawIndexedVerticesUP (sub_821C19A0, 4 engine sites, no call of its own) commit their
 // packets with an inlined EndVertices ([dev+48] = [dev+13444]); the engine's only BeginVertices / EndVertices pair
 // (sub_821B2ED8) calls EndVertices (sub_821C1430), which is that same store. EndVertices is not hooked:
@@ -70,6 +73,64 @@ NATIVE_X_RENDERER_HOOK(821D1418, Present)
 
 namespace ghmetallica {
 
+namespace {
+
+// Frame generation's motion of the note highway's board (NativeXRenderer D124). Its grid of quads (1600 vertices, its
+// vertex shader's hash below) stands still while the texture it shows, the board drawn each frame, scrolls toward the
+// player. The beat lines (quads across the highway) move with that texture: matched with the last frame's, they give at
+// each height of the screen where the board's surface was a frame ago (it moves faster lower down, and spreads sideways
+// from the highway's middle). Each grid vertex's last position: its height as the beat lines' moved at that height, its
+// place across the highway kept between their ends.
+constexpr uint64_t kBoardShader = 0x2083ccdca7046959ull;
+constexpr uint64_t kBeatLineShader = 0x73eff373b3e69dbdull;
+
+void AdjustHighwayMotion(native_x_renderer::OverlayDraw* draws, size_t count) {
+  struct Line {
+    float y, y_last, left, right;
+  };
+  static std::vector<Line> lines;
+  lines.clear();
+  for (size_t d = 0; d < count; ++d) {
+    const native_x_renderer::OverlayDraw& draw = draws[d];
+    if (draw.vertex_shader != kBeatLineShader || !draw.matched || draw.vertex_count != 4) continue;
+    Line line{0.0f, 0.0f, draw.positions[0], draw.positions[0]};
+    for (uint32_t i = 0; i < 4; ++i) {
+      line.y += draw.positions[2 * i + 1] * 0.25f;
+      line.y_last += draw.previous[2 * i + 1] * 0.25f;
+      line.left = std::min(line.left, draw.positions[2 * i]);
+      line.right = std::max(line.right, draw.positions[2 * i]);
+    }
+    // A line comes down the screen; one matched with another (a new line at the top) is left out.
+    if (line.y_last < line.y && line.right - line.left > 1.0f) lines.push_back(line);
+  }
+  if (lines.size() < 2) return;
+  std::sort(lines.begin(), lines.end(), [](const Line& a, const Line& b) { return a.y < b.y; });
+  // A field of the lines at height y: between the two around it, or along the nearest two past the ends.
+  auto at = [&](float y, float Line::*field) {
+    size_t i = 1;
+    while (i + 1 < lines.size() && lines[i].y < y) ++i;
+    const Line& a = lines[i - 1];
+    const Line& b = lines[i];
+    float t = b.y != a.y ? (y - a.y) / (b.y - a.y) : 0.0f;
+    return a.*field + t * (b.*field - a.*field);
+  };
+  for (size_t d = 0; d < count; ++d) {
+    native_x_renderer::OverlayDraw& draw = draws[d];
+    if (draw.vertex_shader != kBoardShader) continue;
+    for (uint32_t i = 0; i < draw.vertex_count; ++i) {
+      float x = draw.positions[2 * i], y = draw.positions[2 * i + 1];
+      float y_last = at(y, &Line::y_last);
+      float left = at(y, &Line::left), right = at(y, &Line::right);
+      float across = right - left > 1.0f ? (x - left) / (right - left) : 0.5f;
+      float left_last = at(y_last, &Line::left), right_last = at(y_last, &Line::right);
+      draw.previous[2 * i] = left_last + across * (right_last - left_last);
+      draw.previous[2 * i + 1] = y_last;
+    }
+  }
+}
+
+}  // namespace
+
 const native_x_renderer::Profile& NativeXRendererProfile() {
   static const native_x_renderer::Profile profile = [] {
     native_x_renderer::Profile p;
@@ -87,6 +148,10 @@ const native_x_renderer::Profile& NativeXRendererProfile() {
     // are drawn after it, outside the view (no jitter, no temporal history for the notes). The camera from the vote of
     // the draws (D118).
     p.upscale_resolve_caller = 0x8251F04C;
+    // Frame generation (D123): the 2D layer after the view, the note highway and its notes included, is drawn in pixels
+    // of the 1280x720 canvas (src/widescreen.cpp narrows it there): its motion comes from its vertices (D124).
+    p.overlay_motion = true;
+    p.overlay_motion_adjust = AdjustHighwayMotion;
     // The ultrawide hooks (src/widescreen.cpp) widen the 16:9 cameras by AspectFactor() and keep the 2D layer at
     // 16:9 in the center: NativeXRenderer may fill a wider output (native_x_renderer_fill_screen).
     p.widens_cameras = true;
