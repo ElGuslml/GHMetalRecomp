@@ -1,7 +1,8 @@
 # Frame generation (experimental)
 
-**Status: added (2026-11-03), off by default; in the launcher since 2026-11-04 (Settings > Video > Frame generation,
-experimental). NativeXRenderer only, with DLSS or FSR 3.1.**
+**Status: added (2026-11-03), off by default, experimental; not in the launcher for 0.3.0 (its row, added on
+2026-11-04, is hidden: the note highway still shows artifacts with it, and the stage ghosts at camera cuts). The
+options file turns it on by hand. NativeXRenderer only, with DLSS or FSR 3.1.**
 
 ## What it does
 
@@ -28,9 +29,9 @@ A song at 3440x1440 with DLAA on an RTX 4070 Ti: 159 FPS shown from the game's 8
 
 ## Turning it on
 
-GH Metallica Launcher: Settings > Video > Upscaling: AMD FSR 3.1 or NVIDIA DLSS, then **Frame generation: AMD FSR
-3.1**, and in Graphics the frame rate to see (120 FPS or more; the display's refresh rate is best). V-Sync stays on.
-The frame rate chosen is the one shown: the game runs at half of it (`src/options.cpp`; 160 -> the game at 80) and the
+With AMD FSR 3.1 or NVIDIA DLSS in Settings > Video > Upscaling and the frame rate to see in Graphics (120 FPS or
+more; the display's refresh rate is best), `native_x_renderer_frame_generation = true` in the options file (the launcher
+keeps it while its row is hidden). V-Sync is forced on. The frame rate chosen is the one shown: the game runs at half of it (`src/options.cpp`; 160 -> the game at 80) and the
 log says `frame generation: 160 FPS shown, the game at 80`. Below 120 it stays off (the game would run under 60).
 
 In `ghmetallica_options.toml`:
