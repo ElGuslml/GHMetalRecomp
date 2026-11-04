@@ -156,7 +156,8 @@ Your choices are saved as soon as you make them. When you quit the game, the lau
 Something looks wrong, sounds wrong, or crashes? Tell us on [Discord](https://discord.gg/XQtM5TmNs8) or open an
 [issue](https://github.com/ElGuslml/GHMetalRecomp/issues), with:
 - where in the game it happened, and a screenshot if you can;
-- the latest file in the `logs` folder next to the game.
+- the latest files in the `logs` folder next to the game: `ghmetallica_NNN.log`, and if the launcher misbehaved,
+  `launcher_NNN.log` (with its `.dmp` file if there is one).
 
 If something looks wrong, try the other renderer: in the launcher, **Graphics → Xenos** (it emulates the Xbox 360's
 graphics instead), and tell us whether it happens there too.

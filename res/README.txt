@@ -136,7 +136,9 @@ FILES
 
 - ghmetallica.toml           Base settings. Created with the defaults this game needs if it is missing.
 - ghmetallica_options.toml   What GH Metallica Launcher saves. Loaded after ghmetallica.toml.
-- logs\                      Log files. Attach the latest one when you report a problem.
+- logs\                      Log files: the game's (ghmetallica_NNN.log) and the launcher's (launcher_NNN.log,
+                             with a .dmp file when it stopped responding). Attach the latest ones when you report
+                             a problem.
 - userdata\                  The shader cache and the installed DLC. Keep this folder if you move the game to
                              another folder. If the game folder cannot be written (for example under Program
                              Files), it goes to Documents\ghmetallica instead.
@@ -149,7 +151,8 @@ Command line options (--name=value, for example in Steam launch options) win ove
 REPORTING A PROBLEM
 
 Tell us on Discord (https://discord.gg/XQtM5TmNs8) or open an issue on the project's page, with where in the
-game it happened, a screenshot if you can, and the latest file in the logs folder.
+game it happened, a screenshot if you can, and the latest files in the logs folder (the game's and, if the
+launcher misbehaved, the launcher's).
 
 
 KNOWN ISSUES
