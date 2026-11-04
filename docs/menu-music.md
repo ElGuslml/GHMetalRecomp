@@ -1,6 +1,8 @@
 # Noise instead of music from the title screen on
 
-**Status: fixed (2026-10-24).** Confirmed by ear: the title screen and the menus play their music.
+**Status: fixed (2026-10-24).** Confirmed by ear: the title screen and the menus play their music. Since
+2026-11-04 the spacing is off again: FMOD now mixes on the audio thread itself, and the spacing left slower PCs too
+little time ([audio-crackling.md](audio-crackling.md)).
 
 ## Symptom
 
@@ -30,7 +32,7 @@ as on the console, instead of twice in a row. The number of calls still follows 
 latency is the same. On the title screen FMOD now mixes 188 blocks a second and reads each song stream 94 times a
 second (48,000 samples a second), up from 13 and 7.
 
-`src/startup.cpp` sets `audio_callback_min_interval_us = 3000` in `ghmetallica.toml`.
+`src/startup.cpp` set `audio_callback_min_interval_us = 3000` in `ghmetallica.toml` until 2026-11-04 (now 0).
 
 ## Turning it off
 

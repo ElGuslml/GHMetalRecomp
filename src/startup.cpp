@@ -84,14 +84,16 @@ clear_memory_page_state = false
 # 3 = 4x (the SDK default), 2 = 2x, 0 = off, -1 = only what the game asks. GH Metallica Launcher's
 # "Anisotropic filtering" row sets it.
 anisotropic_override = 5
-# Call the game's audio callback at least 3 ms apart (the console calls it every 5.3 ms), not in the
-# bursts of two the host device frees frames in. FMOD's mixer polls how far its two-block ring has
-# been read and missed most blocks: from the title screen on, the music played as noise. 0 = the SDK
-# default (no spacing).
-audio_callback_min_interval_us = 3000
+# The game's audio callback is called as soon as the sound device frees a frame (0, the SDK default). 3000
+# spaced the calls at least 3 ms apart for FMOD's own mixing thread, which polled the ring it mixes into and missed
+# the blocks of the device's bursts (the music as noise from the title screen on). FMOD now mixes on the audio worker
+# after each frame (ghmetallica_fmod_on_audio_thread), and the spacing left a slower PC under 2.3 ms for each frame:
+# crackling, or with low latency audio the sound muting every few seconds (docs/audio-crackling.md). Set 3000 again
+# only with ghmetallica_fmod_on_audio_thread = false.
+audio_callback_min_interval_us = 0
 # Audio frames queued for the sound device (5.3 ms each): 4 is the least the SDK allows, 21 ms less
-# delay between a strum and its sound than the SDK's 8. With the calls spaced the queue stays full
-# (no gap in a whole song, measured); the game's calibration covers what is left. 8 = the SDK default.
+# delay between a strum and its sound than the SDK's 8. The queue stays full (no gap in a whole song,
+# measured); the game's calibration covers what is left. 8 = the SDK default.
 audio_maxqframes = 4
 # The SDK's audio threads (its audio worker runs the game's sound callback and, with ghmetallica_fmod_on_audio_thread,
 # FMOD's mixing) in Windows' multimedia class "Pro Audio", as the sound device's thread: a busy PC holds them up less.
@@ -279,9 +281,99 @@ void ConfigureProfile(const std::filesystem::path& user_data_root) {
   }
 }
 
+// Settings whose default changed after a release: a file that still has the old value gets the new one, with its
+// comment (its lines in kDefaultConfig), once. A value the player chose is left alone.
+struct ChangedDefault {
+  const char* key;
+  const char* old_value;
+};
+constexpr ChangedDefault kChangedDefaults[] = {
+    // 0.2.3: no spacing between the audio callback's calls (docs/audio-crackling.md).
+    {"audio_callback_min_interval_us", "3000"},
+};
+
+// The lines of `text` split at '\n' (a last piece without one included; joined back with '\n', the text again).
+std::vector<std::string> SplitLines(const std::string& text) {
+  std::vector<std::string> lines;
+  size_t start = 0;
+  for (;;) {
+    size_t end = text.find('\n', start);
+    if (end == std::string::npos) {
+      lines.push_back(text.substr(start));
+      return lines;
+    }
+    lines.push_back(text.substr(start, end - start));
+    start = end + 1;
+  }
+}
+
+// The index of `key`'s line (`key = value`, spaces around) in `lines`, its value trimmed in `value`; -1 when absent.
+int FindSettingLine(const std::vector<std::string>& lines, const std::string& key, std::string* value) {
+  for (size_t i = 0; i < lines.size(); ++i) {
+    const std::string& line = lines[i];
+    size_t first = line.find_first_not_of(" \t");
+    if (first == std::string::npos || line.compare(first, key.size(), key) != 0) {
+      continue;
+    }
+    size_t eq = line.find_first_not_of(" \t", first + key.size());
+    if (eq == std::string::npos || line[eq] != '=') {
+      continue;
+    }
+    std::string v = line.substr(eq + 1);
+    v.erase(0, v.find_first_not_of(" \t"));
+    v.erase(v.find_last_not_of(" \t\r") + 1);
+    if (value) {
+      *value = v;
+    }
+    return int(i);
+  }
+  return -1;
+}
+
+// The first line of the comments right above line `index`.
+size_t CommentStart(const std::vector<std::string>& lines, size_t index) {
+  while (index > 0) {
+    const std::string& above = lines[index - 1];
+    size_t first = above.find_first_not_of(" \t");
+    if (first == std::string::npos || above[first] != '#') {
+      break;
+    }
+    --index;
+  }
+  return index;
+}
+
+// Replaces in `existing` the settings of kChangedDefaults that still have their old value; true when one was.
+bool ApplyChangedDefaults(std::string& existing) {
+  std::vector<std::string> lines = SplitLines(existing);
+  const std::vector<std::string> defaults = SplitLines(kDefaultConfig);
+  bool changed = false;
+  for (const ChangedDefault& setting : kChangedDefaults) {
+    std::string value;
+    int line = FindSettingLine(lines, setting.key, &value);
+    int default_line = FindSettingLine(defaults, setting.key, nullptr);
+    if (line < 0 || default_line < 0 || value != setting.old_value) {
+      continue;
+    }
+    size_t from = CommentStart(lines, size_t(line));
+    size_t default_from = CommentStart(defaults, size_t(default_line));
+    lines.erase(lines.begin() + from, lines.begin() + line + 1);
+    lines.insert(lines.begin() + from, defaults.begin() + default_from, defaults.begin() + default_line + 1);
+    changed = true;
+  }
+  if (changed) {
+    existing.clear();
+    for (size_t i = 0; i < lines.size(); ++i) {
+      existing += (i ? "\n" : "") + lines[i];
+    }
+  }
+  return changed;
+}
+
 // Creates ghmetallica.toml with the defaults, or appends to an existing one the settings (with their
 // comments) it does not mention, so that a setting added in a newer build takes effect without
-// deleting the user's file. A setting the file has, with any value, is left alone.
+// deleting the user's file. A setting the file has, with any value, is left alone, but for a changed default the
+// file still has the old value of (kChangedDefaults).
 void EnsureDefaultConfig(const std::filesystem::path& config_path) {
   // Logging is not initialized yet (the config sets it up): nothing to log here.
   std::string existing;
@@ -293,6 +385,7 @@ void EnsureDefaultConfig(const std::filesystem::path& config_path) {
     f << kDefaultConfig;
     return;
   }
+  const bool migrated = ApplyChangedDefaults(existing);
   auto has_key = [&existing](const std::string& key) {
     size_t pos = 0;
     while ((pos = existing.find(key, pos)) != std::string::npos) {
@@ -333,14 +426,19 @@ void EnsureDefaultConfig(const std::filesystem::path& config_path) {
     }
     comments.clear();
   }
-  if (missing.empty()) {
+  if (missing.empty() && !migrated) {
     return;
   }
-  std::ofstream f(config_path, std::ios::binary | std::ios::app);
-  if (!existing.empty() && existing.back() != '\n') {
-    f << '\n';
+  std::ofstream f(config_path, std::ios::binary | (migrated ? std::ios::trunc : std::ios::app));
+  if (migrated) {
+    f << existing;
   }
-  f << missing;
+  if (!missing.empty()) {
+    if (!existing.empty() && existing.back() != '\n') {
+      f << '\n';
+    }
+    f << missing;
+  }
 }
 
 bool CheckGameFiles(const std::filesystem::path& game_root) {
