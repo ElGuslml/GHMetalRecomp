@@ -47,6 +47,10 @@ targets). `ghmetallica_frame_rate_fix` (on) covers:
   (3.60 radians a second at 60, 3.52 at 160 while the boot ran at 156 FPS; 9.34 without this);
 - **clocks counted in vertical blanks**, which divide by the game's vertical blanks per second (60, or 50 for PAL):
   they divide by the real rate. The game's value itself stays 60, as other code compares it with 60.
+- **the physics** (Havok, 2026-11-04): the world is stepped by a fixed 1/60 s each frame (`sub_823B7798`), so above
+  60 FPS it ran faster than real time (2.67 times at 160) and the guitars' strings swung wildly (Gustavo). Above 60 Hz
+  it is stepped by the frame's own time (hook `0x823B77E4`, `GHMetallicaPhysicsStepHook`), as GH Aerosmith's fix for
+  its hair and cables.
 
 ## Turning it off
 

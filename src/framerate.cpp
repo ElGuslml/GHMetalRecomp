@@ -421,3 +421,27 @@ void GHMetallicaLoadingWaveHook(PPCRegister& step) {
     step.f64 = double(float(step.f64 * FrameStepScale()));
   }
 }
+
+// The physics (Havok): sub_823B7798, once a frame, steps the world (sub_82638090, then sub_82638098) by the game's time
+// scale (sub_822D0EA0: 0x82838F20, last frame's 0x82838F24, 1 while the game runs) times a fixed 1/60 s (0x82022BBC), not
+// by the frame's time, as GH Aerosmith's engine does (its src/framerate.cpp; there the bodies that follow the animated
+// bones, by velocity = (target - position) / the frame's time, overshot 2.67 times at 160 and the hair and cables
+// stretched in spikes). Here the guitars' strings swung wildly above 60 FPS (Gustavo, 2026-11-04), and the world ran
+// 2.67 times as fast at 160. Above 60 Hz the world is stepped by the frame's own time when it is shorter than 1/60 s:
+// the measured frame time sub_822D1148 keeps at +52 of the timer block 0x82A92458 (clamped as the game clamps it), so
+// the physics keeps real time.
+// [[midasm_hook]] 0x823B77E4 (sub_823B7798: after "lfs f31,11196(r11)", the step's 1/60 s, before "fmuls f1,f1,f31" and
+// the world's two calls): f31 = the step.
+void GHMetallicaPhysicsStepHook(PPCRegister& f31) {
+  constexpr uint32_t kFrameTime = 0x82A92458 + 52;  // float, seconds
+  uint8_t* base = GuestBase();
+  if (!base || !HighRate()) {
+    return;
+  }
+  const uint32_t bits = LoadWord(base, kFrameTime);
+  float frame;
+  std::memcpy(&frame, &bits, 4);
+  if (frame > 0.0f && frame < f31.f64) {
+    f31.f64 = frame;
+  }
+}

@@ -221,6 +221,12 @@ registers = ["r11"]
 address = 0x8214686C   # cmpwi cr6,r11,5 (sub_82146590: frames in a row of not whammying)
 name = "GHMetallicaWhammyStateHook"
 registers = ["r11"]
+# Havok's world is stepped by a fixed 1/60 s each frame (the guitars' strings swung wildly above 60 FPS): above 60 Hz by
+# the frame's own time.
+[[midasm_hook]]
+address = 0x823B77E4   # fmuls f1,f1,f31 (sub_823B7798, after lfs f31,11196(r11): the world's step, 1/60 s)
+name = "GHMetallicaPhysicsStepHook"
+registers = ["f31"]
 # The loading screen's animations step by the frame: above 60 Hz the steps are scaled by 60 / the rate.
 [[midasm_hook]]
 address = 0x824C2DC4   # after lfd f31,4208(r10) (sub_824C2CB0: the boot's spinning star, f31 = its turn each frame, 0.06 radians)
