@@ -51,7 +51,25 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
   // video_mode_refresh_rate, read when the graphics system starts, after this). At 60 it is left alone, so a
   // video_mode_refresh_rate given on its own still counts.
   if (kHasFrameRate) {
-    if (int32_t frame_rate = rex::cvar::Query<int32_t>(GAME_FRAME_RATE_CVAR); frame_rate > 60) {
+    int32_t frame_rate = rex::cvar::Query<int32_t>(GAME_FRAME_RATE_CVAR);
+    // Frame generation (NativeXRenderer D123; GH Metallica Launcher's Video > Frame generation): the frame rate chosen
+    // is the one shown, so the game runs at half of it and AMD FSR 3.1 draws a frame between each two of its own. It
+    // needs DLSS or FSR 3.1 (NativeXRenderer turns it off otherwise and says so) and 120 FPS or more: the game at 60 or
+    // more, never below the console's.
+    if (rex::cvar::Query<bool>("native_x_renderer_frame_generation") && rex::cvar::Query<bool>("native_x_renderer")) {
+      std::string aa = rex::cvar::Query<std::string>("native_x_renderer_antialiasing");
+      bool temporal = aa == "dlaa" || aa.rfind("dlss_", 0) == 0 || aa.rfind("fsr_", 0) == 0;
+      if (temporal && frame_rate < 120) {
+        rex::cvar::SetFlagByName("native_x_renderer_frame_generation", "false");
+        REXLOG_INFO("[options] frame generation off: it needs " GAME_FRAME_RATE_CVAR " at 120 or more (the game would "
+                    "run at {} FPS)",
+                    frame_rate / 2);
+      } else if (temporal) {
+        REXLOG_INFO("[options] frame generation: {} FPS shown, the game at {}", frame_rate, frame_rate / 2);
+        frame_rate /= 2;
+      }
+    }
+    if (frame_rate > 60) {
       rex::cvar::SetFlagByName("video_mode_refresh_rate", std::to_string(frame_rate));
     }
   }

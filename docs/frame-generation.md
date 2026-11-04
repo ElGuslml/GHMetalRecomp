@@ -1,6 +1,7 @@
 # Frame generation (experimental)
 
-**Status: added (2026-11-03), off by default, not in the launcher yet. NativeXRenderer only, with DLSS or FSR 3.1.**
+**Status: added (2026-11-03), off by default; in the launcher since 2026-11-04 (Settings > Video > Frame generation,
+experimental). NativeXRenderer only, with DLSS or FSR 3.1.**
 
 ## What it does
 
@@ -13,8 +14,12 @@ The note highway is interpolated as the stage is: its notes, beat lines and boar
 the generated one (the highway is drawn by the game in screen pixels; its movement is taken from where each piece was
 in the last frame, the board's from its beat lines). The HUD stays where it is.
 
-It adds about one game frame of delay to what is shown (12.5 ms at 80 FPS). The game's own timing does not change; the
-video calibration can take the rest.
+It adds delay to what is shown: each of the game's frames waits one refresh behind the generated one (6.25 ms at
+160 Hz), plus the generation itself (about 2 ms of the graphics card's time); against the game running at the full
+rate without it, about one game frame (12.5 ms at 80 FPS), as the game also reads the controls half as often. The game's
+own timing does not change; the video calibration takes it. Not measured end to end (no latency meter here). NVIDIA
+Reflex is not used: AMD's frame generation does not need it, and V-Sync following the display already keeps frames
+from queueing (4.2 ms from present to display at 160 Hz, [vsync.md](vsync.md)).
 
 ## Measured
 
@@ -23,12 +28,17 @@ A song at 3440x1440 with DLAA on an RTX 4070 Ti: 159 FPS shown from the game's 8
 
 ## Turning it on
 
-In `ghmetallica_options.toml`, with DLSS or FSR 3.1 chosen (Settings > Video > Upscaling):
+GH Metallica Launcher: Settings > Video > Upscaling: AMD FSR 3.1 or NVIDIA DLSS, then **Frame generation: AMD FSR
+3.1**, and in Graphics the frame rate to see (120 FPS or more; the display's refresh rate is best). V-Sync stays on.
+The frame rate chosen is the one shown: the game runs at half of it (`src/options.cpp`; 160 -> the game at 80) and the
+log says `frame generation: 160 FPS shown, the game at 80`. Below 120 it stays off (the game would run under 60).
+
+In `ghmetallica_options.toml`:
 
 ```toml
+native_x_renderer_antialiasing = "dlaa"   # or fsr_native, a DLSS or FSR 3.1 mode
 native_x_renderer_frame_generation = true
-ghmetallica_frame_rate = 80
+ghmetallica_frame_rate = 160              # shown; the game at 80
 ```
 
-`ghmetallica_frame_rate` should be half the display's refresh rate (60 for 120 Hz, 72 for 144 Hz, 80 for 160 Hz).
 Without DLSS or FSR 3.1 it stays off (the log says so).
