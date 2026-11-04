@@ -1,6 +1,7 @@
 # V-Sync
 
-**Status: added (2026-10-29), on by default; in step with the display since 2026-10-30.**
+**Status: added (2026-10-29), on by default; in step with the display since 2026-10-30. Recommended with G-Sync and
+FreeSync too; V-Sync off at the display's exact rate since 2026-11-04.**
 
 ## Symptom
 
@@ -46,8 +47,24 @@ The game's notes are judged against the song, not the screen, so a steady delay 
 calibration takes off; one that slides cannot be calibrated. Recalibrate the video after updating.
 
 A frame rate the display does not divide (60 or 120 FPS on a 144 or 160 Hz monitor) keeps the timer and judders by
-arithmetic (frames shown for 1 and 2, or 2 and 3 refreshes): choose the monitor's refresh rate in the launcher, or use
-a G-Sync or FreeSync monitor with V-Sync off.
+arithmetic (frames shown for 1 and 2, or 2 and 3 refreshes): choose the monitor's refresh rate in the launcher.
+
+## G-Sync and FreeSync (2026-11-04)
+
+Gustavo's G-Sync monitor (159.962 Hz; NVIDIA's G-SYNC indicator on) tore with V-Sync off at 160 FPS: the timer at
+160.000 put the game a hair above the panel's ceiling, and a variable refresh rate display can only follow frames that
+come slower than its maximum. Up to 0.2.1 there was no V-Sync off: NativeXRenderer presented with MAILBOX, which never
+tears (and queued frames).
+
+- **V-Sync on is the one recommended, also with G-Sync or FreeSync**: it never tears, and with the game's vertical
+  blank following the display it adds none of V-Sync's usual delay (no queue: 4.2 ms from present to display at 160 Hz,
+  above). The launcher's help says so since RecompLauncher 3.11.3 (3.4-3.11.2 said Off was for G-Sync and FreeSync).
+- **V-Sync off** now runs the game at the display's exact refresh rate when the frame rate chosen is that rate, within
+  2 % (`src/options.cpp`: the current mode's rate from `QueryDisplayConfig`, 159.962 for "160 Hz"; the log says
+  `V-Sync off: the game at the display's 159.962 Hz (160 chosen)`). Gustavo's test at 159.96: no tearing; the motion
+  was less even than with V-Sync on, as each frame reaches the screen when the renderer finishes it (a millisecond or
+  two either way) while the song advances in even steps. NVIDIA's own way (a frame rate cap under the maximum, about
+  153 at 160 Hz) was not wanted.
 
 The log says what was chosen: `[vblank] following the display's vertical blank: \\.\DISPLAY1 at 160 Hz` (or why the
 timer is kept) and `[native_x_renderer] present mode: vsync (FIFO)`.
@@ -55,4 +72,5 @@ timer is kept) and `[native_x_renderer] present mode: vsync (FIFO)`.
 ## Turning it off
 
 The launcher's V-Sync row. For the vertical blank alone, `vblank_follows_display = false` in
-`ghmetallica_options.toml`; `native_x_renderer_present_mode = "mailbox"` for the earlier presentation.
+`ghmetallica_options.toml`; `native_x_renderer_present_mode = "mailbox"` for the earlier presentation. With V-Sync off,
+`video_mode_refresh_rate` on the command line sets the game's rate itself (with the launcher's frame rate at 60).

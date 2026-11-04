@@ -79,7 +79,7 @@ From then on, the launcher keeps itself up to date: when a new version comes out
   edges (antialiasing) and sharper textures.
 - ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
   (experimental). The songs keep their speed and stay in sync. V-Sync is on by default (no tearing, the game in step
-  with your monitor); turn it off for a G-Sync or FreeSync monitor.
+  with your monitor, without V-Sync's usual delay); leave it on with a G-Sync or FreeSync monitor too.
 - 🔊 **Low latency audio:** optional, in the launcher's Settings: the game takes your audio device in exclusive mode,
   and the sound comes up to about 55 ms sooner (measured on a USB audio interface).
 - 📺 **Wide and ultrawide screens:** the stage fills 16:9, 21:9 and wider screens, while the note highway, the HUD and
@@ -125,7 +125,7 @@ Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboar
 | 🎶 **DLC** | Install your downloadable content packages, and see the installed ones. |
 | 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
 | 🎮 **Controls** | Your guitars, controllers and keyboard: what each button or key does, and which controller sings. The keyboard as a guitar (experimental). Frets that strum as you press them, on a controller or the keyboard. Your microphone (experimental): device, gain and level. |
-| ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9), upscaling (AMD FSR 1, NVIDIA NIS; AMD FSR 3.1 and NVIDIA DLSS on the 3D stage) and sharpness. **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
+| ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9), upscaling (AMD FSR 1, NVIDIA NIS) and sharpness. **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |
 | 🔄 **Updates** | Your version, and new ones when they come out. |
 | 👤 **Profile** | Your picture at the top right: hours played, streaks, your week, your games and your favorite achievements. |
 

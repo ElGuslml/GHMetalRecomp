@@ -88,7 +88,10 @@ inline constexpr bool kNativeXRendererDefault = true;
 // The upscaling row's AMD FSR 3.1 and NVIDIA DLSS (NativeXRenderer's D47-D49, D116: the main 3D view rebuilt from
 // several frames). This game marks no views: NativeXRenderer finds the view from its draws, up to the profile's upscale
 // point (D118-D121, src/native_x_renderer_ghmetallica.cpp); the note highway and the HUD are drawn after it.
-inline constexpr bool kHasDlaa = true;
+// Hidden for 0.3.0 (Gustavo, 2026-11-04): the stage ghosts at the camera's cuts (no reset there yet). The upscaling row
+// offers AMD FSR 1 and NVIDIA NIS; the options file still turns FSR 3.1 or DLSS on for tests by hand, until the launcher
+// saves (it writes SMAA then).
+inline constexpr bool kHasDlaa = false;
 
 // The Graphics page's shadow quality row: NativeXRenderer draws the game's shadow maps at a scale of their own
 // (native_x_renderer_shadow_scale, its D92): at least twice or four times the game's resolution. Only where it

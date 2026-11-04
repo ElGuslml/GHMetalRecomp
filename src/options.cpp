@@ -6,7 +6,12 @@
 #include <rex/filesystem.h>
 #include <rex/logging.h>
 
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cwchar>
 #include <string>
+#include <vector>
 
 #ifdef _WIN32
 #ifndef NOMINMAX
@@ -23,6 +28,67 @@ namespace {
 // The optional features (src/project.h): a cvar name, or "" when the game does not have the feature.
 constexpr bool kHasFrameRate = sizeof(GAME_FRAME_RATE_CVAR) > 1;
 constexpr bool kHasUltrawide = sizeof(GAME_ULTRAWIDE_CVAR) > 1;
+
+// A refresh rate for the log: whole, or with its decimals (159.962).
+std::string RefreshText(double hz) {
+  char text[32];
+  std::snprintf(text, sizeof(text), hz == std::floor(hz) ? "%.0f" : "%.3f", hz);
+  return text;
+}
+
+#ifdef _WIN32
+// The refresh rate of the display the game opens on (the monitor cvar: 1 = the primary, then the others in
+// EnumDisplayMonitors order, as SDL numbers them), exact as Windows keeps its current mode (159.96 for a "160 Hz"
+// monitor); 0 when unknown.
+double DisplayRefresh(int32_t monitor) {
+  std::vector<HMONITOR> monitors;
+  EnumDisplayMonitors(
+      nullptr, nullptr,
+      [](HMONITOR handle, HDC, LPRECT, LPARAM list) -> BOOL {
+        reinterpret_cast<std::vector<HMONITOR>*>(list)->push_back(handle);
+        return TRUE;
+      },
+      LPARAM(&monitors));
+  std::stable_partition(monitors.begin(), monitors.end(), [](HMONITOR handle) {
+    MONITORINFO info = {sizeof(info)};
+    return GetMonitorInfoW(handle, &info) && (info.dwFlags & MONITORINFOF_PRIMARY);
+  });
+  if (monitors.empty()) {
+    return 0.0;
+  }
+  MONITORINFOEXW info = {};
+  info.cbSize = sizeof(info);
+  size_t index = monitor >= 1 && size_t(monitor) <= monitors.size() ? size_t(monitor) - 1 : 0;
+  if (!GetMonitorInfoW(monitors[index], &info)) {
+    return 0.0;
+  }
+  UINT32 path_count = 0;
+  UINT32 mode_count = 0;
+  if (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &path_count, &mode_count) != ERROR_SUCCESS) {
+    return 0.0;
+  }
+  std::vector<DISPLAYCONFIG_PATH_INFO> paths(path_count);
+  std::vector<DISPLAYCONFIG_MODE_INFO> modes(mode_count);
+  if (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &path_count, paths.data(), &mode_count, modes.data(), nullptr) !=
+      ERROR_SUCCESS) {
+    return 0.0;
+  }
+  for (UINT32 i = 0; i < path_count; ++i) {
+    DISPLAYCONFIG_SOURCE_DEVICE_NAME source = {};
+    source.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
+    source.header.size = sizeof(source);
+    source.header.adapterId = paths[i].sourceInfo.adapterId;
+    source.header.id = paths[i].sourceInfo.id;
+    if (DisplayConfigGetDeviceInfo(&source.header) != ERROR_SUCCESS ||
+        std::wcscmp(source.viewGdiDeviceName, info.szDevice) != 0) {
+      continue;
+    }
+    const DISPLAYCONFIG_RATIONAL& rate = paths[i].targetInfo.refreshRate;
+    return rate.Denominator ? double(rate.Numerator) / double(rate.Denominator) : 0.0;
+  }
+  return 0.0;
+}
+#endif
 
 }  // namespace
 
@@ -69,8 +135,22 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
         frame_rate /= 2;
       }
     }
+    // V-Sync off (the game's vertical blank on its own timer: vblank_follows_display false): at the display's own rate
+    // when the frame rate chosen is that rate, within 2 % (159.96 for 160 on a "160 Hz" monitor). At the round number
+    // the timer ran a hair faster than the panel, and a G-Sync monitor tore at its ceiling; at the display's rate it did
+    // not (Gustavo, 2026-11-04). With V-Sync the vertical blank follows the display's already.
+    double rate = frame_rate;
+#ifdef _WIN32
+    if (frame_rate > 60 && !rex::cvar::Query<bool>("vblank_follows_display")) {
+      double display = DisplayRefresh(rex::cvar::Query<int32_t>("monitor"));
+      if (display > 0.0 && std::abs(display - frame_rate) <= frame_rate * 0.02) {
+        rate = display;
+        REXLOG_INFO("[options] V-Sync off: the game at the display's {:.3f} Hz ({} chosen)", display, frame_rate);
+      }
+    }
+#endif
     if (frame_rate > 60) {
-      rex::cvar::SetFlagByName("video_mode_refresh_rate", std::to_string(frame_rate));
+      rex::cvar::SetFlagByName("video_mode_refresh_rate", std::to_string(rate));
     }
   }
 
@@ -97,7 +177,7 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
   std::string features;
   if (kHasFrameRate) {
     features += std::string(" ") + GAME_FRAME_RATE_CVAR + "=" + std::to_string(rex::cvar::Query<int32_t>(GAME_FRAME_RATE_CVAR)) +
-                " refresh=" + std::to_string(int(rex::cvar::Query<double>("video_mode_refresh_rate")));
+                " refresh=" + RefreshText(rex::cvar::Query<double>("video_mode_refresh_rate"));
   }
   if (kHasUltrawide) {
     features += std::string(" ") + GAME_ULTRAWIDE_CVAR + "=" + (rex::cvar::Query<bool>(GAME_ULTRAWIDE_CVAR) ? "true" : "false");

@@ -38,7 +38,10 @@ as with the stretch; the GPU's time per frame +0.14 ms with FSR 1, +0.20 ms with
 
 ## FSR 3.1 and DLSS
 
-**Status: added (2026-11-03), off by default. NativeXRenderer's D118-D121.**
+**Status: added (2026-11-03), off by default. NativeXRenderer's D118-D121. Not in the launcher for 0.3.0
+(`kHasDlaa = false` in `launcher/game.h`, 2026-11-04: the stage ghosts at the camera's cuts, which reset nothing yet);
+the options file turns them on by hand (`native_x_renderer_antialiasing = "dlaa"`, `"fsr_native"`, ...) until the
+launcher saves.**
 
 The game does not tell NativeXRenderer where its 3D stage begins and ends, so NativeXRenderer finds it from the
 draws: from the first 3D draw of the screen's size to the copy of the finished stage the game makes before its note
