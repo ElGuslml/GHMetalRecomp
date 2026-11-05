@@ -116,6 +116,10 @@ audio_wasapi_exclusive_queue = 2
 # three frames). "immediate" and false = V-Sync off (tearing, or a G-Sync / FreeSync display following the game).
 native_x_renderer_present_mode = "vsync"
 vblank_follows_display = true
+# Where the vertical blank runs on the SDK's timer (a G-Sync / FreeSync display, V-Sync off): its ticks within a few
+# microseconds of their time (700 us of spinning each; without, up to half a millisecond late), as the display shows
+# each frame when it comes.
+vblank_timer_spin_us = 700
 # Report a controller (and the keyboard's emulated one) as a guitar: the game gives a plain gamepad
 # the vocals, which need a microphone. Frets on A (green), B (red), Y (yellow), X (blue) and LB
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real

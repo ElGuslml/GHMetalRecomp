@@ -59,12 +59,24 @@ tears (and queued frames).
 - **V-Sync on is the one recommended, also with G-Sync or FreeSync**: it never tears, and with the game's vertical
   blank following the display it adds none of V-Sync's usual delay (no queue: 4.2 ms from present to display at 160 Hz,
   above). The launcher's help says so since RecompLauncher 3.11.3 (3.4-3.11.2 said Off was for G-Sync and FreeSync).
-- **V-Sync off** now runs the game at the display's exact refresh rate when the frame rate chosen is that rate, within
-  2 % (`src/options.cpp`: the current mode's rate from `QueryDisplayConfig`, 159.962 for "160 Hz"; the log says
-  `V-Sync off: the game at the display's 159.962 Hz (160 chosen)`). Gustavo's test at 159.96: no tearing; the motion
-  was less even than with V-Sync on, as each frame reaches the screen when the renderer finishes it (a millisecond or
-  two either way) while the song advances in even steps. NVIDIA's own way (a frame rate cap under the maximum, about
-  153 at 160 Hz) was not wanted.
+- **V-Sync on with G-Sync** (found later the same day: Gustavo's frame time graph showed a saw tooth for a few seconds,
+  then even, over and over, at 120 Hz on a 4K TV and at 160 on the monitor). With V-Sync, the SDK finds a variable
+  refresh rate display by its vertical blanks, which follow the game's frames, and keeps its timer for it
+  (`[vblank] the display's vertical blanks come every 13.65 ms, not 8.33: a variable refresh rate`). That timer had two
+  faults: it slept a millisecond at a time, so its ticks came 6 to 10 ms apart at 120 Hz, which a fixed refresh display
+  evens out and a G-Sync display shows as they come; and it ran at the panel's maximum, so now and then frames came
+  faster than the panel could show them and waited in the swap chain's queue. SDK change 70: a high resolution timer
+  and `vblank_timer_spin_us = 700` (set in `src/startup.cpp`; ticks 8.33-8.38 ms apart, +0.02 cores), and on such a
+  display the timer 0.25 % under its exact refresh rate (119.70 at 120, 159.56 at 159.962; the log:
+  `[vblank] the timer at 119.70 Hz: the display follows the game's frames up to its 120.000 Hz`). The render thread
+  wakes on an event the game's vertical blank callback sets (`src/thread_waits.cpp`), 4 us after the tick instead of
+  up to half a millisecond. Gustavo: the saw tooth gone.
+- **V-Sync off** runs the game just under the display's exact refresh rate when the frame rate chosen is that rate,
+  within 2 % (`src/options.cpp`: the current mode's rate from `QueryDisplayConfig`, 159.962 for "160 Hz", less 0.25 %;
+  the log says `V-Sync off: the game at 159.56 Hz, just under the display's 159.962 (160 chosen)`). Gustavo's test at
+  the exact 159.96, before the precise timer: no tearing, the motion less even than with V-Sync on. NVIDIA's own way (a
+  frame rate cap well under the maximum, about 153 at 160 Hz) was not wanted; 0.25 % under is enough with ticks this
+  even.
 
 The log says what was chosen: `[vblank] following the display's vertical blank: \\.\DISPLAY1 at 160 Hz` (or why the
 timer is kept) and `[native_x_renderer] present mode: vsync (FIFO)`.
@@ -74,3 +86,4 @@ timer is kept) and `[native_x_renderer] present mode: vsync (FIFO)`.
 The launcher's V-Sync row. For the vertical blank alone, `vblank_follows_display = false` in
 `ghmetallica_options.toml`; `native_x_renderer_present_mode = "mailbox"` for the earlier presentation. With V-Sync off,
 `video_mode_refresh_rate` on the command line sets the game's rate itself (with the launcher's frame rate at 60).
+`vblank_timer_spin_us = 0` keeps the timer's ticks without the spin (up to half a millisecond late).

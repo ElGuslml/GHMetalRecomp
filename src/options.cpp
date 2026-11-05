@@ -135,17 +135,20 @@ void LoadLauncherOptions(const std::filesystem::path& options_path,
         frame_rate /= 2;
       }
     }
-    // V-Sync off (the game's vertical blank on its own timer: vblank_follows_display false): at the display's own rate
-    // when the frame rate chosen is that rate, within 2 % (159.96 for 160 on a "160 Hz" monitor). At the round number
-    // the timer ran a hair faster than the panel, and a G-Sync monitor tore at its ceiling; at the display's rate it did
-    // not (Gustavo, 2026-11-04). With V-Sync the vertical blank follows the display's already.
+    // V-Sync off (the game's vertical blank on its own timer: vblank_follows_display false): just under the display's
+    // own rate when the frame rate chosen is that rate, within 2 % (159.56 for 160 on a 159.962 Hz monitor). At the
+    // round number the timer ran a hair faster than the panel, and a G-Sync monitor tore at its ceiling; at the
+    // display's rate it did not (Gustavo, 2026-11-04), but with the timer's ticks now within microseconds of their time
+    // half the frames would come a hair early. 0.25 % under, as the SDK keeps a variable refresh rate display with
+    // V-Sync (its vblank thread); with V-Sync on a fixed refresh display the vertical blank follows the display's.
     double rate = frame_rate;
 #ifdef _WIN32
     if (frame_rate > 60 && !rex::cvar::Query<bool>("vblank_follows_display")) {
       double display = DisplayRefresh(rex::cvar::Query<int32_t>("monitor"));
       if (display > 0.0 && std::abs(display - frame_rate) <= frame_rate * 0.02) {
-        rate = display;
-        REXLOG_INFO("[options] V-Sync off: the game at the display's {:.3f} Hz ({} chosen)", display, frame_rate);
+        rate = display * (1.0 - 0.0025);
+        REXLOG_INFO("[options] V-Sync off: the game at {:.2f} Hz, just under the display's {:.3f} ({} chosen)", rate,
+                    display, frame_rate);
       }
     }
 #endif

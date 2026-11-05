@@ -68,6 +68,14 @@ registers = ["r3", "r11"]
 address = 0x8241CA9C   # cmpld cr6,r3,r30 (sub_8241C840: until the other counter reaches the frame's last vertical blank)
 name = "GHMetallicaVblankWait2Hook"
 registers = ["r3", "r30"]
+# The game's two callbacks advance the counters those loops wait on: an event set right after each advance wakes the
+# waiting render thread at once (src/thread_waits.cpp).
+[[midasm_hook]]
+address = 0x822D0D04   # lwz r10,40(r11) (sub_822D0CC8, the swap callback: after the swap counter 0x82A925A0's advance)
+name = "GHMetallicaSwapSignalHook"
+[[midasm_hook]]
+address = 0x822D0CB4   # mftb r4 (sub_822D0C80, the vertical blank callback: after the counter 0x82A92590's advance)
+name = "GHMetallicaVblankSignalHook"
 [[midasm_hook]]
 address = 0x822BADA4   # lwz r11,20(r29) (sub_822BAD30: the main thread waiting for a job group, after a pass)
 name = "GHMetallicaJobGroupWaitHook"
