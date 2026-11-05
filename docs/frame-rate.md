@@ -47,12 +47,15 @@ targets). `ghmetallica_frame_rate_fix` (on) covers:
   (3.60 radians a second at 60, 3.52 at 160 while the boot ran at 156 FPS; 9.34 without this);
 - **clocks counted in vertical blanks**, which divide by the game's vertical blanks per second (60, or 50 for PAL):
   they divide by the real rate. The game's value itself stays 60, as other code compares it with 60.
-- **the guitars' strings** (2026-11-04): Gustavo's character's strings shook wildly above 60 FPS when he hit notes.
-  A strum plucks a string (`sub_8211F328`); each frame its amplitude is multiplied by 0.99 (`sub_8211CFD0`) and it is
-  drawn displaced by amplitude x sin(2 pi x 62 Hz x its time) (`sub_82122138`). At 60 FPS a 62 Hz vibration shows as a
-  slow 2 Hz wobble (62 - 60), the console's look; at 160 the real 62 Hz showed, fading 2.67 times as fast. Above 60 Hz
-  the frequency is the 2 Hz 60 FPS shows and the fade 0.99 per 60th of a second (hooks `0x821221B8` and `0x8211D00C`):
-  measured, the fade 0.546 a second at 60 and 0.545 at 160 (a temporary probe, two runs of the career's first song).
+- **the guitars' strings** (2026-11-04): Gustavo's character's strings shook wildly above 60 FPS while he played.
+  The strings are placed each pass of a script loop (`BandManager_PrepareBandForRender`, then `Wait 1 gameframe`;
+  script 0x827BA6B0): each string's start, end, fretting point and vibrating point, in the world, from the instrument's
+  bones that frame. With the game-frame waits held to 60 passes a second (above), they were placed every second or
+  third frame at 120 or 160 FPS and stayed where the guitar had been in between (a temporary probe: placed every
+  16.7 ms at 120 FPS). That script's waits are not held now, as star power's drain. Placed every frame, their
+  vibration (amplitude x sin(2 pi x 62 Hz x time), fading 0.99 a frame, `sub_82122138`, `sub_8211CFD0`) would show
+  its real 62 Hz instead of the 2 Hz wobble 60 FPS shows: above 60 Hz the frequency is that 2 Hz and the fade 0.99 per
+  60th of a second (hooks `0x821221B8` and `0x8211D00C`; the fade measured 0.546 a second at 60 and 0.545 at 160).
 - **the physics** (Havok, 2026-11-04): the world is stepped by a fixed 1/60 s each frame (`sub_823B7798`), so above
   60 FPS it ran faster than real time (2.67 times at 160). Above 60 Hz it is stepped by the frame's own time (hook
   `0x823B77E4`, `GHMetallicaPhysicsStepHook`), as GH Aerosmith's fix for its hair and cables. Nothing seen depended on
