@@ -106,9 +106,29 @@ with one:
   reads it now, and a calibration (push the bar all the way and hold it, then let it go) for a bar that rests or moves
   elsewhere: the axis, its value at rest and all the way (`gamepad_whammy_calibration`, change 60).
 
+### CRKD guitars, and a whammy bar on another axis (2026-11-05)
+
+A player of a CRKD Gibson Les Paul (Multi Platform) reported no whammy bar, or yellow and blue swapped, and a launcher
+that did not react to the guitar on its P3 setting. Not tried with a CRKD guitar yet: the fixes were checked with
+SDL's virtual controllers, and which USB IDs the guitar reports on each setting is expected, not read from a log.
+
+- **Any controller in GH Metallica Launcher.** The launcher kept only the first controller open, and SDL reports only
+  an open controller's input: on any other the Controls page assigned nothing and the whammy bar read 0, so calibrating
+  it always ended in "no movement". SDL lists HIDAPI controllers first, so with a DualSense connected a guitar was never
+  the first. Every controller is open now; the first still navigates (RecompLauncher 3.12).
+- **The P3 setting.** A PS3 Guitar Hero guitar is USB 12BA:0100, the ID that console's games look for, so the guitar
+  should report it there. That protocol has yellow on Square's bit and blue on Triangle's: SDL reads them as a
+  DualShock 3's, so the game saw them swapped. Its bar rests at the middle of the axis, which the game reads as half
+  pressed. The SDK puts both right (`guitar_ps3_protocol`, change 71, set in `src/startup.cpp`), and the log says so.
+  Tilt is not on that protocol's axes: Star Power is on Back (View).
+- **The whammy bar's row.** It now says Assign and shows the axis in use: push the bar all the way, hold it, let it go,
+  and any axis of the controller is the bar, which a guitar with sticks of its own needs if its right stick is not the
+  bar (CRKD's Les Paul has both). The launcher's log says what it found.
+
 ## Turning it off
 
 Set `gamepad_subtype = 0` in `ghmetallica.toml`, or start the game with `--gamepad_subtype=0`: a controller is then
 the singer again. The keyboard's strum on each fret: the Keyboard page's switch, or `mnk_tap_target = ""`; a
 controller's: its switch on the Controls page, or `gamepad_tap_target = ""`. The whammy bar at rest on a controller's
-stick: `gamepad_whammy_rest = false`. A calibration: X (or Delete) on the Whammy bar row's Calibrate, or Reset.
+stick: `gamepad_whammy_rest = false`. A PS3 guitar's frets and bar: `guitar_ps3_protocol = false`. An assigned
+whammy bar: X (or Delete) on the Whammy bar row's Assign, or Reset.

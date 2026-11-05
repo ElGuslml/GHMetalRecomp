@@ -85,7 +85,7 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - 🎸 **Your guitar:** an Xbox 360 guitar plays as on the console, whammy bar and Star Power included. Any other
   controller is a guitar too, and the keyboard can be one (experimental: turn it on in the launcher's Keyboard page;
   frets on D F J K L). Each controller's buttons can be reassigned in the launcher, and a whammy bar that reads
-  pressed at rest (some third-party guitars) can be calibrated there.
+  pressed at rest or does nothing (some third-party guitars) can be assigned there.
 - 🎮 **Auto-strum, GH2 / GH3 style:** on a controller or the keyboard, each fret strums as you press it, so you play
   with the frets alone (a chord is one strum). Turn it on in the launcher's Controls tab; it only acts during a song,
   so the menus work as usual. The whammy bar is the right stick, pushed to either side.

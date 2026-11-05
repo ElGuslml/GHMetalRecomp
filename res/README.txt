@@ -68,8 +68,8 @@ when you press PLAY.
     side) and Star Power Back. A controller's Instrument: Guitar, or Vocals for the singer (see SINGING).
     "Strum when a fret is pressed" makes the frets of every controller playing guitar strum as you press
     them, in songs. Each controller keeps its own assignments. Whammy bar: how far the game reads the bar.
-    If it reads pressed with the bar at rest, or does nothing (some third-party guitars), press Calibrate,
-    push the bar all the way and hold it, then let it go; X clears the calibration.
+    If it reads pressed with the bar at rest, or does nothing (some third-party guitars), press Assign,
+    push the bar all the way and hold it, then let it go; X clears the assignment.
   - Keyboard (experimental): turn on "Play with keyboard and mouse" to play with the keyboard as a guitar
     (frets D F J K L, strum with the Up and Down arrows, Star Power with Space, Start with Enter), and change
     any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs. Shift, Ctrl

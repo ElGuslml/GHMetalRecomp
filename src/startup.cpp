@@ -127,6 +127,9 @@ vblank_timer_spin_us = 700
 gamepad_subtype = 6
 # An Xbox 360 guitar reads its whammy bar half pressed until the bar first moves: at rest until then.
 guitar_whammy_rest = true
+# A PS3 Guitar Hero guitar (a CRKD guitar on its P3 setting too): yellow and blue, swapped on that protocol, put right,
+# and its whammy bar, which rests at the middle of its axis, at rest there.
+guitar_ps3_protocol = true
 # A controller or the keyboard playing guitar: the whammy bar at rest while the right stick is centred (or its keys
 # are up), and pressed as far as the stick goes from the centre, on either side. The stick's own value, 0 at rest,
 # is the bar held about half way for the game (its bar rests at -0.76 of the axis).
