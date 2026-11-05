@@ -115,7 +115,10 @@ SDL's virtual controllers, and which USB IDs the guitar reports on each setting 
 - **Any controller in GH Metallica Launcher.** The launcher kept only the first controller open, and SDL reports only
   an open controller's input: on any other the Controls page assigned nothing and the whammy bar read 0, so calibrating
   it always ended in "no movement". SDL lists HIDAPI controllers first, so with a DualSense connected a guitar was never
-  the first. Every controller is open now; the first still navigates (RecompLauncher 3.12).
+  the first. Every controller is open now, and the last one that pressed a button navigates (RecompLauncher 3.12).
+- **A guitar locking the launcher.** After a button was assigned the launcher waited for all of them to be up, and
+  counted the triggers: an Xbox 360 guitar's tilt rests its right trigger at half, so the controller stayed locked until
+  the launcher closed. The triggers no longer count; they press nothing there.
 - **The P3 setting.** A PS3 Guitar Hero guitar is USB 12BA:0100, the ID that console's games look for, so the guitar
   should report it there. That protocol has yellow on Square's bit and blue on Triangle's: SDL reads them as a
   DualShock 3's, so the game saw them swapped. Its bar rests at the middle of the axis, which the game reads as half
