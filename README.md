@@ -35,6 +35,22 @@ guitar.
 > of them and something goes wrong, please report it in [issues](https://github.com/ElGuslml/GHMetalRecomp/issues) or
 > on [Discord](https://discord.gg/XQtM5TmNs8).
 
+## 🆕 What's new in 0.3.0
+
+- 🔍 **Upscaling with AMD FSR 1 and NVIDIA NIS:** sharp text and edges from fewer lines, for 4K screens and slower
+  graphics cards ([see below](#-upscaling-amd-fsr-1-and-nvidia-nis)).
+- 🖥️ **Smooth with G-Sync and FreeSync:** frames come evenly, just under your monitor's maximum, with V-Sync on or
+  off: no more saw tooth in the frame time graph, no tearing.
+- 🎸 **The guitars' strings above 60 FPS:** they used to shake around the guitar; they follow it now, every frame.
+- 🔊 **No more crackling audio** on slower PCs, and no more muting with Low latency audio on.
+- ⌨️ **More keys for the keyboard:** Shift, Ctrl and Alt as keys of their own (Left Alt as Star Power!), and F1 to F12.
+- 🪟 **Alt+Tab** in fullscreen no longer closes the game.
+- 🌍 **The launcher in your language** (English, French, German, Italian or Spanish), and a log of its own to help
+  with problems.
+- 🎤 The keyboard is no longer taken for the singer when a controller is set to sing.
+
+The full list is in the [release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.3.0).
+
 ## 🎮 How to play
 
 1. **Download** the latest version from [Releases](https://github.com/ElGuslml/GHMetalRecomp/releases/latest):
@@ -77,6 +93,8 @@ From then on, the launcher keeps itself up to date: when a new version comes out
   choose which controller sings.
 - 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
   edges (antialiasing) and sharper textures.
+- 🔍 **Upscaling:** AMD FSR 1 or NVIDIA NIS, on any graphics card, with their quality and sharpness
+  ([see below](#-upscaling-amd-fsr-1-and-nvidia-nis)).
 - ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
   (experimental). The songs keep their speed and stay in sync. V-Sync is on by default (no tearing, the game in step
   with your monitor, without V-Sync's usual delay); leave it on with a G-Sync or FreeSync monitor too.
@@ -91,6 +109,33 @@ From then on, the launcher keeps itself up to date: when a new version comes out
 - 🏆 **Achievements:** a notification when you unlock one, and all 50 in the launcher or with F7 in the game.
 - 🌍 **Languages:** English, French, German, Italian and Spanish.
 - 🔄 **Automatic updates** from this page.
+
+## 🔍 Upscaling: AMD FSR 1 and NVIDIA NIS
+
+For a 4K screen or a slower graphics card, the game can be drawn with fewer lines than your screen has and enlarged
+to fill it. A plain stretch makes the menus' text, the HUD and every edge soft; **AMD FSR 1** and **NVIDIA Image
+Scaling (NIS)** enlarge the image keeping them sharp. Both work on any graphics card (AMD, NVIDIA or Intel).
+
+<p align="center">
+  <img src="docs/images/upscaling-comparison.png" width="100%" alt="The main menu at 3440x1440: native, a plain stretch from 720 lines, AMD FSR 1 and NVIDIA NIS">
+</p>
+<p align="center"><sub>The main menu on a 3440x1440 screen, at its own pixels: drawn at the screen's 1440 lines, then
+from the console's 720 lines with a plain stretch, with AMD FSR 1 and with NVIDIA NIS.</sub></p>
+
+In the launcher's **Settings → Video**:
+- **Upscaling:** Off, AMD FSR 1 or NVIDIA NIS.
+- **Quality:** how many fewer lines the game is drawn with: Ultra Quality (77 % of your screen's), Quality (67 %),
+  Balanced (59 %), Performance (50 %) or Ultra Performance (33 %), never fewer than the console's 720.
+- **Sharpness:** Off, Low, Medium (AMD's and NVIDIA's recommendation) or High. It works without upscaling too (AMD
+  CAS).
+
+<p align="center">
+  <img src="docs/images/launcher-video.png" width="70%" alt="Settings, Video: Upscaling, Quality and Sharpness">
+</p>
+
+They are light: measured on an RTX 4070 Ti at 3440x1440 from 720 lines, the text came out about twice as sharp as
+with the plain stretch, for 0.14 ms (FSR 1) or 0.20 ms (NIS) of the graphics card's time per frame
+([details](docs/scaling.md)). Upscaling is for the NativeXRenderer renderer (the default).
 
 ## 🔧 Better than the original
 
@@ -138,7 +183,7 @@ Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboar
   <img src="docs/images/launcher-video.png" width="49%" alt="Settings: Video">
   <img src="docs/images/launcher-achievements.png" width="49%" alt="Achievements">
 </p>
-<p align="center"><sub>Settings (Video: your screen, window or fullscreen, the image format) and the achievements.</sub></p>
+<p align="center"><sub>Settings (Video: your screen, window or fullscreen, the image format, upscaling) and the achievements.</sub></p>
 
 Your choices are saved as soon as you make them. When you quit the game, the launcher comes back.
 
@@ -196,8 +241,12 @@ natively on Vulkan.
 ## 🚧 In the works
 
 New features on the way:
+- 🌐 **Online multiplayer:** play with your friends over the internet.
+- 🥁 **MIDI drum kits:** play the drums on an electronic drum kit connected to your PC.
+- 💿 **Guitar Hero: World Tour DLC:** import your World Tour songs and play them here.
 - 🎵 **Custom songs:** play songs made by the community.
 - 🐧 **Linux and Steam Deck:** a port to play there too.
+- ✨ **And more...**
 
 Follow along on [Discord](https://discord.gg/XQtM5TmNs8) and on [X](https://x.com/ElGuslml).
 
