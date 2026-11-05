@@ -123,10 +123,27 @@ SDL's virtual controllers, and which USB IDs the guitar reports on each setting 
   should report it there. That protocol has yellow on Square's bit and blue on Triangle's: SDL reads them as a
   DualShock 3's, so the game saw them swapped. Its bar rests at the middle of the axis, which the game reads as half
   pressed. The SDK puts both right (`guitar_ps3_protocol`, change 71, set in `src/startup.cpp`), and the log says so.
-  Tilt is not on that protocol's axes: Star Power is on Back (View).
+  Tilt is not on that protocol's axes, only on its accelerometer: Star Power is on Back (View) unless Tilt is assigned
+  (below).
 - **The whammy bar's row.** It now says Assign and shows the axis in use: push the bar all the way, hold it, let it go,
   and any axis of the controller is the bar, which a guitar with sticks of its own needs if its right stick is not the
   bar (CRKD's Les Paul has both). The launcher's log says what it found.
+
+### Tilt that does nothing (2026-11-05)
+
+A player reported that tilting a Wii guitar gave no Star Power. Not tried with one yet: checked with SDL's virtual
+controllers. The game reads tilt from the right stick's Y (an Xbox 360 guitar's accelerometer) and asks for its very end:
+`star_tilt_threshold` in its scripts is -1.0, which is the axis at 98 % (32256 of 32767). An Xbox 360 guitar's sensor
+saturates well before that. A Wii guitar through WiitarThing reaches the PC as an Xbox 360 controller whose tilt axis
+ends with the neck straight up, so at the angle anyone plays it never gets there. On a PS3 guitar tilt is on no axis at
+all.
+
+GH Metallica Launcher's Controls page has a Tilt row under the Whammy bar's, on each guitar and each controller playing
+guitar: how far the game reads it, and Assign: tilt the neck up as for Star Power and hold it, then go back to your
+playing position. Any axis of the controller, or its accelerometer, becomes the right stick's Y: 0 at rest and the end of
+the axis a fifth short of the position held, so Star Power comes before you reach it (`gamepad_tilt_calibration`, change
+72 of the SDK; the launcher's log says what it found). A guitar whose tilt is a switch shows as a button: assign that
+button to Star Power instead.
 
 ## Turning it off
 
@@ -134,4 +151,4 @@ Set `gamepad_subtype = 0` in `ghmetallica.toml`, or start the game with `--gamep
 the singer again. The keyboard's strum on each fret: the Keyboard page's switch, or `mnk_tap_target = ""`; a
 controller's: its switch on the Controls page, or `gamepad_tap_target = ""`. The whammy bar at rest on a controller's
 stick: `gamepad_whammy_rest = false`. A PS3 guitar's frets and bar: `guitar_ps3_protocol = false`. An assigned
-whammy bar: X (or Delete) on the Whammy bar row's Assign, or Reset.
+whammy bar or tilt: X (or Delete) on its row's Assign, or Reset.
