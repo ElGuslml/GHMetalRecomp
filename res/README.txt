@@ -80,13 +80,16 @@ when you press PLAY.
 - Settings:
   - Video: the monitor, fullscreen, borderless or window, the resolution, the image format (fill a screen
     wider than 16:9, where the stage is seen wider while the note highway, the HUD and the menus stay 16:9
-    in the center, or keep 16:9 with bars) and the internal resolution the game is drawn at.
+    in the center, or keep 16:9 with bars) and the internal resolution the game is drawn at. Upscaling: AMD
+    FSR 1 or NVIDIA NIS draw the game with fewer lines than your screen's and enlarge it keeping edges and
+    text sharp (for a 4K screen or a slower graphics card); Quality says how many fewer, Sharpness how sharp
+    (it works without upscaling too). V-Sync (on by default): no tearing, and no extra delay; leave it on with
+    a G-Sync or FreeSync monitor too.
   - Graphics: the renderer, the frame rate, antialiasing and anisotropic filtering. NativeXRenderer (the
     default) draws the game natively with Vulkan; Xenos emulates the Xbox 360 GPU instead (DirectX 12 or
     Vulkan): choose it if something looks wrong with NativeXRenderer, and tell us where. Frame rate: 60 FPS
     (original), and 120, 144, 160, 165 or 240 FPS where your monitor reaches them (experimental). The songs
-    keep their speed and stay in sync at every frame rate. V-Sync (on by default): no tearing, and no extra
-    delay; leave it on with a G-Sync or FreeSync monitor too. The game's screen effects can be turned off one
+    keep their speed and stay in sync at every frame rate. The game's screen effects can be turned off one
     by one.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
     own), and Low latency audio (off by default): the game takes your audio device in exclusive mode and the
