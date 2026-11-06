@@ -23,6 +23,9 @@
 ; uninstall entry.
 #define RepoUrl ""
 
+; The file's version takes numbers alone: 0.3.1 for "0.3.1-beta.1".
+#define FileVersion Copy(AppVersion, 1, Pos("-", AppVersion + "-") - 1)
+
 [Setup]
 ; Never change the AppId: Windows knows the installation by it, and a newer installer finds the older one with it.
 AppId={{4E2BAC8A-1D47-4743-99FF-DE8A39E78D1B}
@@ -35,7 +38,7 @@ AppPublisherURL={#RepoUrl}
 AppSupportURL={#RepoUrl}/issues
 AppUpdatesURL={#RepoUrl}/releases
 #endif
-VersionInfoVersion={#AppVersion}.0
+VersionInfoVersion={#FileVersion}.0
 VersionInfoDescription={#AppName} (Recomp) setup
 PrivilegesRequired=lowest
 DefaultDirName={autopf}\GHMetalRecomp
