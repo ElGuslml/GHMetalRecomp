@@ -47,6 +47,10 @@ targets). `ghmetallica_frame_rate_fix` (on) covers:
   (3.60 radians a second at 60, 3.52 at 160 while the boot ran at 156 FPS; 9.34 without this);
 - **clocks counted in vertical blanks**, which divide by the game's vertical blanks per second (60, or 50 for PAL):
   they divide by the real rate. The game's value itself stays 60, as other code compares it with 60.
+- **the frets falling back** (2026-11-05, GH5's fix): on a hit the fret heads rise 20 pixels and fall back in 0.1 s. Each
+  pass of the script `button_checker` (`0x716BADDC`, through `sub_82147B18`) lowers them by the frame's time; held to 60
+  passes a second they fell back in 0.27 s at 160 FPS (measured in GH5). It runs every frame again (at 160 FPS: 160
+  passes a second, 59 held);
 - **the guitars' strings** (2026-11-04): Gustavo's character's strings shook wildly above 60 FPS while he played.
   The strings are placed each pass of a script loop (`BandManager_PrepareBandForRender`, then `Wait 1 gameframe`;
   script 0x827BA6B0): each string's start, end, fretting point and vibrating point, in the world, from the instrument's

@@ -125,6 +125,11 @@ constexpr uint32_t kStarPowerDrainScript = 0x74B936AB;
 // where the guitar had been in between: they shook around a guitar that moved (Gustavo, 2026-11-04: his character's,
 // while playing; a temporary probe recorded them every 16.7 ms at 120 FPS, the three musicians alike).
 constexpr uint32_t kBandRenderScript = 0x827BA6B0;
+// button_checker: ButtonCheckerPerFrame (sub_8219A530), the player's input object (sub_82105D98 or
+// sub_82106B28) and sub_82147B18, which takes 20 pixels * the frame's time / 0.1 s off each fret's height after a
+// hit. Held to 60 passes a second the frets fell back in 266 ms at 160 FPS (measured in GH5), 100 ms every frame, as
+// at 60.
+constexpr uint32_t kButtonCheckerScript = 0x716BADDC;
 
 uint32_t WaitingScript(uint32_t wait) {
   auto* kernel = rex::system::kernel_state();
@@ -148,10 +153,11 @@ void GHMetallicaFrameWaitSetHook(PPCRegister& r3, PPCRegister& r4) {
   // 0x74B936AB) waits one game frame per pass and takes current_deltatime (the frame's time, sub_82195548) off the meter
   // each pass, or GetFrameLength's in a band: held to 60 passes a second it drained 60 frames' time a second, and at
   // 160 FPS star power lasted 160 / 60 times as long (Gustavo). It is the only script of the game's 7822 that waits in
-  // game frames and reads either. The band's strings are placed every frame too (kBandRenderScript). The waiting
-  // script's name is at +48 of its wait (+216 of the script).
+  // game frames and reads either.
+  // The band's strings and the frets' fall run every frame too (kBandRenderScript, kButtonCheckerScript).
+  // The waiting script's name is at +48 of its wait (+216 of the script).
   const uint32_t script = WaitingScript(r3.u32);
-  if (script == kStarPowerDrainScript || script == kBandRenderScript) {
+  if (script == kStarPowerDrainScript || script == kBandRenderScript || script == kButtonCheckerScript) {
     std::lock_guard lock(g_frame_waits_mutex);
     g_frame_waits.erase(r3.u32);
     return;
