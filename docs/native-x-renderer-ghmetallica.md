@@ -388,6 +388,16 @@ had no host format for, so they sampled its white placeholder (18-28 placeholder
 first song). D105 loads them as B5G5R5A1 (with its DiligentCore patch 0008, Vulkan's A1R5G5B5): the same song with 0
 placeholders, James's guitar black with its graphics. The Xenos path never had it.
 
+**The bloom's lattice** (2026-11-07, NativeXRenderer D127; [bloom-lattice.md](bloom-lattice.md)). The post-processing
+(`0x824B80C0`) works on reduced copies of the scene: the 640x360 4x MSAA resolve of the 1280x720 scene (D95), then
+320x180 targets: a glow pass (scene objects drawn again with a 320x180 depth), a bright pass, and the bloom's and the
+depth of field's separable 16-tap blurs (`sub_824305xx` / `sub_824309xx`, PS `0x3750c0`, offsets in c64-c79 and weights
+in c80-c95 for 320x180 texels), into 0x40008600 (bloom) and 0x40008650 (depth of field), which the composite samples. At
+the render scale those offsets skipped host texels: the glow came out as a grid of copies (a player's issue). The
+profile's `unscaled_screen_fractions` keeps the 640x360 and 320x180 targets and their resolves at 1x, the 640x360
+resolve box-filtered from the full target; the HUD's 512x128 text target and the blob shadows' 256x256 / 128x128 stay
+at the render scale. Gustavo's songs at 3440x1440 (`ghmetallica_664`-`666`): one smooth halo, the frame time unchanged.
+
 **DLAA without view hooks** (2026-11-03, NativeXRenderer D118-D121; the launcher's Upscaling row offers FSR 3.1 and
 DLSS, `game::kHasDlaa`). The game has no hooks marking its 3D view, so the
 profile names the upscale point instead (`upscale_resolve_caller`, the same `0x8251F04C`): the view runs from the first
