@@ -160,6 +160,15 @@ const native_x_renderer::Profile& NativeXRendererProfile() {
     // separable 16-tap blurs (sub_824305xx / sub_824309xx, offsets and weights in c64-c95 for 320x180 texels). At the
     // render scale those offsets skipped host texels: the bloom showed a lattice. They stay at 1x, as on the console.
     p.unscaled_screen_fractions = true;
+    // The pipeline list (D129): every shader the game has is in MaterialLibrary.bin.xen (1,788 pixel and 2,057 vertex
+    // shader containers), which the engine's start (sub_822E4460 -> sub_82454280) loads once; each material's passes
+    // make their shader objects from it (sub_824546C0 vertex, sub_824547F8 pixel), the only shader objects the game
+    // makes. A program is the end of its container's microcode section (64 bytes of literal constants before it when
+    // the header's dword 5 is set).
+    static const char* const kShaderFiles[] = {"DATA/FXFILES/MaterialLibrary.bin.xen"};
+    p.title_id = 0x41560830;
+    p.shader_files = kShaderFiles;
+    p.shader_file_count = 1;
     native_x_renderer::DeviceLayout& d = p.device;
     // Six dirty masks from +0: VS constants, PS constants, register groups and the program, fetch slots (low half,
     // slot 0 in bit 31) and the 0x2280 group, the 0x2300/0x2380 groups with the clip planes and bool/loop constants,

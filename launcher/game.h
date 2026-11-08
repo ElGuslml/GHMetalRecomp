@@ -151,6 +151,11 @@ inline constexpr std::array<Toggle, 6> kToggles{{
 // game lists in Quickplay (docs/dlc.md).
 inline constexpr bool kHasDlcPage = true;
 
+// NativeXRenderer's pipeline list (its D129, pipelines.h): Play first runs the game's --native_x_renderer_prepare_pipelines
+// ("Compiling shaders") when the executable, the list (<TITLEID>.pipelines.list beside it) or the graphics driver
+// changed since the last time. On when the game's NativeXRenderer profile names its shader files.
+inline constexpr bool kHasPipelineList = true;
+
 // --- The keyboard ---
 
 // The Keyboard page's defaults where they are not the SDK's (its "Reset to defaults", and a control the files do not

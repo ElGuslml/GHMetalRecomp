@@ -14,6 +14,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [Frame rates above 60](frame-rate.md) | Working, experimental: 120 to 240 FPS at the game's speed, the launcher's frame rate row |
 | [Ultrawide displays](ultrawide.md) | Working: the stage seen wider (Hor+), menus, HUD and note highway kept 16:9 in the center |
 | [A lower internal resolution looks soft](scaling.md) | Added, off by default: AMD FSR 1 or NVIDIA Image Scaling to the screen, and a sharpness row (NativeXRenderer) |
+| [Stutters the first time something is shown](compiling-shaders.md) | Fixed: a pipeline list ships with the game; the launcher compiles it for your graphics card at the first PLAY ("Compiling shaders"; NativeXRenderer) |
 | [A lattice in the bloom at high resolutions](bloom-lattice.md) | Fixed: the bloom's and the depth of field's reduced copies of the scene at the game's resolution (NativeXRenderer) |
 | [Turning off the game's screen effects](screen-effects.md) | Switches in the launcher's Settings → Graphics: bloom, depth of field, grain, color correction, vignette, ink blotches (all on by default) |
 | [The crowd claps out of time on star power](crowd-claps.md) | Fixed: the claps follow the audio calibration, as the music does |

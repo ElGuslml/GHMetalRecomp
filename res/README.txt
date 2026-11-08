@@ -58,7 +58,11 @@ GH METALLICA LAUNCHER
 The launcher works with the mouse, the keyboard or a controller. Changes are saved automatically and apply
 when you press PLAY.
 
-- Play: starts the game, with your current settings, achievements and updates at a glance.
+- Play: starts the game, with your current settings, achievements and updates at a glance. The first time,
+  and after an update of the game or of your graphics driver, it first shows "Compiling shaders" for a
+  moment: it prepares the game's graphics for your graphics card, so that the game does not stutter the
+  first time it shows something (with NativeXRenderer). Skip starts the game at once; it then compiles
+  them as you play.
 - Your profile (your picture at the top right): hours played, streaks, the week's activity, your games
   and your favorite achievements; edit your name, picture and color, or switch profiles.
 - Achievements: the game's 50 achievements, unlocked or not. In the game, F7 shows the same list.
