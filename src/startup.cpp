@@ -120,6 +120,11 @@ vblank_follows_display = true
 # microseconds of their time (700 us of spinning each; without, up to half a millisecond late), as the display shows
 # each frame when it comes.
 vblank_timer_spin_us = 700
+# A thread entering a game lock another thread holds watches it for up to 20 us before it sleeps (the console's
+# kernel puts it to sleep at once when the game asks for no spin, as it does for its job queue's lock). The main
+# thread and the three job workers took that lock by turns and slept and woke each other ~92,000 times a second in
+# a song; with this ~31,000, and 1.84 -> 1.66 cores (docs/cpu-usage.md). 0 = the SDK default.
+critical_section_spin_us = 20
 # Report a controller (and the keyboard's emulated one) as a guitar: the game gives a plain gamepad
 # the vocals, which need a microphone. Frets on A (green), B (red), Y (yellow), X (blue) and LB
 # (orange), strumming on the D-pad, the whammy bar on the right stick, Star Power on Back. A real

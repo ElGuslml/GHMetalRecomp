@@ -78,6 +78,23 @@ DiligentCore patch `0007` (its decision D99) asks for the image only when the fr
 asleep: a song 2.17 → 1.68 cores, NativeXRenderer's thread 0.78 → 0.39 cores, the frame pacing slightly better. In a
 1280x720 window nothing changes (the image was free at once there). It has no switch: it is part of NativeXRenderer.
 
+## Songs at 160 FPS: the job queue's lock (2026-11-08)
+
+A trace of a song (Windows Performance Recorder, context switches with their stacks) showed every thread of the game
+on the processor's performance cores and running within 5 µs of being woken (99 % within 26 µs): nothing to gain from
+affinities or priorities. What it did show: the main thread and the three job workers slept and woke each other about
+78,000 times a second, 95 % of the time on one lock, the job queue's critical section (0x82A8D960: the main thread
+adds jobs under it, `sub_822BB5A0`; the workers take them, `sub_82425D30`). The game creates it with no spin count,
+so the SDK's `RtlEnterCriticalSection`, as the console's kernel, puts a thread that finds it taken to sleep at once,
+and hands the lock to that sleeper at its release: for the ~5 µs the sleeper takes to wake the lock is nobody's, and
+whoever comes next sleeps too.
+
+SDK change 75, `critical_section_spin_us` (20 here, set in `src/startup.cpp`): a thread watches the lock for up to
+20 µs before it sleeps, and takes it as soon as it is free. In one song, switching it every 6 seconds: the process's
+context switches 92,000 → 31,300 a second (the workers 21,500 → 4,900 each, the main thread 12,500 → 1,700), 1.84 →
+1.66 cores (the main thread 30.5 → 26.1 % of a core, each worker 19.2 → 15.5 %). 5 and 50 µs gave the same switches as
+20: the lock is free again within 5 µs. Turned off with `critical_section_spin_us = 0`.
+
 ## Also: registers as local variables in the generated code (2026-10-24)
 
 Not a bug, an optimization of the recompiled code, as in KameoRecomp, GRAWRecomp and POTCAWERecomp: with the SDK's
