@@ -398,6 +398,14 @@ profile's `unscaled_screen_fractions` keeps the 640x360 and 320x180 targets and 
 resolve box-filtered from the full target; the HUD's 512x128 text target and the blob shadows' 256x256 / 128x128 stay
 at the render scale. Gustavo's songs at 3440x1440 (`ghmetallica_664`-`666`): one smooth halo, the frame time unchanged.
 
+**The render scale in the shaders' constants** (2026-11-08, NativeXRenderer D128, the SDK's recomp change 73). The
+translated shaders had the render scale written into them, so a window size, internal resolution or FSR 1 / NIS setting
+not used before gave the driver new shaders to compile, and its cache kept a copy of each pipeline per scale
+(`41560830.vkcache`: 69 MB for 473 pipelines). The shaders now read the scale from the draw's system constants: one
+translation for every scale. This game has no parameter generation, so only the resolution-scaled textures read it (175
+of its 364 stored translations). The first start after the change compiles every pipeline once.
+`--native_x_renderer_scale_in_constants=false` writes the scale into the shaders as before.
+
 **DLAA without view hooks** (2026-11-03, NativeXRenderer D118-D121; the launcher's Upscaling row offers FSR 3.1 and
 DLSS, `game::kHasDlaa`). The game has no hooks marking its 3D view, so the
 profile names the upscale point instead (`upscale_resolve_caller`, the same `0x8251F04C`): the view runs from the first
