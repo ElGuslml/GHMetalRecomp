@@ -17,6 +17,12 @@ graphics card and driver, and saves the driver's binaries (`41560830.vkcache`). 
 about a tenth of a second at its start. On an RTX 4070 Ti the screen takes under a second (473 pipelines). It shows again
 only after an update of the game or of the graphics driver.
 
+**Pipelines linked from parts (NativeXRenderer D130-D132, on NVIDIA GPUs).** A pipeline the list does not name, but whose
+shaders the game drew before, no longer waits for the driver: each shader is compiled once as a part (Vulkan's graphics
+pipeline libraries), and a new pipeline is linked from its parts in microseconds; its fully optimized version is
+compiled in the background and takes over. The 473 pipelines of the list come from 266 parts. `native_x_renderer_pipeline_library
+= off` (in `ghmetallica.toml`) compiles every pipeline whole, as before.
+
 **How to turn it off.** Skip on that screen starts the game at once; it then compiles at its draws, as before. Without the
 list file, or with the Xenos renderer, the launcher does not show it. Started without the launcher (Steam, the
 executable directly), the game does what it did before. The tool can be run by hand:
