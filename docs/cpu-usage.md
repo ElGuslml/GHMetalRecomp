@@ -105,6 +105,17 @@ our own. In one song, switching it every 6 seconds: each worker 5,300 → 3,400 
 core, the process 32,900 → 26,900 switches a second, 1.98 → 1.84 cores (NativeXRenderer's thread, which this does not
 touch, varied by ±4 % of a core between windows). Turned off with `ghmetallica_job_wake_one = false`.
 
+## NativeXRenderer: the command processor's idle work (2026-11-08)
+
+With NativeXRenderer the SDK's command processor still reads the game's GPU command stream, for its synchronization
+(fences, interrupts, the swaps). A profile of its thread in Kameo (Windows Performance Recorder) showed a third of its
+time going to work nobody used: loading each shader for the Xenos renderer that does not draw, refreshing at every swap
+the image of a presenter that is not shown, and spinning about 0.1 ms each time it waited for NativeXRenderer. The SDK's
+change 76 (`sync_only_lean`, on by default) skips the first two while NativeXRenderer draws, and NativeXRenderer's D135
+sleeps at once when it is far behind. Kameo at the same spot: that thread 7.0 % -> 4.4 % of a core, the image the same.
+A rewrite of the command processor (a "ring skimmer") was measured first and judged not worth it: this thread is under a
+tenth of a core even in Kameo. Turned off with `sync_only_lean = false`.
+
 ## Also: registers as local variables in the generated code (2026-10-24)
 
 Not a bug, an optimization of the recompiled code, as in KameoRecomp, GRAWRecomp and POTCAWERecomp: with the SDK's
