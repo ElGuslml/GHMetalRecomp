@@ -23,6 +23,11 @@ pipeline libraries), and a new pipeline is linked from its parts in microseconds
 compiled in the background and takes over. The 473 pipelines of the list come from 266 parts. `native_x_renderer_pipeline_library
 = off` (in `ghmetallica.toml`) compiles every pipeline whole, as before.
 
+**Measured** (RTX 4070 Ti, the graphics driver's own cache emptied first): "Compiling shaders" takes about 3 s the first
+time (2 s without the parts); a first start without it skipped 25 draws and held 3 for 99 ms before the intro alone, with
+it one draw. A render scale never used before (another window size, internal resolution or upscaler) compiles nothing
+again: before NativeXRenderer D128 it compiled every pipeline again and skipped 185 draws.
+
 **How to turn it off.** Skip on that screen starts the game at once; it then compiles at its draws, as before. Without the
 list file, or with the Xenos renderer, the launcher does not show it. Started without the launcher (Steam, the
 executable directly), the game does what it did before. The tool can be run by hand:
