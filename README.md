@@ -31,25 +31,27 @@ guitar.
 > [tell us](#-reporting-a-problem)!
 
 > [!WARNING]
-> ⚠️ **Not tested yet:** AMD graphics cards, and Wii or PS3 instruments (guitars and drum kits). If you play with any
-> of them and something goes wrong, please report it in [issues](https://github.com/ElGuslml/GHMetalRecomp/issues) or
-> on [Discord](https://discord.gg/XQtM5TmNs8).
+> ⚠️ **Not tested yet:** AMD graphics cards (only in a simulation so far) and drum kits. If you play with either and
+> something goes wrong, please report it in [issues](https://github.com/ElGuslml/GHMetalRecomp/issues) or on
+> [Discord](https://discord.gg/XQtM5TmNs8).
 
-## 🆕 What's new in 0.3.0
+## 🆕 What's new in 0.4.0
 
-- 🔍 **Upscaling with AMD FSR 1 and NVIDIA NIS:** sharp text and edges from fewer lines, for 4K screens and slower
-  graphics cards ([see below](#-upscaling-amd-fsr-1-and-nvidia-nis)).
-- 🖥️ **Smooth with G-Sync and FreeSync:** frames come evenly, just under your monitor's maximum, with V-Sync on or
-  off: no more saw tooth in the frame time graph, no tearing.
-- 🎸 **The guitars' strings above 60 FPS:** they used to shake around the guitar; they follow it now, every frame.
-- 🔊 **No more crackling audio** on slower PCs, and no more muting with Low latency audio on.
-- ⌨️ **More keys for the keyboard:** Shift, Ctrl and Alt as keys of their own (Left Alt as Star Power!), and F1 to F12.
-- 🪟 **Alt+Tab** in fullscreen no longer closes the game.
-- 🌍 **The launcher in your language** (English, French, German, Italian or Spanish), and a log of its own to help
-  with problems.
-- 🎤 The keyboard is no longer taken for the singer when a controller is set to sing.
+- 🚀 **No more stutters the first time something shows up:** the first time you press PLAY (and after an update of
+  the game or of your graphics driver), the launcher shows **"Compiling shaders"** for a few seconds and prepares the
+  game's graphics for your graphics card. The first song, venue or effect then plays smoothly.
+- 🎸 **More guitars:** PS3 guitars play with the right frets (yellow and blue were swapped) and a whammy bar at rest,
+  CRKD guitars work, and in the launcher you can **assign your whammy bar and your tilt** to any axis of your guitar
+  (for third-party and Wii guitars). Every controller now works in the launcher, not just the first one.
+- 🔥 **Lighter on your processor:** songs use noticeably less CPU, with the game's threads no longer waking each other
+  up tens of thousands of times a second.
+- ✨ **A clean glow at high resolutions:** the bloom around lights and bright surfaces showed a grid pattern above
+  1080p; it is smooth now.
+- ⚡ **The frets above 60 FPS** spring back after each hit as quickly as at 60.
+- 🔴 **Ready for AMD graphics cards:** a problem that would have hit them at 2560 wide and above is fixed (found by
+  simulating an AMD card; not tested on a real one yet).
 
-The full list is in the [release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.3.0).
+The full list is in the [release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.4.0).
 
 ## 🎮 How to play
 
@@ -93,6 +95,8 @@ From then on, the launcher keeps itself up to date: when a new version comes out
   choose which controller sings.
 - 🖥️ **Sharp, native graphics:** the game is drawn by your graphics card at your screen's resolution, with smooth
   edges (antialiasing) and sharper textures.
+- 🚀 **No first-time stutters:** "Compiling shaders" prepares every graphics combination the game uses for your
+  graphics card before you play, in a few seconds, only the first time and after an update.
 - 🔍 **Upscaling:** AMD FSR 1 or NVIDIA NIS, on any graphics card, with their quality and sharpness
   ([see below](#-upscaling-amd-fsr-1-and-nvidia-nis)).
 - ⚡ **High frame rates:** 60 FPS as on the console, or 120, 144, 160, 165 or 240 FPS if your monitor supports it
@@ -218,7 +222,8 @@ graphics instead), and tell us whether it happens there too.
   a motherboard's audio): calibrate the audio in the game's options.
 - ⚡ Above 60 FPS is experimental: something may still run too fast.
 - 📺 In an ultrawide window, the second controller's "not signed in" screen shows a colored band at its right edge.
-- ✨ The first time an effect appears, it may show up a moment late.
+- ✨ With the Xenos renderer, or if you skip "Compiling shaders", the first time an effect appears it may show up a
+  moment late.
 
 ## ❤️ Support
 
