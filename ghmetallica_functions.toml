@@ -52,6 +52,12 @@ reserved_as_local = true
 [[midasm_hook]]
 address = 0x82425A78   # li r4,0 (sub_82425A18: a job worker with an empty queue, before WaitForSingleObject(event, 0))
 name = "GHMetallicaJobWaitHook"
+# A job queued (sub_822BB198) pulses the manual-reset job event, which woke every waiting worker for one job: with
+# ghmetallica_job_wake_one the hook wakes one waiting worker itself and the pulse is skipped.
+[[midasm_hook]]
+address = 0x822BA9C0   # lis r11,-32087 (sub_822BA9C0: NtPulseEvent on the job event at 0x82A8D574)
+name = "GHMetallicaJobPulseHook"
+return_on_true = true
 [[midasm_hook]]
 address = 0x822E4600   # cmplwi cr6,r3,0 (sub_822E4588: while (sub_8243C3D8(0x82C129E8) != 0) {})
 name = "GHMetallicaFrameWaitHook"

@@ -49,7 +49,7 @@ Left for later:
 - **The job workers**, still about 10 % of a core each in a song. They now block on the job event 75 % of the time;
   the rest is each wake's own cost: the game's WaitForSingleObject(event, 0) after the wait (in the SDK a
   SwitchToThread and the object table's lock), and the queue's critical section, contended. If the event wakes all
-  three workers for each job, one waiting worker would be enough.
+  three workers for each job, one waiting worker would be enough (it did; both fixed on 2026-11-08, below).
 - **The main thread's waits for the render thread** (sub_822E4588, sub_822E0C10) still sleep in slices: about 20 % of
   a core at 120 FPS, half of it in the kernel.
 
@@ -93,7 +93,17 @@ SDK change 75, `critical_section_spin_us` (20 here, set in `src/startup.cpp`): a
 20 µs before it sleeps, and takes it as soon as it is free. In one song, switching it every 6 seconds: the process's
 context switches 92,000 → 31,300 a second (the workers 21,500 → 4,900 each, the main thread 12,500 → 1,700), 1.84 →
 1.66 cores (the main thread 30.5 → 26.1 % of a core, each worker 19.2 → 15.5 %). 5 and 50 µs gave the same switches as
-20: the lock is free again within 5 µs. Turned off with `critical_section_spin_us = 0`.
+20: the lock is free again within 5 µs. Turned off with `critical_section_spin_us = 0`. It does not make the processor
+draw more power: in another song, with the package's power read every second (Intel's RAPL counter), 68.8 W without
+the spin and 66.6 W with it.
+
+The same trace showed the job workers waking for nothing: the game pulses its job event (`NtPulseEvent`) once for each
+job it queues, and the event is a manual-reset one, so each pulse woke all three waiting workers; they saw the queue not
+empty, ran for its lock, and two of them found the job taken and slept again. `ghmetallica_job_wake_one` (on, with
+`ghmetallica_wait_smart`): the pulse is skipped and one waiting worker is woken instead, through an auto-reset event of
+our own. In one song, switching it every 6 seconds: each worker 5,300 → 3,400 wakes a second and 18.8 → 16.3 % of a
+core, the process 32,900 → 26,900 switches a second, 1.98 → 1.84 cores (NativeXRenderer's thread, which this does not
+touch, varied by ±4 % of a core between windows). Turned off with `ghmetallica_job_wake_one = false`.
 
 ## Also: registers as local variables in the generated code (2026-10-24)
 

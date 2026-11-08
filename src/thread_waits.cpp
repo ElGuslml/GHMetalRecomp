@@ -21,7 +21,9 @@
 // timer and a context switch: in a song the waiting threads spent more time in the kernel than in the game. So the
 // waits that can are smarter (docs/cpu-usage.md):
 // - A job worker with an empty queue blocks on the job event itself, which the game pulses (NtPulseEvent) when it
-//   queues a job: it wakes at once for a job instead of within a slice, and otherwise once a millisecond.
+//   queues a job: it wakes at once for a job instead of within a slice, and otherwise once a millisecond. The event is
+//   a manual-reset one, so each pulse woke every waiting worker for one job; the job queue's pulse now wakes one
+//   (2026-11-08).
 // - The main thread waiting for a group of jobs to finish (sub_822BAD30: while (pending[group] != 0) run the
 //   group's jobs, sub_82425D30) took the queue's critical section again and again while the workers ran them, the
 //   lock they need to finish: between its passes it now watches the count without the lock.
@@ -61,6 +63,10 @@ REXCVAR_DEFINE_INT32(ghmetallica_wait_sleep_us, 200, "GHMetallica",
                      "is longer than ghmetallica_wait_spin_us (0 = busy wait, as on the console)");
 REXCVAR_DEFINE_INT32(ghmetallica_wait_spin_us, 100, "GHMetallica",
                      "Game threads waiting for work: busy-wait this long before sleeping");
+REXCVAR_DEFINE_BOOL(ghmetallica_job_wake_one, true, "GHMetallica",
+                    "With ghmetallica_wait_smart, a job queued wakes one waiting job worker (an auto-reset event "
+                    "set) instead of pulsing the game's manual-reset event, which woke all three for each job: two "
+                    "of them found it taken and slept again (false = the game's pulse)");
 REXCVAR_DEFINE_BOOL(ghmetallica_wait_smart, true, "GHMetallica",
                     "Job workers block on the game's job event, the main thread waits for its jobs without taking "
                     "the queue's lock, the render thread sleeps until shortly before the vertical blank (false = "
@@ -136,6 +142,14 @@ struct JobWait {
 };
 thread_local JobWait t_job_event;
 
+// The workers' wake-up when ghmetallica_job_wake_one is on: auto-reset, so each job queued releases one waiting worker,
+// and a job queued while none is waiting yet (between its check of the queue and its wait) leaves it set for the next
+// one to wait, where the game's pulse was lost then.
+HANDLE JobWakeEvent() {
+  static const HANDLE event = CreateEventW(nullptr, FALSE, FALSE, nullptr);
+  return event;
+}
+
 // XEvent's host event, which the SDK keeps protected (only its own waits use it): a pointer to the member, formed in
 // a derived class that is never instantiated.
 struct EventHandleAccess : rex::system::XEvent {
@@ -172,15 +186,18 @@ bool WaitForJob(JobWait& state) {
   if (!SetWaitableTimerEx(state.timer, &due, 0, nullptr, nullptr, nullptr, 0)) {
     return false;
   }
-  HANDLE handles[2] = {wait->native_handle(), state.timer};
+  // The game's event still ends the wait: its own pulse with ghmetallica_job_wake_one off, and its NtSetEvent when the
+  // job system shuts down (sub_822BA900).
+  HANDLE handles[3] = {wait->native_handle(), state.timer, JobWakeEvent()};
+  const DWORD count = handles[2] ? 3 : 2;
   const Clock::time_point start = Clock::now();
-  const DWORD result = WaitForMultipleObjects(2, handles, FALSE, INFINITE);
+  const DWORD result = WaitForMultipleObjects(count, handles, FALSE, INFINITE);
   if (result == WAIT_OBJECT_0 && Clock::now() - start < 5us) {
     ++state.immediate;
   } else {
     state.immediate = 0;
   }
-  return result == WAIT_OBJECT_0 || result == WAIT_OBJECT_0 + 1;
+  return result >= WAIT_OBJECT_0 && result < WAIT_OBJECT_0 + count;
 }
 
 // A vertical blank counter's last advance seen while the render thread was checking it closely, the anchor of
@@ -274,6 +291,19 @@ void GHMetallicaJobWaitHook() {
     return;
   }
   SpinOrSleep(t_job_wait);
+}
+
+// [[midasm_hook]] 0x822BA9C0 (sub_822BA9C0, return_on_true: the job event's pulse, NtPulseEvent on the manual-reset
+// event at 0x82A8D574). Its one caller, sub_822BB198, queues a job under the queue's lock and pulses when a worker
+// waits (the idle count at 0x82A8D968, which sub_82425A18 raises while it checks the queue). Every waiting worker woke
+// for each job, saw the queue not empty (it reads it without the lock) and ran for the lock, and all but one found
+// the job taken and slept again: in a song each worker woke ~4,900 times a second. Here one waiting worker is woken.
+bool GHMetallicaJobPulseHook() {
+  if (!Smart() || !REXCVAR_GET(ghmetallica_job_wake_one) || !JobWakeEvent()) {
+    return false;
+  }
+  SetEvent(JobWakeEvent());
+  return true;
 }
 
 // [[midasm_hook]] 0x822BADA4 (sub_822BAD30, the main thread waiting for a job group: while (pending[group] != 0)
