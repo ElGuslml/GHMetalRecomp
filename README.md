@@ -106,7 +106,9 @@ From then on, the launcher keeps itself up to date: when a new version comes out
   and the sound comes up to about 55 ms sooner (measured on a USB audio interface).
 - 📺 **Wide and ultrawide screens:** the stage fills 16:9, 21:9 and wider screens, while the note highway, the HUD and
   the menus keep their shape in the center.
-- 🎶 **Downloadable content:** install your own Xbox 360 DLC packages (the *Death Magnetic* album) from the launcher.
+- 🎶 **Downloadable content:** point the launcher's DLC tab at the folder where you keep your Xbox 360 packages (the
+  *Death Magnetic* album): the game reads them from there (nothing is copied, and the other ElGus Recomps launchers can
+  use the same folder), and packages made for another game come turned off.
 - 👤 **Profiles:** your saves, achievements and playtime in a profile shared by all the ElGus Recomps launchers.
 - 👥 **Play together:** the controller that presses a button at the title screen plays with your profile; the other
   controllers join as its guests, as on the Xbox 360.
@@ -171,7 +173,7 @@ Everything is set up from **GH Metallica Launcher**, with the mouse, the keyboar
 | Tab | What you find there |
 |---|---|
 | ▶️ **Play** | Start the game, and see your settings, achievements and updates at a glance. |
-| 🎶 **DLC** | Install your downloadable content packages, and see the installed ones. |
+| 🎶 **DLC** | Your DLC folder: the game reads your packages from there, nothing copied. They are grouped by the game they were made for, each with its switch. |
 | 🏆 **Achievements** | All 50 achievements, the ones you have unlocked and when. |
 | 🎮 **Controls** | Your guitars, controllers and keyboard: what each button or key does, and which controller sings. The keyboard as a guitar (experimental). Frets that strum as you press them, on a controller or the keyboard. Your microphone (experimental): device, gain and level. |
 | ⚙️ **Settings** | **Game:** the language. **Video:** monitor, fullscreen or window, resolution, image format (fill a wide screen or keep 16:9), upscaling (AMD FSR 1, NVIDIA NIS) and sharpness. **Graphics:** renderer, frame rate, antialiasing, texture sharpness, the game's screen effects. |

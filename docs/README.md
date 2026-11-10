@@ -28,7 +28,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [The keyboard playing guitar taken for the singer](controller-kind.md) | Fixed: each player's kind of controller (guitar, drums, singer) follows the controller they play with, outside a song |
 | [Playing with a controller or the keyboard as a guitar](guitar-controller.md) | Working: the controller is reported as a guitar; the keyboard's frets on D F J K L, a switch to strum on each fret; assignments per controller, a whammy bar's calibration |
 | [V-Sync](vsync.md) | Added: the launcher's V-Sync row, on by default: FIFO and the game's vertical blank on the monitor's (4 ms from present to display at 160 Hz), or each frame as it is ready |
-| [Downloadable content (DLC)](dlc.md) | Working: the player's Death Magnetic package plays in Quickplay; the launcher's DLC page installs packages |
+| [Downloadable content (DLC)](dlc.md) | Working: the player's Death Magnetic package plays in Quickplay; the launcher's DLC page takes the player's DLC folder, read in place (0.4.1-beta.1) |
 | [An empty screen after pressing a button on a second controller](second-controller.md) | Fixed: the controller that presses a button at the title screen plays with the profile, the others are its guests, as on the console |
 | [Only the guitar and the kick drum heard in the songs](song-audio.md) | Fixed: every track of a song plays |
 | [Noise instead of music from the title screen on](menu-music.md) | Fixed: the game's audio output is called at the console's pace |

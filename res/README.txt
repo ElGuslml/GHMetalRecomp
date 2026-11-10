@@ -102,10 +102,14 @@ when you press PLAY.
     sound comes sooner (about 55 ms on a USB audio interface); other programs cannot play on that device
     while the game runs. Calibrate the audio again after changing it. Debug keys (off by default): F3, F4
     and ` open the developer's windows in the game (frame times, settings, console).
-- DLC: install your own Xbox 360 downloadable content. "Choose folder..." looks for packages in a folder and
-  installs them; your files stay where they are. Metallica's "Death Magnetic" album (the package made for
-  Guitar Hero III, which this game also reads) adds 10 songs to Quickplay's song list (its blue button shows
-  the downloaded content).
+- DLC: choose the folder where you keep your Xbox 360 packages (LIVE, PIRS or CON files, in it or its
+  subfolders). The game reads them from there: nothing is copied, and the other ElGus Recomps launchers can
+  use the same folder. The packages are listed by the game they were made for, each with a switch; those
+  made for another game come turned off (this game would only pass them by). Metallica's "Death Magnetic"
+  album (the package made for Guitar Hero III, which this game also reads) adds 10 songs to Quickplay's song
+  list (its blue button shows the downloaded content). DLC installed by an earlier version keeps working; if
+  your folder has the same packages, "Remove copies" deletes the installed copies to free space (it asks
+  first, and never touches your folder).
 - Updates: the launcher checks for a new version when it starts (you can turn that off) and installs it
   for you, keeping your saves, settings and game files.
 

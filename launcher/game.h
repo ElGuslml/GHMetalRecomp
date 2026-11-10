@@ -145,11 +145,11 @@ inline constexpr std::array<Toggle, 6> kToggles{{
 
 // --- Downloadable content ---
 
-// The DLC page (page_dlc.cpp, dlc.h): Xbox 360 content packages, each installed by the game's --install_content tool
-// mode into its user data's content folder, where its system software lists them. On when the game takes
-// downloadable content: checked with Guitar Hero III's "Death Magnetic" album (title 415607F7), whose 10 songs the
-// game lists in Quickplay (docs/dlc.md).
+// The DLC page (page_dlc.cpp, dlc.h; docs/dlc.md): the player's DLC folder, its packages read by the game where they
+// are (SDK change 80, content_packages.txt); packages extracted by launchers before 3.16 still read. Checked with Guitar
+// Hero III's "Death Magnetic" album (title 415607F7), whose 10 songs the game lists in Quickplay.
 inline constexpr bool kHasDlcPage = true;
+inline constexpr DlcMode kDlcMode = DlcMode::kFolder;
 
 // Which installed packages the game reads (docs/dlc.md, local_docs/32): its DLC script (5A4B6A0C) looks for one file,
 // adl1.pak, Death Magnetic's manifest, in every content folder; a package without it is passed by (World Tour's
