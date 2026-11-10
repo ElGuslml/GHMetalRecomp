@@ -40,6 +40,15 @@ keeps in a dispatch header, which an enumerator does not have: after the first c
 taken a freed handle, sometimes a file the game had just opened, and the game's next read of the disc failed. Now the
 object is found by its guest address. Every game uses this path; more packages only made it likelier.
 
+## Packages of other games: turned off (launcher 3.15.0)
+
+The game's DLC script (`5A4B6A0C`) looks for one file in the content folders, `adl1.pak`, Death Magnetic's manifest;
+a package without it (World Tour's `adl2`, Guitar Hero 5's `bmanifest_*`) is passed by. Nothing harmful here: in Guitar
+Hero 5 such a package made the game report a damaged package and turn off every DLC (its `docs/dlc.md`). GH Metallica
+Launcher 3.15.0 turns off a package without `adl1.pak.xen` (`kDlcRule` in `launcher/game.h`), with the note "Not made
+for this game: it adds nothing here": its folder moves to `userdata\0000000000000000\41560830\Disabled DLC`, where the
+game does not look. Each package has a switch; one turned on by the player stays on.
+
 ## Turning it off
 
-Remove the package from the DLC page, or delete its folder.
+Turn the package off on the DLC page (or remove it), or move its folder out of `00000002`.

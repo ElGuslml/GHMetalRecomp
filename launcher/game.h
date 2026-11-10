@@ -151,6 +151,12 @@ inline constexpr std::array<Toggle, 6> kToggles{{
 // game lists in Quickplay (docs/dlc.md).
 inline constexpr bool kHasDlcPage = true;
 
+// Which installed packages the game reads (docs/dlc.md, local_docs/32): its DLC script (5A4B6A0C) looks for one file,
+// adl1.pak, Death Magnetic's manifest, in every content folder; a package without it is passed by (World Tour's
+// adl2, Guitar Hero 5's bmanifest_*). Nothing resolves folders here, so such a package does no harm: only nothing.
+inline constexpr const char* kDlcFiles[] = {"adl1.pak.xen"};
+inline constexpr DlcRule kDlcRule{.files = kDlcFiles, .foreign = DlcForeign::kUnused};
+
 // NativeXRenderer's pipeline list (its D129, pipelines.h): Play first runs the game's --native_x_renderer_prepare_pipelines
 // ("Compiling shaders") when the executable, the list (<TITLEID>.pipelines.list beside it) or the graphics driver
 // changed since the last time. On when the game's NativeXRenderer profile names its shader files.
