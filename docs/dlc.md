@@ -31,6 +31,15 @@ game's executable without a window (for its title ID), extracts the package into
 holds its name (the SDK's `ContentManager::InstallContent`), and quits. The package's own title ID is not checked, as
 the *Death Magnetic* one shows.
 
+## Many packages: "Disc Read Error" at start (fixed, SDK change 78)
+
+Found in GH Warriors of Rock (2026-11-09), whose collection of 190 packages showed the "Disc Read Error" dialog a few
+seconds after starting. The game lists its content one package at a time with the XDK's asynchronous `XEnumerate`,
+which ends each call with `ObDereferenceObject` on the enumerator. The SDK looked that object up through a handle it
+keeps in a dispatch header, which an enumerator does not have: after the first call it released whatever object had
+taken a freed handle, sometimes a file the game had just opened, and the game's next read of the disc failed. Now the
+object is found by its guest address. Every game uses this path; more packages only made it likelier.
+
 ## Turning it off
 
 Remove the package from the DLC page, or delete its folder.
