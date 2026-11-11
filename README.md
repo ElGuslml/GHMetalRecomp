@@ -35,23 +35,19 @@ guitar.
 > something goes wrong, please report it in [issues](https://github.com/ElGuslml/GHMetalRecomp/issues) or on
 > [Discord](https://discord.gg/XQtM5TmNs8).
 
-## 🆕 What's new in 0.4.0
+## 🆕 What's new in 0.4.1
 
-- 🚀 **No more stutters the first time something shows up:** the first time you press PLAY (and after an update of
-  the game or of your graphics driver), the launcher shows **"Compiling shaders"** for a few seconds and prepares the
-  game's graphics for your graphics card. The first song, venue or effect then plays smoothly.
-- 🎸 **More guitars:** PS3 guitars play with the right frets (yellow and blue were swapped) and a whammy bar at rest,
-  CRKD guitars work, and in the launcher you can **assign your whammy bar and your tilt** to any axis of your guitar
-  (for third-party and Wii guitars). Every controller now works in the launcher, not just the first one.
-- 🔥 **Lighter on your processor:** songs use noticeably less CPU, with the game's threads no longer waking each other
-  up tens of thousands of times a second.
-- ✨ **A clean glow at high resolutions:** the bloom around lights and bright surfaces showed a grid pattern above
-  1080p; it is smooth now.
-- ⚡ **The frets above 60 FPS** spring back after each hit as quickly as at 60.
-- 🔴 **Ready for AMD graphics cards:** a problem that would have hit them at 2560 wide and above is fixed (found by
-  simulating an AMD card; not tested on a real one yet).
+- 📁 **Your DLC folder, read where it is:** in the launcher's DLC tab, choose the folder where you keep your Xbox 360
+  packages. The game reads them from there and nothing is copied (before, the *Death Magnetic* album took another
+  1.4 GB in every game that used it). The other ElGus Recomps launchers can use the same folder.
+- 🗂️ **Packages grouped by game,** each with its switch; those made for another game come turned off, since this game
+  only reads *Death Magnetic*.
+- 💿 **No more "Disc Read Error"** a few seconds after starting with many DLC packages installed.
+- 🚀 **"Compiling shaders" prepares more of the game,** so fewer things stutter the first time they show up.
 
-The full list is in the [release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.4.0).
+0.4.0 brought "Compiling shaders", PS3 and CRKD guitars with the whammy bar and tilt assigned in the launcher, less
+CPU in songs and a clean glow at high resolutions ([its release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.4.0)).
+The full list for 0.4.1 is in the [release notes](https://github.com/ElGuslml/GHMetalRecomp/releases/tag/v0.4.1).
 
 ## 🎮 How to play
 
