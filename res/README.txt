@@ -69,7 +69,9 @@ when you press PLAY.
 - Controls: your guitars, controllers, the keyboard and the microphone.
   - A guitar or a controller: what each of its buttons does. A guitar's frets are A, B, Y, X and LB of an
     Xbox controller, strum is the D-pad, the whammy bar the right stick (a controller's, pushed to either
-    side) and Star Power Back. A controller's Instrument: Guitar, or Vocals for the singer (see SINGING).
+    side) and Star Power Back. A controller's Instrument: Guitar, Drums, or Vocals for the singer (see
+    SINGING). With Drums, Drum kit chooses 5 lanes (Guitar Hero) or 4 lanes (the game's Rock Band highway, as
+    with a Rock Band drum kit on the console); a real drum kit has the same choice.
     "Strum when a fret is pressed" makes the frets of every controller playing guitar strum as you press
     them, in songs. Each controller keeps its own assignments. Whammy bar: how far the game reads the bar.
     If it reads pressed with the bar at rest, or does nothing (some third-party guitars), press Assign,
@@ -81,6 +83,9 @@ when you press PLAY.
     any key. "Strum when a fret is pressed" makes each fret strum as you press it, in songs. Shift, Ctrl
     and Alt can be keys of their own (press and release one alone): each side is a separate key, so Left
     Alt can be Star Power. F1 to F12 can be assigned too: a key on a control only presses that control.
+    Instrument: Drums plays the keyboard as a drum kit with keys of its own (5 lanes: D red, F yellow,
+    J blue, K orange, L green; 4 lanes: K green; Space the kick pedal, Backspace Star Power); your guitar
+    keys stay as they were.
   - Microphone (experimental): the microphone you sing with, its channel and gain, and its level (see
     SINGING).
 - Settings:

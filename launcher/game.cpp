@@ -262,7 +262,83 @@ std::vector<GameControlGroup> Guitar(const ControlWords& w) {
   };
 }
 
+// One language's words for the drums' functions.
+struct DrumWords {
+  const char* pads;
+  const char* kick_group;
+  const char* menus;
+  const char* red;
+  const char* yellow_cymbal;
+  const char* yellow_pad;
+  const char* blue;
+  const char* orange;
+  const char* green;
+  const char* kick;
+  const char* kick_chip;
+  const char* dpad_up;
+  const char* dpad_down;
+};
+
+// The game's drums on the Xbox 360 controller, in the highway's order: a Guitar Hero kit's pads on B, Y, X and A, its
+// orange cymbal on RB and its kick pedal on LB; a Rock Band kit (four lanes) has no orange. Star Power on Back; the
+// menus on the D-pad and Start.
+std::vector<GameControlGroup> Drums(const DrumWords& w, bool four) {
+  std::vector<GameControl> pads = {
+      {int(Bind::kB), "", kRed, kOnFret, w.red},
+      {int(Bind::kY), "", kYellow, kOnFret, four ? w.yellow_pad : w.yellow_cymbal},
+      {int(Bind::kX), "", kBlue, kOnFret, w.blue},
+  };
+  if (!four) pads.push_back({int(Bind::kRightShoulder), "", kOrange, kOnFret, w.orange});
+  pads.push_back({int(Bind::kA), "", kGreen, kOnFret, w.green});
+  return {
+      {w.pads, pads},
+      {w.kick_group,
+       {
+           {int(Bind::kLeftShoulder), w.kick_chip, kGrey, kOnGrey, w.kick},
+           {int(Bind::kBack), "SP", kGrey, kOnStarPower, "Star Power"},
+       }},
+      {w.menus,
+       {
+           {int(Bind::kDpadUp), "\xE2\x86\x91", kGrey, kOnGrey, w.dpad_up, w.dpad_up},
+           {int(Bind::kDpadDown), "\xE2\x86\x93", kGrey, kOnGrey, w.dpad_down, w.dpad_down},
+           {int(Bind::kStart), "START", kGrey, kOnGrey, "Start"},
+       }},
+  };
+}
+
 }  // namespace
+
+const std::vector<GameControlGroup>& GameDrumControlsFor(uint32_t language, bool four_lanes) {
+  static const DrumWords kEnglish{"Drums \xC2\xB7 Pads", "Drums \xC2\xB7 Kick and Star Power", "Menus", "Red pad",
+                                  "Yellow cymbal", "Yellow pad", "Blue pad", "Orange cymbal", "Green pad",
+                                  "Kick pedal", "KICK", "D-pad up", "D-pad down"};
+  static const DrumWords kGerman{"Schlagzeug \xC2\xB7 Pads", "Schlagzeug \xC2\xB7 Bass und Star Power", "Menüs",
+                                 "Rotes Pad", "Gelbes Becken", "Gelbes Pad", "Blaues Pad", "Oranges Becken",
+                                 "Grünes Pad", "Bassdrum-Pedal", "BASS", "Steuerkreuz hoch", "Steuerkreuz runter"};
+  static const DrumWords kFrench{"Batterie \xC2\xB7 Pads", "Batterie \xC2\xB7 Grosse caisse et Star Power", "Menus",
+                                 "Pad rouge", "Cymbale jaune", "Pad jaune", "Pad bleu", "Cymbale orange", "Pad vert",
+                                 "Pédale de grosse caisse", "GC", "Croix haut", "Croix bas"};
+  static const DrumWords kSpanish{"Batería \xC2\xB7 Pads", "Batería \xC2\xB7 Bombo y Star Power", "Menús",
+                                  "Pad rojo", "Platillo amarillo", "Pad amarillo", "Pad azul", "Platillo naranja",
+                                  "Pad verde", "Pedal del bombo", "BOMBO", "Cruceta arriba", "Cruceta abajo"};
+  static const DrumWords kItalian{"Batteria \xC2\xB7 Pad", "Batteria \xC2\xB7 Cassa e Star Power", "Menu",
+                                  "Pad rosso", "Piatto giallo", "Pad giallo", "Pad blu", "Piatto arancione",
+                                  "Pad verde", "Pedale della cassa", "CASSA", "Croce su", "Croce giù"};
+  const DrumWords& words = language == 3   ? kGerman
+                           : language == 4 ? kFrench
+                           : language == 5 ? kSpanish
+                           : language == 6 ? kItalian
+                                           : kEnglish;
+  // Built once per language and kind of kit.
+  static std::vector<GameControlGroup> built[7][2];
+  static bool done[7][2] = {};
+  const uint32_t index = language < 7 ? language : 1;
+  if (!done[index][four_lanes]) {
+    built[index][four_lanes] = Drums(words, four_lanes);
+    done[index][four_lanes] = true;
+  }
+  return built[index][four_lanes];
+}
 
 const std::vector<GameControlGroup>& GameControlsFor(uint32_t language) {
   static const std::vector<GameControlGroup> kEnglish = Guitar({

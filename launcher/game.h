@@ -199,6 +199,31 @@ inline constexpr std::array<KeyDefault, 19> kKeyboardDefaults{{
     {"keybind_lstick_right", ""},
     {"keybind_lstick_press", ""},
 }};
+// The keyboard playing drums (kHasDrums): its keys apart from the guitar's, in the highway's order. Five lanes, a
+// Guitar Hero kit (pads on B, Y, X and A, the orange cymbal on RB, the kick pedal on LB): D red, F yellow, J blue,
+// K orange, L green, Space the kick; four lanes, a Rock Band kit (no orange): K green. Backspace is Star Power (Space
+// is the kick); the right stick's arrow off (a Guitar Hero kit's sticks carry its pads' velocity). The others are the
+// guitar's (kKeyboardDefaults), as the menus' keys.
+inline constexpr std::array<KeyDefault, 8> kDrumKeyboardDefaults{{
+    {"keybind_b", "D"},
+    {"keybind_y", "F"},
+    {"keybind_x", "J"},
+    {"keybind_right_shoulder", "K"},
+    {"keybind_a", "L"},
+    {"keybind_left_shoulder", "Space"},
+    {"keybind_back", "Backspace"},
+    {"keybind_rstick_right", ""},
+}};
+inline constexpr std::array<KeyDefault, 8> kDrumKeyboardDefaultsFourLanes{{
+    {"keybind_b", "D"},
+    {"keybind_y", "F"},
+    {"keybind_x", "J"},
+    {"keybind_right_shoulder", ""},
+    {"keybind_a", "K"},
+    {"keybind_left_shoulder", "Space"},
+    {"keybind_back", "Backspace"},
+    {"keybind_rstick_right", ""},
+}};
 // The Keyboard page's switch that makes the keyboard's frets strum as they are pressed (the SDK's mnk_tap_target with
 // src/startup.cpp's mnk_tap_sources, the frets): the control it presses when on, the D-pad (strumming); "": no switch.
 // The same on each controller's page for the controllers playing guitar (gamepad_tap_target, gamepad_tap_sources).
@@ -216,6 +241,14 @@ inline constexpr bool kHasWhammy = true;
 // game gives the vocals; the SDK's gamepad_device_subtypes, change 56). Real guitars and drum kits keep their own.
 // Their names are GameTexts::part_instrument and part_vocals.
 inline constexpr bool kHasMicrophones = true;
+
+// --- Drums ---
+
+// A controller or the keyboard playing drums (launcher 3.20, the Instrument row): the SDK's gamepad_device_subtypes
+// gives it XInput's drum kit subtype, 8. The game plays a kit as Guitar Hero's five lanes, or as a Rock Band kit on
+// its own four-lane highway when the kit's capability flags have bit 0 (sub_8239D688 / sub_8239D890, the SDK's change
+// 87: "8:1"); the Drum kit row chooses. A real drum kit gets the row too.
+inline constexpr bool kHasDrums = true;
 // The microphone's gain (usb_microphone_1_gain) until the player changes it, and the Microphone's Reset: src/startup.cpp's.
 inline constexpr int kMicrophoneGainDefault = -12;
 
@@ -224,6 +257,8 @@ inline constexpr int kMicrophoneGainDefault = -12;
 // The game's functions (game_types.h's GameControl) in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls
 // (texts.cpp). The Keyboard page lists after them, under "Other controls", the ones no function is on.
 const std::vector<GameControlGroup>& GameControlsFor(uint32_t language);
+// The same for a controller or the keyboard playing drums (kHasDrums), five or four lanes.
+const std::vector<GameControlGroup>& GameDrumControlsFor(uint32_t language, bool four_lanes);
 
 // --- Texts of the game's own (game.cpp) ---
 
