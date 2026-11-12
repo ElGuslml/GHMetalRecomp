@@ -1,6 +1,6 @@
 # Low latency audio
 
-**Status: added (2026-10-30), off by default: the launcher's Settings > Game > Low latency audio.**
+**Status: added (2026-10-30), off by default: the launcher's Settings > Audio > Low latency audio (Settings > Game before launcher 3.19).**
 
 ## Symptom
 
@@ -15,7 +15,7 @@ or a monitor's output takes about 20-25 ms less on the shared path (`local_docs/
 
 ## Fix
 
-**Low latency audio** in GH Metallica Launcher (Settings > Game; the SDK's `audio_wasapi_exclusive`, recomp change 64):
+**Low latency audio** in GH Metallica Launcher (Settings > Audio; the SDK's `audio_wasapi_exclusive`, recomp change 64):
 the game takes the output device in exclusive mode (WASAPI), past Windows' audio engine, keeps 10 ms in the device's
 buffer (`audio_wasapi_exclusive_buffer_ms`) and queues 2 of its frames instead of 4 (`audio_wasapi_exclusive_queue`).
 Other programs (music, Discord) cannot play on that device while the game runs; when the device is busy or refuses,

@@ -91,17 +91,23 @@ when you press PLAY.
     text sharp (for a 4K screen or a slower graphics card); Quality says how many fewer, Sharpness how sharp
     (it works without upscaling too). V-Sync (on by default): no tearing, and no extra delay; leave it on with
     a G-Sync or FreeSync monitor too.
-  - Graphics: the renderer, the frame rate, antialiasing and anisotropic filtering. NativeXRenderer (the
-    default) draws the game natively with Vulkan; Xenos emulates the Xbox 360 GPU instead (DirectX 12 or
-    Vulkan): choose it if something looks wrong with NativeXRenderer, and tell us where. Frame rate: 60 FPS
-    (original), and 120, 144, 160, 165 or 240 FPS where your monitor reaches them (experimental). The songs
-    keep their speed and stay in sync at every frame rate. The game's screen effects can be turned off one
-    by one.
+  - Graphics: the renderer, the graphics card, the frame rate, antialiasing and anisotropic filtering.
+    NativeXRenderer (the default) draws the game natively with Vulkan; Xenos emulates the Xbox 360 GPU
+    instead (DirectX 12 or Vulkan): choose it if something looks wrong with NativeXRenderer, and tell us
+    where. Graphics card: on a PC with two (a laptop's integrated and dedicated ones), the one the game draws
+    with. Frame rate: 60 FPS (original), and 120, 144, 160, 165 or 240 FPS where your monitor reaches them
+    (experimental). The songs keep their speed and stay in sync at every frame rate. The game's screen effects
+    can be turned off one by one.
   - Game: the language (English, French, German, Italian or Spanish; the game has no language menu of its
-    own), and Low latency audio (off by default): the game takes your audio device in exclusive mode and the
-    sound comes sooner (about 55 ms on a USB audio interface); other programs cannot play on that device
-    while the game runs. Calibrate the audio again after changing it. Debug keys (off by default): F3, F4
-    and ` open the developer's windows in the game (frame times, settings, console).
+    own). Debug keys (off by default): F3, F4 and ` open the developer's windows in the game (frame times,
+    settings, console). Skip the intro videos (off by default): the game starts at its title screen. Game
+    debug menu (off by default): the debug menu its developers used, in the main menu and the pause menu
+    (its texts in English; Unlock All and the money items change your save).
+  - Audio: the output device (Windows default, or another one), the channels (Automatic, Stereo or Mono:
+    the same sound on both sides), the volume, mute while another window is in front, and Low latency audio
+    (off by default): the game takes your audio device in exclusive mode and the sound comes sooner (about
+    55 ms on a USB audio interface); other programs cannot play on that device while the game runs.
+    Calibrate the audio again after changing it.
 - DLC: choose the folder where you keep your Xbox 360 packages (LIVE, PIRS or CON files, in it or its
   subfolders). The game reads them from there: nothing is copied, and the other ElGus Recomps launchers can
   use the same folder. The packages are listed by the game they were made for, each with a switch; those
