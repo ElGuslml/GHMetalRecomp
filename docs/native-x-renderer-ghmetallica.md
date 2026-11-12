@@ -442,6 +442,16 @@ the per-draw work D139 trimmed). The process 1.57 -> 1.56 cores (the job workers
 vary by a few percent with the song). GPU time (3.00 ms a frame), frame pacing and the images unchanged; D138's dither
 costs no measurable GPU time and James's hair stays solid.
 
+**The gate told each signal's submission** (2026-11-12, NativeXRenderer D142, the SDK's change 88; `crowd-stutters.md`).
+At Tushino Air Field (3440x1440, 160 FPS) the renderer's CPU was 3.1-3.3 ms a frame (557-890 draws, 4.2-4.9 MB of guest
+memory copied and 5.3-6.6 MB compared a frame) and the command processor waited 2.9-3.2 ms a frame at its signals, nearly
+all of it; the game's render thread spent 62 % of its samples in the present's fence wait (sub_821D1418 -> sub_821C8870).
+RenderDoc per event (two frames, 3.3 and 3.5 ms of GPU): the scene's draws 1.1-1.5 ms, the guest memory copies 0.73-0.85
+ms (700+ copy commands), the full-screen passes 0.6-0.7, the crowd's impostor cards (shaders 2669/2670, 2-3 draws of
+11,760-18,546 indices) 0.31 ms with the crowd behind and 0.55 ms with it in front, the 1024x1024 shadow map (2752x2048 on
+the host) 0.24. With D142, in the career's first song at 240 FPS, V-Sync off: the signals' waits 0.00 ms a frame (1.9-2.6
+without, in one run), 240 FPS either way.
+
 ## 8. Open questions
 
 1. **Inline draws.** The profile relies on D77 (`inline_draw_end = 13444`) for both DrawIndexedVerticesUP (no

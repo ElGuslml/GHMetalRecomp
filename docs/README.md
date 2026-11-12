@@ -25,6 +25,7 @@ To build the project and work on it: [Building and developing](development.md).
 | [Crackling, or the sound muting with low latency audio, on slower PCs](audio-crackling.md) | Fixed: the audio calls no longer spaced, the catch-up never adds silence |
 | [Low latency audio](audio-latency.md) | Added, off by default: the launcher's Settings > Audio row, the device in exclusive mode (77 -> 20 ms on a USB interface) |
 | [Choosing the audio output and the graphics card](audio-and-gpu.md) | Added: the launcher's Settings → Audio (output device, stereo or mono, volume, mute in the background, low latency) and Settings → Graphics → Graphics card |
+| [Stutters at 60 FPS in crowded venues on slower PCs](crowd-stutters.md) | Fixed (0.5.0-beta.1): the GPU's signals to the game wait only for the renderer's work on what came before each (NativeXRenderer) |
 | [CPU usage: five cores at 100 %](cpu-usage.md) | Fixed: the game's threads sleep while they wait; registers as local variables in the generated code |
 | [Singing with a PC microphone](microphone.md) | Experimental: a PC microphone as the game's USB microphone, a controller's instrument (guitar or vocals) in the launcher |
 | [Shift, Ctrl, Alt and the F keys on the keyboard's controls](keyboard-keys.md) | Added: a modifier alone is a key of its own (Alt as Star Power); F3, F4 and ` do nothing unless the launcher's Debug keys row is on; a key on a control only presses it |
