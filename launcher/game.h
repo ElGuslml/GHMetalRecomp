@@ -37,6 +37,8 @@ inline constexpr const char* kVersion = RECOMP_VERSION_STR;
 // The title the Play page shows over the art: a small line above, the name below.
 inline constexpr const char* kArtKicker = "GUITAR HERO";
 inline constexpr const char* kArtTitle = "Metallica";
+// The name's size in dp (launcher 3.18's mockup: 120; game_types.h's default is 96).
+inline constexpr float kArtTitleSize = 120.0f;
 // The mark in the header's logo while the game's icon is unknown: an icon's SVG paths in a 24-unit box, stroked as the
 // launcher's icons are (ui.cpp). A guitar pick with a lightning bolt (the mockup's, local_docs/launcher_design).
 inline constexpr const char* kBrandIcon =
@@ -48,6 +50,10 @@ inline constexpr const char* kBrandSubtitle = "Metallica";
 // point kept in view, as fractions of its width and height. The pile of skulls, at the bottom right.
 inline constexpr float kArtFocusX = 0.8f;
 inline constexpr float kArtFocusY = 1.0f;
+// The art's corner under the pages other than Play (launcher 3.18, game_types.h's defaults): the pile of skulls and its
+// bones, without the lightning bolts above it, its top peeking over the footer (Gustavo's 2026-11-11 mockup).
+inline constexpr ArtPart kArtCorner{480.0f, 330.0f, 1280.0f, 760.0f};
+inline constexpr float kArtCornerRise = 145.0f;
 // The logo's mark on a disc instead of a rounded square.
 inline constexpr bool kBrandRound = false;
 // The titles in capitals, as the mockup draws them (the game's own texts that the launcher shows as titles).
