@@ -204,6 +204,11 @@ ghmetallica_fx_grain = true
 ghmetallica_fx_color = true
 ghmetallica_fx_vignette = true
 ghmetallica_fx_ink = true
+# The game's own debug menu (Neversoft's, src/debug_menu.cpp): true adds a Debug item to the main menu and the pause
+# menu (Unlock All, Skip Into Song, Settings with Toggle Bot, Show Song Time, Change Venue, ...). The development
+# shortcuts the same switch had (unlocking or completing songs from the setlist and the gig posters) stay off. Some
+# items need Neversoft's development tools and do nothing. false = as on the console.
+ghmetallica_debug_menu = false
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

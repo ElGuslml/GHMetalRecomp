@@ -279,3 +279,27 @@ registers = ["r4", "r30"]
 address = 0x8251EEA8   # mr r11,r24 (sub_8251EC80), after lwz r31,12(r25): r31 = the effects' mask
 name = "GHMetallicaScreenFxMaskHook"
 registers = ["r31"]
+
+# The game's debug menu offered in the main and pause menus (src/debug_menu.cpp, ghmetallica_debug_menu): the script
+# global enable_button_cheats reads as 1 only in the scripts that build those menus. The script interpreter's
+# statement (sub_822CF7C8, r31 = the script) evaluates expressions with sub_823AED90 at two places (none of these
+# addresses is a branch target); sub_822BD1E8 resolves a "$name" component (r3) to the global's value.
+[[midasm_hook]]
+address = 0x822CF998   # lwz r3,16(r31), before bl 0x823AED90 at 0x822CF99C
+name = "GHMetallicaScriptEvalEnterHook"
+registers = ["r31"]
+[[midasm_hook]]
+address = 0x822CF9A0   # stw r3,16(r31), after it
+name = "GHMetallicaScriptEvalLeaveHook"
+[[midasm_hook]]
+address = 0x822CFCAC   # bl 0x823AED90 (the other evaluation, reached past bne 0x822CFCB8)
+name = "GHMetallicaScriptEvalEnterHook"
+registers = ["r31"]
+[[midasm_hook]]
+address = 0x822CFCB0   # stw r3,16(r31), after it
+name = "GHMetallicaScriptEvalLeaveHook"
+[[midasm_hook]]
+address = 0x822BD1E8   # lbz r11,2(r3) (the entry of sub_822BD1E8): r3 = the component
+name = "GHMetallicaGlobalResolveHook"
+registers = ["r3"]
+return_on_true = true
