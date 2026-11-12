@@ -433,6 +433,15 @@ frame (into a 768x1024 target, resolved with its mips at the frame's start) with
 first draw: near 0.1, far 400, 44.5 degrees. The scene resolve (0x8251F04C) is before the bloom composite: not a
 HUD-less picture.
 
+**CPU per draw** (2026-11-11, NativeXRenderer D136-D140 and the SDK's recomp change 82, made for Kameo's dense areas).
+The career's first song (The Forum, For Whom the Bell Tolls, the bot) at 3440x1440, 160 FPS, V-Sync, FXAA: three
+alternating runs of the 0.4.1 release and of this build, 30 s each at the same moment of the song. The game's render
+thread 22.2 -> 20.2 % of a core (21.5-23.2 -> 20.1-20.2; about -0.13 ms a frame at ~485 draws), the renderer's CPU
+2.38 -> 2.27 ms a frame (4.9 -> 4.65 us a draw: here most of it is the ~3.5 MB of guest memory copied each frame, not
+the per-draw work D139 trimmed). The process 1.57 -> 1.56 cores (the job workers and the main thread, the game's own code,
+vary by a few percent with the song). GPU time (3.00 ms a frame), frame pacing and the images unchanged; D138's dither
+costs no measurable GPU time and James's hair stays solid.
+
 ## 8. Open questions
 
 1. **Inline draws.** The profile relies on D77 (`inline_draw_end = 13444`) for both DrawIndexedVerticesUP (no
