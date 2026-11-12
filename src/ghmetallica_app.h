@@ -11,6 +11,7 @@
 #include <rex/system/kernel_state.h>
 #include <rex/system/xthread.h>
 #include <rex/ui/imgui_dialog.h>
+#include <rex/ui/overlay/invite_prompt.h>
 
 #include <native_x_renderer/native_x_renderer.h>
 
@@ -92,6 +93,9 @@ class GhmetallicaApp : public rex::ReXApp {
       ghmetallica::SetOutputSize(window()->GetActualPhysicalWidth(), window()->GetActualPhysicalHeight());
     }
     ghmetallica::InitializeKeyboard();
+    // Online play: a friend's invite is asked about outside a song (rex/ui/overlay/invite_prompt.h), never over
+    // the highway.
+    rex::ui::SetInvitePromptCondition([] { return !ghmetallica::SongShown(); });
   }
   void OnWindowPixelSizeChanged(uint32_t pixel_width, uint32_t pixel_height) override {
     ghmetallica::SetOutputSize(pixel_width, pixel_height);
