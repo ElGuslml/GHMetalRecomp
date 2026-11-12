@@ -244,7 +244,7 @@ inline constexpr bool kHasMicrophones = true;
 
 // --- Drums ---
 
-// A controller or the keyboard playing drums (launcher 3.20, the Instrument row): the SDK's gamepad_device_subtypes
+// A controller or the keyboard playing drums (launcher 3.19.1, the Instrument row): the SDK's gamepad_device_subtypes
 // gives it XInput's drum kit subtype, 8. The game plays a kit as Guitar Hero's five lanes, or as a Rock Band kit on
 // its own four-lane highway when the kit's capability flags have bit 0 (sub_8239D688 / sub_8239D890, the SDK's change
 // 87: "8:1"); the Drum kit row chooses. A real drum kit gets the row too.

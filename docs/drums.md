@@ -1,6 +1,6 @@
 # Drums on the keyboard or a controller, five or four lanes
 
-**Status: added (2026-11-11), launcher 3.20:** Controls → a controller or Keyboard and mouse → Instrument: Drums, then
+**Status: added (2026-11-11), launcher 3.19.1:** Controls → a controller or Keyboard and mouse → Instrument: Drums, then
 Drum kit: 5 lanes (Guitar Hero) or 4 lanes (Rock Band). Not yet played through a song with them.
 
 ## How the game tells the kits apart
