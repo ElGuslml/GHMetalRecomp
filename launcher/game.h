@@ -133,14 +133,18 @@ inline constexpr std::array<Language, 5> kLanguages{{
 // Switches of the game's own (src/), each a boolean cvar with a row in the Settings tab (game_types.h's Toggle); their
 // titles, hints and help are game.cpp's (GameTexts::toggles and toggle_help, in this order).
 // The screen effects (src/screen_fx.cpp, docs/screen-effects.md), all on as on the console: the grain only with the
-// color correction (without that pass the grain is far stronger, Gustavo's rule).
-inline constexpr std::array<Toggle, 6> kToggles{{
+// color correction (without that pass the grain is far stronger, Gustavo's rule). Then two in Settings > Game, off as
+// on the console: the boot's videos skipped (src/intro.cpp, docs/intro.md) and the game's debug menu
+// (src/debug_menu.cpp, docs/debug-menu.md).
+inline constexpr std::array<Toggle, 8> kToggles{{
     {"ghmetallica_fx_bloom", true, ToggleGroup::kScreenEffects},
     {"ghmetallica_fx_depth_of_field", true, ToggleGroup::kScreenEffects},
     {"ghmetallica_fx_color", true, ToggleGroup::kScreenEffects},
     {"ghmetallica_fx_grain", true, ToggleGroup::kScreenEffects, "ghmetallica_fx_color"},
     {"ghmetallica_fx_vignette", true, ToggleGroup::kScreenEffects},
     {"ghmetallica_fx_ink", true, ToggleGroup::kScreenEffects},
+    {"ghmetallica_skip_intro", false},
+    {"ghmetallica_debug_menu", false},
 }};
 
 // --- Downloadable content ---

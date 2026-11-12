@@ -71,6 +71,7 @@ set(GHMETALLICA_SOURCES
     src/options.cpp
     src/crowd.cpp
     src/debug_menu.cpp
+    src/intro.cpp
     src/fmod_mix.cpp
     src/players.cpp
     src/screen_fx.cpp

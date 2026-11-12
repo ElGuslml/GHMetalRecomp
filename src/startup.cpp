@@ -209,6 +209,9 @@ ghmetallica_fx_ink = true
 # shortcuts the same switch had (unlocking or completing songs from the setlist and the gig posters) stay off. Some
 # items need Neversoft's development tools and do nothing. false = as on the console.
 ghmetallica_debug_menu = false
+# The videos at the start (Activision, RedOctane, Neversoft, the game's intro) skipped, and the legal notice not waited
+# for once the game has loaded: the game starts at its title screen (src/intro.cpp). false = as on the console.
+ghmetallica_skip_intro = false
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

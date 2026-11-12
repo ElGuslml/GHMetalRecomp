@@ -1,7 +1,7 @@
 # The game's own debug menu
 
-**Status: added, off by default (2026-11-11):** `ghmetallica_debug_menu = true` in `ghmetallica.toml` (or
-`--ghmetallica_debug_menu=true`). Not in the launcher.
+**Status: added, off by default (2026-11-11):** the launcher's Settings → Game → "Game debug menu" row, or
+`ghmetallica_debug_menu = true` in `ghmetallica.toml` (or `--ghmetallica_debug_menu=true`).
 
 ## What it is
 
@@ -28,4 +28,4 @@ menu: the item is there, the shortcuts are not. The log names each script that r
 
 ## Turning it off
 
-`ghmetallica_debug_menu = false` (the default): the menus are as on the console.
+The launcher's row off, or `ghmetallica_debug_menu = false` (the default): the menus are as on the console.

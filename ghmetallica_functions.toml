@@ -269,8 +269,8 @@ address = 0x824C3260   # fadds f0,f13,f0 (sub_824C3028's mode 2: the other phase
 name = "GHMetallicaLoadingWaveHook"
 registers = ["f0"]
 [[midasm_hook]]
-address = 0x8239318C   # bne cr6 (sub_82392F58, the script function Wait, its seconds branch): r4 = the wait in ms, r30 = the script; src/crowd.cpp
-name = "GHMetallicaCrowdBeatWaitHook"
+address = 0x8239318C   # bne cr6 (sub_82392F58, the script function Wait, its seconds branch): r4 = the wait in ms, r30 = the script; src/crowd.cpp (and src/intro.cpp's legal notice)
+name = "GHMetallicaScriptWaitSecondsHook"
 registers = ["r4", "r30"]
 
 # The screen effects each turned off by an option (src/screen_fx.cpp, ghmetallica_fx_*): the effects' composite
@@ -303,3 +303,10 @@ address = 0x822BD1E8   # lbz r11,2(r3) (the entry of sub_822BD1E8): r3 = the com
 name = "GHMetallicaGlobalResolveHook"
 registers = ["r3"]
 return_on_true = true
+
+# The boot's videos skipped (src/intro.cpp, ghmetallica_skip_intro): PlayMovie (sub_823CD8A0) has read its `movie`
+# string into 84(r1) (bl 0x822B5EC8 at 0x823CD91C); r3 = found. Not found returns false without playing.
+[[midasm_hook]]
+address = 0x823CD920   # clrlwi r11,r3,24 (then beq 0x823CD8FC: return 0)
+name = "GHMetallicaPlayMovieHook"
+registers = ["r1", "r3"]
