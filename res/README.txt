@@ -113,6 +113,7 @@ when you press PLAY.
     (off by default): the game takes your audio device in exclusive mode and the sound comes sooner (about
     55 ms on a USB audio interface); other programs cannot play on that device while the game runs.
     Calibrate the audio again after changing it.
+  - Online (experimental): online play with your friends (see ONLINE PLAY).
 - DLC: choose the folder where you keep your Xbox 360 packages (LIVE, PIRS or CON files, in it or its
   subfolders). The game reads them from there: nothing is copied, and the other ElGus Recomps launchers can
   use the same folder. The packages are listed by the game they were made for, each with a switch; those
@@ -136,6 +137,26 @@ Any microphone connected to the PC works as the game's Xbox 360 USB microphone:
 If the pitch line jumps around, lower the Gain; if the game does not hear you, raise it. Headphones help: with
 speakers, the microphone hears the song too. While a microphone is chosen, Windows shows that the game is using
 it.
+
+
+ONLINE PLAY (EXPERIMENTAL)
+
+The game's online modes with your friends (Pro Face-Off, Battle, Band Quickplay and the rest), without Xbox
+Live: one of you hosts and the others join, everyone with this same version.
+1. In the launcher's Settings > Online, turn on Online play, on every PC.
+2. The host keeps Connection on Host. Its launcher shows Your address (for friends on the same network) and
+   Internet (for friends over the internet): choose a row to copy it, and send it to your friends.
+3. The others choose Join a friend and type that address.
+4. In the game, go online from the main menu, as on the console: the party, invites, the modes. An invite
+   shows at the top of the screen: hold START (or Enter) for 2 seconds to join.
+Over the internet, the host's game asks its router to open its port (UDP 3074) while it runs (UPnP). If the
+Internet row says "Not reachable" (CGNAT), the host's internet provider shares one address among its
+customers and no friend can join from the internet: let a friend host, play Through Steam, or use a virtual
+network program (ZeroTier, Tailscale, Radmin VPN) and type the host's address on it. If it says "Unknown",
+the router does not answer UPnP: turn UPnP on in the router, or forward UDP port 3074 to the host's PC.
+Through Steam (experimental): with Steam running, your Steam friends who play this game appear in its friends
+list and the invites go through Steam; no port is opened. Steam shows you playing "Spacewar" (Valve's test
+app, which games without a Steam page of their own use).
 
 
 MORE THAN ONE CONTROLLER

@@ -16,6 +16,13 @@ only when the game offers AMD FSR 3.1). Their notices:
 
 NVIDIA and DLSS are trademarks or registered trademarks of NVIDIA Corporation in the U.S. and other countries.
 
+## Steamworks API
+
+`steam_api64.dll` (the Steamworks API, Copyright Valve Corporation) is shipped beside `rexsteam.exe`, the SDK's helper
+for online play through Steam (`online_steam`, off by default), and loaded only then. It is redistributed under the
+Steamworks SDK Access Agreement; it is not built from this repository (Valve's Steamworks SDK). Steam and the Steam
+logo are trademarks and/or registered trademarks of Valve Corporation in the U.S. and/or other countries.
+
 ## GH Metallica Launcher
 
 The launcher (the RecompLauncher submodule, `recomp_launcher/`, and this game's `launcher/`) uses SDL 3, Dear ImGui,
