@@ -9,7 +9,9 @@ The launcher's **Settings > Online**:
 
 - **Online play**: on, on every PC.
 - **Connection**: *Host* on one PC; *Join a friend* on the others, with the host's address and port as the host's
-  launcher shows them under **Your address** (choose that row to copy it).
+  launcher shows them: **Your address** on one network, **Internet** over the internet (choose a row to copy it).
+  **Internet** says *Not reachable* (CGNAT) when the host's internet provider shares its address, and *Unknown* when
+  the router does not answer UPnP.
 - On one network, the host's local address (192.168.x.x) is enough. Over the internet the friends type the host's
   public address, and the host's router must forward the UDP port (3074 by default, the **Port** row) to the host's
   PC. The host's game asks the router to do it while it runs (UPnP, when the router has it on; `online_upnp`), and its
