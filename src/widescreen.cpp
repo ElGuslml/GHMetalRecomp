@@ -288,6 +288,34 @@ void GHMetallicaTailHook(PPCRegister& r5, PPCRegister& r6, PPCRegister& r7) {
   StoreFloat(base, c0 + 12, float(LoadFloat(base, c0 + 12) / factor));
 }
 
+// [[midasm_hook]] at 0x821B70DC in sub_821B69B0, the trail that joins tap notes (guitartaptrailcontrolpoints): r1 = its
+// stack. sub_82139818 makes each control point from a tap gem's screen element, {x, y} its position (+432, +436, pixels
+// of the 1280x720 canvas), then a kind and its scale (+456); sub_821B69B0 copies them to r1 + 544 (the first once more
+// before them, the last repeated after them, up to 34 more), and its vertex shader draws the curve from 34 of them at a
+// time (VS c0-c33, batches 31 apart) over a fixed strip of 522 vertices. The gems are narrowed when drawn (the sprite
+// hooks), their positions are not: the trail stayed where the gems would be unnarrowed, beside its highway, the more the
+// farther from the center (two players' highways). Each point's x narrowed once here, after the copies are made and
+// before the first batch.
+void GHMetallicaTapTrailHook(PPCRegister& r1) {
+  uint8_t* base = ghmetallica::GuestBase();
+  double factor = NarrowFactor(base);
+  if (factor == 1.0) {
+    return;
+  }
+  // guitartaptrailcontrolpointcount, as sub_821B69B0 kept it ([0x828233F0]); the batches read up to 31 * ((n - 1) /
+  // 34) + 33 < n + 34 points.
+  constexpr uint32_t kTapTrailPointCount = 0x828233F0;
+  constexpr uint32_t kPoints = 544;
+  int32_t count = int32_t(LoadWord(base, kTapTrailPointCount));
+  if (count <= 0 || count > 256) {
+    return;
+  }
+  for (int32_t i = 0; i < count + 34; ++i) {
+    uint32_t x = r1.u32 + kPoints + uint32_t(i) * 16;
+    StoreFloat(base, x, float(640.0 + (LoadFloat(base, x) - 640.0) / factor));
+  }
+}
+
 // [[midasm_hook]] at 0x821B3498 in sub_821B2ED8, a sprite drawn as a grid of quads (the highway's board): r3 = the
 // device, before EndVertices; the vertices BeginVertices handed out are 20 bytes each (x, y, color, u, v).
 void GHMetallicaMeshSpriteHook(PPCRegister& r3) {

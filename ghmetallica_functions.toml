@@ -144,6 +144,10 @@ address = 0x821B5A74   # bl DrawVerticesUP in sub_821B4FB0 (a sustained note's t
 name = "GHMetallicaTailHook"
 registers = ["r5", "r6", "r7"]
 [[midasm_hook]]
+address = 0x821B70DC   # lwz r11,13296(r20) in sub_821B69B0 (the tap notes' trail: its control points at r1 + 544)
+name = "GHMetallicaTapTrailHook"
+registers = ["r1"]
+[[midasm_hook]]
 address = 0x821B3498   # bl EndVertices in sub_821B2ED8 (a sprite drawn as a grid of quads, the highway's board: r3 = device)
 name = "GHMetallicaMeshSpriteHook"
 registers = ["r3"]
