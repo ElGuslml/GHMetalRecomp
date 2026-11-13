@@ -54,6 +54,16 @@ farther from the center, so little with one centered highway (about 50 pixels at
 first batch. Checked on King Nothing's intro, one highway, A/B: without it the trail ended about 50 pixels right of the
 blue gem, with it under the gem.
 
+## The red border while the band is failing (2026-11-13)
+
+Gustavo: when the band is about to fail a song, its red border showed as a frame around the middle 16:9 at 21:9, with
+the stage plain at the sides. The border is a 2D element (the script `Band_Failing_Vingette_on` fades in
+`Vingette_of_failure`, a `band_fail_vignette` element over the whole 1280×720 canvas) drawn by the sprite hook's
+function, so it was narrowed with the HUD. Now, in a song, a sprite that is a piece of an overlay of the whole screen
+(at least half the canvas's width and half its height, reaching a side and the top or bottom: GH5's rule) is left
+unnarrowed, so the border covers the whole width (`ghmetallica_ultrawide_overlays`, on by default; GH5's and GH
+Warriors of Rock's fix). Checked by Gustavo at 21:9.
+
 ## Black bars outside a song (2026-10-26)
 
 The menus, the loading screens and the boot videos were made for 16:9: at their sides the 3D room behind the menus
@@ -86,3 +96,4 @@ of the image, not of the screen.
 Choose 16:9 in GH Metallica Launcher's image format (it writes `ghmetallica_ultrawide = false`), or start the game with
 `--ghmetallica_ultrawide=false`. With `ghmetallica_ultrawide_hud = false` the 2D layer is stretched with the image.
 With `ghmetallica_menu_bars = false` the menus show the room at their sides as before.
+With `ghmetallica_ultrawide_overlays = false` the red border stays at 16:9 with the HUD.

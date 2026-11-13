@@ -27,6 +27,9 @@ REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide, false, "GHMetallica",
 REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide_hud, true, "GHMetallica",
                     "With ghmetallica_ultrawide: keep the HUD, the menus and the videos at 16:9 in the center "
                     "(false = stretched)");
+REXCVAR_DEFINE_BOOL(ghmetallica_ultrawide_overlays, true, "GHMetallica",
+                    "With ultrawide, in a song: a 2D overlay over the whole screen (the red border while the band is "
+                    "failing) covers the whole width; false = kept at 16:9 in the center with the HUD");
 
 namespace ghmetallica {
 namespace {
@@ -183,6 +186,21 @@ double NarrowFactor(const uint8_t* base) {
   return width == 1280 && height == 720 ? factor : 1.0;
 }
 
+// Whether the vertices (x and y the first two floats of each, pixels of the 1280x720 canvas) are a piece of an
+// overlay of the whole screen: at least a quarter of the canvas (half its width and half its height) reaching one of
+// its sides and its top or bottom (GH5's rule: its red border is four such quarters, or one quad over the canvas).
+bool ScreenOverlayPiece(const uint8_t* base, uint32_t data, uint32_t count, uint32_t stride) {
+  float x0 = 1e9f, x1 = -1e9f, y0 = 1e9f, y1 = -1e9f;
+  for (uint32_t i = 0; i < count; ++i) {
+    const float x = LoadFloat(base, data + i * stride), y = LoadFloat(base, data + i * stride + 4);
+    x0 = std::min(x0, x);
+    x1 = std::max(x1, x);
+    y0 = std::min(y0, y);
+    y1 = std::max(y1, y);
+  }
+  return (x0 <= 0.5f || x1 >= 1279.5f) && (y0 <= 0.5f || y1 >= 719.5f) && x1 - x0 >= 639.5f && y1 - y0 >= 359.5f;
+}
+
 // The vertices' x (the first float of each, in pixels of the 1280x720 canvas) narrowed around the center.
 void NarrowVertices(uint8_t* base, double factor, uint32_t data, uint32_t count, uint32_t stride) {
   static std::atomic<bool> logged{false};
@@ -203,13 +221,25 @@ void NarrowVertices(uint8_t* base, double factor, uint32_t data, uint32_t count,
 // are placed by the highway's own code, not through root_window, and narrowing root_window left them stretched.
 //
 // [[midasm_hook]] at 0x82421D78 in sub_82421B60, a sprite's quad: r6 = its 4 vertices (0x82BE20E0), r7 = their stride
-// (28 or 36), before DrawVerticesUP.
+// (28 or 36), before DrawVerticesUP. In a song a sprite that is a piece of an overlay of the whole screen (the red border
+// while the band is failing: Band_Failing_Vingette_on fades in the element Vingette_of_failure, a descinterface
+// 'band_fail_vignette' on root_window) is left as it is, so the overlay is stretched over the whole width instead of a
+// red frame around the middle 16:9 (ghmetallica_ultrawide_overlays; GH5's and GH Warriors of Rock's fix).
 void GHMetallicaSpriteHook(PPCRegister& r6, PPCRegister& r7) {
   uint8_t* base = ghmetallica::GuestBase();
   double factor = NarrowFactor(base);
-  if (factor != 1.0) {
-    NarrowVertices(base, factor, r6.u32, 4, r7.u32);
+  if (factor == 1.0) {
+    return;
   }
+  if (REXCVAR_GET(ghmetallica_ultrawide_overlays) && ghmetallica::SongShown() &&
+      ScreenOverlayPiece(base, r6.u32, 4, r7.u32)) {
+    static std::atomic<bool> logged{false};
+    if (!logged.exchange(true)) {
+      REXLOG_INFO("[ultrawide] a song's overlays over the whole screen cover the whole width");
+    }
+    return;
+  }
+  NarrowVertices(base, factor, r6.u32, 4, r7.u32);
 }
 
 // [[midasm_hook]] at 0x82465718 in sub_82465228, another screen element's quad (drawn by sub_82465870 for the loading
