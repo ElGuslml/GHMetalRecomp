@@ -67,6 +67,7 @@ set(GHMETALLICA_SOURCES
     src/framerate.cpp
     src/keyboard.cpp
     src/main.cpp
+    src/matchmaking.cpp
     src/native_x_renderer_ghmetallica.cpp
     src/options.cpp
     src/crowd.cpp

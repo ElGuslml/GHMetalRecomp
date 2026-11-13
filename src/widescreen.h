@@ -27,6 +27,9 @@ void SetOutputSize(uint32_t width, uint32_t height);
 // included) and its pause menu.
 bool SongShown();
 
+// Whether the loading screen is up (the byte 0x82BDC850, which sub_823F7DF0 checks to draw it every frame).
+bool LoadingShown();
+
 // The bars outside a song, a dialog that stays for the session (ReXApp::OnCreateDialogs; destroyed in OnShutdown).
 std::unique_ptr<rex::ui::ImGuiDialog> CreateMenuBars(rex::ui::ImGuiDrawer* drawer);
 

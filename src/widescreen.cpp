@@ -92,6 +92,11 @@ class MenuBarsDialog : public rex::ui::ImGuiDialog {
 
 bool SongShown() { return DrawnRecently(g_highway_drawn); }
 
+bool LoadingShown() {
+  const uint8_t* base = GuestBase();
+  return base && base[0x82BDC850] != 0;
+}
+
 void SetOutputSize(uint32_t width, uint32_t height) {
   double factor = 1.0;
   if (native_x_renderer::Renders()) {

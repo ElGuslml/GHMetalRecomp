@@ -252,6 +252,12 @@ inline constexpr bool kHasDrums = true;
 // The microphone's gain (usb_microphone_1_gain) until the player changes it, and the Microphone's Reset: src/startup.cpp's.
 inline constexpr int kMicrophoneGainDefault = -12;
 
+// --- Online ---
+
+// Settings > Online (launcher 3.20): online play between friends (the SDK's online_play, its changes 89-97): one
+// player hosts, the others join by address and port, or through Steam (rexsteam.exe, experimental).
+inline constexpr bool kHasOnline = true;
+
 // --- The controls in the game's words ---
 
 // The game's functions (game_types.h's GameControl) in groups, in the launcher's language (game.cpp); empty: the pages show the Xbox 360 controls

@@ -396,7 +396,7 @@ void GHMetallicaWhammyStateHook(PPCRegister& r11) {
   }
 }
 
-// The loading screen (sub_824C3028, drawn every frame while the byte 0x81BDC850 is set: sub_823A4AB0 ->
+// The loading screen (sub_824C3028, drawn every frame while the byte 0x82BDC850 is set: sub_823A4AB0 ->
 // sub_823F7DF0) animates by the frame, not by time:
 // - the boot's spinning Metallica star (sub_824C2CB0: the four vertices of the mesh at [0x82C79164 + 80] turned about
 //   their center by 0.06 radians each frame, 3.6 a second at 60);

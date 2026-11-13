@@ -9,6 +9,7 @@
 #include <rex/kernel/xam/module.h>
 #include <rex/logging.h>
 #include <rex/system/kernel_state.h>
+#include <rex/system/online/session_service.h>
 #include <rex/system/xthread.h>
 #include <rex/ui/imgui_dialog.h>
 
@@ -92,6 +93,12 @@ class GhmetallicaApp : public rex::ReXApp {
       ghmetallica::SetOutputSize(window()->GetActualPhysicalWidth(), window()->GetActualPhysicalHeight());
     }
     ghmetallica::InitializeKeyboard();
+    // Online play: a friend's invite shows at once (a card, START held to join; rex/ui/overlay/invite_prompt.h), and
+    // an accepted one is told to the game only in the menus: never over the highway, nor while a loading screen is
+    // up. Told while it loaded its menus after leaving a song, the game joined the party as the lobby menu was being
+    // built and crashed (a menu_remove_data event on a menu with no list; local_docs/51).
+    rex::system::online::SessionService::SetDefaultInviteGate(
+        [] { return !ghmetallica::SongShown() && !ghmetallica::LoadingShown(); });
   }
   void OnWindowPixelSizeChanged(uint32_t pixel_width, uint32_t pixel_height) override {
     ghmetallica::SetOutputSize(pixel_width, pixel_height);
