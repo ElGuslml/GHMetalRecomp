@@ -20,7 +20,10 @@ address impossible; Steam or a virtual network (ZeroTier, Tailscale, Radmin VPN)
 
 ## In the game
 
-The online modes are in the game's own menus, as with Xbox Live on the console: the party, the friends list, invites,
+The main menu's online item says "ONLINE" ("EN LÍNEA", "EN LIGNE"): the game's own text for its PlayStation 3
+version, in every language's pack on the Xbox disc, in place of "Xbox LIVE" (`ghmetallica_online_text`, true; false
+brings "Xbox LIVE" back; the game's other texts that name Xbox LIVE are unchanged). The online modes are in the
+game's own menus, as with Xbox Live on the console: the party, the friends list, invites,
 Pro Face-Off, Battle, Band Quickplay and the rest. The friends list shows the players connected and the Steam friends
 with the game open. An invite shows as a card at the top of the screen for 15 seconds: hold START on a controller (or
 Enter) for 2 seconds to join. A friend can also be invited from Steam's friends list (Invite to game), or joined
@@ -44,6 +47,7 @@ The launcher writes them to `ghmetallica_options.toml`; they can also go in `ghm
 `online_play`, `online_steam`, `online_host` (`"a.b.c.d:port"`; empty: this PC hosts), `online_port`, `online_upnp`
 (the host's router asked to forward its port), and `online_xuid` (two instances on one PC with copies of one profile).
 `ghmetallica_online_host_wait` (seconds, 3) is the matchmaking's wait above.
+`ghmetallica_online_text` (true): the main menu's item named "ONLINE" instead of "Xbox LIVE".
 
 ## Turning it off
 

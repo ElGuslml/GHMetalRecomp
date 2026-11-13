@@ -212,6 +212,9 @@ ghmetallica_debug_menu = false
 # The videos at the start (Activision, RedOctane, Neversoft, the game's intro) skipped, and the legal notice not waited
 # for once the game has loaded: the game starts at its title screen (src/intro.cpp). false = as on the console.
 ghmetallica_skip_intro = false
+# The main menu's online item named "ONLINE" (the game's own PlayStation 3 text, in the game's language), as online
+# play here is through Steam (src/online_text.cpp). false = "Xbox LIVE", as on the console.
+ghmetallica_online_text = true
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {

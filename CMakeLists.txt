@@ -68,6 +68,7 @@ set(GHMETALLICA_SOURCES
     src/keyboard.cpp
     src/main.cpp
     src/matchmaking.cpp
+    src/online_text.cpp
     src/native_x_renderer_ghmetallica.cpp
     src/options.cpp
     src/crowd.cpp

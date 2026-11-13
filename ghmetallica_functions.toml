@@ -148,6 +148,10 @@ address = 0x823F78A4   # mr r3,r31 at the end of sub_823F7800 (the online matchm
 name = "GHMetallicaMatchmakerHook"
 registers = ["r31"]
 [[midasm_hook]]
+address = 0x823AA99C   # stw r3,116(r1) in sub_823AA990 (a text's key -> its text in the player's language: r3 = the key)
+name = "GHMetallicaTextKeyHook"
+registers = ["r3"]
+[[midasm_hook]]
 address = 0x821B70DC   # lwz r11,13296(r20) in sub_821B69B0 (the tap notes' trail: its control points at r1 + 544)
 name = "GHMetallicaTapTrailHook"
 registers = ["r1"]
