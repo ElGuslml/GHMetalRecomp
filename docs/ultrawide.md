@@ -18,7 +18,7 @@ scene, so that nothing is drawn behind the highway; at 16:9 it lies exactly unde
 
 ## Fix
 
-`src/widescreen.cpp` with eight `[[midasm_hook]]`s in `ghmetallica_functions.toml`, active only with
+`src/widescreen.cpp` with `[[midasm_hook]]`s in `ghmetallica_functions.toml`, active only with
 `ghmetallica_ultrawide` (GH Metallica Launcher's image format on a screen or window wider than 16:9) or, with
 NativeXRenderer, when it fills the screen. The 1280×720 frame is stretched over the screen (anamorphic), and the game
 is corrected by the same factor (screen aspect ratio ÷ 16:9, for example 1.34 on 3440×1440):
@@ -41,6 +41,18 @@ quads drawn by `sub_821B79F8` (DrawVerticesUP at 0x821B7B44, 4 vertices of 20 by
 canvas) only when notes are hit, which no hook narrowed. `GHMetallicaParticleHook` narrows them like the sprites.
 Found with temporary probes on the engine's 2D draws during a song played on Easy with the keyboard (every fret press
 strums): the particles' quads came at up to 98 a second with x from 137 to 1011, unnarrowed.
+
+## The tap notes' trail (2026-11-12)
+
+Gustavo: with two players at 21:9 a white line wandered beside his highway, left of its notes. It is the trail that
+joins tap notes (King Nothing's intro on Expert has them). `sub_82139818` makes each of its control points from a tap
+gem's screen element (its position, pixels of the 1280×720 canvas, and its scale), and `sub_821B69B0` hands them to
+its vertex shader as constants (c0-c33, 34 at a time) to draw the curve over a fixed strip of 522 vertices. The gems
+are narrowed when drawn, the points were not: the trail stayed where the gems would be unnarrowed, the more off the
+farther from the center, so little with one centered highway (about 50 pixels at 3440×1440) and a lot with two.
+`GHMetallicaTapTrailHook` (0x821B70DC) narrows the points' x once, after `sub_821B69B0` has copied them and before its
+first batch. Checked on King Nothing's intro, one highway, A/B: without it the trail ended about 50 pixels right of the
+blue gem, with it under the gem.
 
 ## Black bars outside a song (2026-10-26)
 
