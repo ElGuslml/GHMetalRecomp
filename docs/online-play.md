@@ -12,7 +12,9 @@ The launcher's **Settings > Online**:
   launcher shows them under **Your address** (choose that row to copy it).
 - On one network, the host's local address (192.168.x.x) is enough. Over the internet the friends type the host's
   public address, and the host's router must forward the UDP port (3074 by default, the **Port** row) to the host's
-  PC; or everyone joins a virtual network program (ZeroTier, Tailscale, Radmin VPN) and types the host's address on it.
+  PC. The host's game asks the router to do it while it runs (UPnP, when the router has it on; `online_upnp`), and its
+  log says how it went (lines beginning `online: UPnP:`); a router without UPnP needs the port forwarded by hand. Or
+  everyone joins a virtual network program (ZeroTier, Tailscale, Radmin VPN) and types the host's address on it.
   Some internet providers share one public address among many customers (carrier-grade NAT: the router's own
   "internet" address is a private one, such as 10.x.x.x or 100.64-127.x.x); a port cannot be forwarded there, so a
   friend without it hosts, or Steam, or a virtual network.
@@ -37,6 +39,7 @@ The launcher writes them to `ghmetallica_options.toml`; they can also go in `ghm
 `online_play`, `online_host` (`"a.b.c.d:port"`; empty: this PC hosts), `online_port`, `online_steam`, and
 `online_xuid` (two instances on one PC with copies of one profile).
 `ghmetallica_online_host_wait` (seconds, 3) is the matchmaking's wait above.
+`online_upnp` (true): the host's router asked to forward its port.
 
 ## Turning it off
 
