@@ -141,22 +141,15 @@ it.
 
 ONLINE PLAY (EXPERIMENTAL)
 
-The game's online modes with your friends (Pro Face-Off, Battle, Band Quickplay and the rest), without Xbox
-Live: one of you hosts and the others join, everyone with this same version.
-1. In the launcher's Settings > Online, turn on Online play, on every PC.
-2. The host keeps Connection on Host. Its launcher shows Your address (for friends on the same network) and
-   Internet (for friends over the internet): choose a row to copy it, and send it to your friends.
-3. The others choose Join a friend and type that address.
-4. In the game, go online from the main menu, as on the console: the party, invites, the modes. An invite
-   shows at the top of the screen: hold START (or Enter) for 2 seconds to join.
-Over the internet, the host's game asks its router to open its port (UDP 3074) while it runs (UPnP). If the
-Internet row says "Not reachable" (CGNAT), the host's internet provider shares one address among its
-customers and no friend can join from the internet: let a friend host, play Through Steam, or use a virtual
-network program (ZeroTier, Tailscale, Radmin VPN) and type the host's address on it. If it says "Unknown",
-the router does not answer UPnP: turn UPnP on in the router, or forward UDP port 3074 to the host's PC.
-Through Steam (experimental): with Steam running, your Steam friends who play this game appear in its friends
-list and the invites go through Steam; no port is opened. Steam shows you playing "Spacewar" (Valve's test
-app, which games without a Steam page of their own use).
+The game's online modes with your Steam friends (Pro Face-Off, Battle, Band Quickplay and the rest), without
+Xbox Live. Everyone needs Steam running and signed in, and this same version of the game.
+1. In the launcher's Settings > Online, turn on Online play, on every PC (Through Steam turns on with it).
+2. In the game, go online from the main menu, as on the console: the party, invites, the modes. Your Steam
+   friends who have the game open are in its friends list: invite them from there.
+3. An invite shows at the top of the screen: hold START (or Enter) for 2 seconds to join.
+You can also invite a friend from Steam's friends list (Invite to game), or join a friend there (Join game):
+the game takes you to their party. No port needs opening: Steam carries the game between you. Steam shows you
+playing "Spacewar" (Valve's test app, which games without a Steam page of their own use).
 
 
 MORE THAN ONE CONTROLLER
