@@ -24,7 +24,9 @@ The online modes are in the game's own menus, as with Xbox Live on the console: 
 Pro Face-Off, Battle, Band Quickplay and the rest. The friends list shows the players connected and the Steam friends
 with the game open. An invite shows as a card at the top of the screen for 15 seconds: hold START on a controller (or
 Enter) for 2 seconds to join. A friend can also be invited from Steam's friends list (Invite to game), or joined
-there (Join game): the game takes the player to the friend's party.
+there (Join game): the game takes the player to the friend's party. That happens once per join: when the host later leaves
+its party or goes online again (the game makes a new party), the friend stays in its own lobby until invited, as on
+the console (SDK change 102; before it, the friend followed the host into every new party).
 
 Steam does not show a friend's game when the friend's profile keeps its game details private (the friend looks
 "online", not "in game"). The games then tell each other directly that they are running, so one of the two seeing the
