@@ -144,6 +144,10 @@ address = 0x821B5A74   # bl DrawVerticesUP in sub_821B4FB0 (a sustained note's t
 name = "GHMetallicaTailHook"
 registers = ["r5", "r6", "r7"]
 [[midasm_hook]]
+address = 0x823F78A4   # mr r3,r31 at the end of sub_823F7800 (the online matchmaker's constructor: its times read)
+name = "GHMetallicaMatchmakerHook"
+registers = ["r31"]
+[[midasm_hook]]
 address = 0x821B70DC   # lwz r11,13296(r20) in sub_821B69B0 (the tap notes' trail: its control points at r1 + 544)
 name = "GHMetallicaTapTrailHook"
 registers = ["r1"]
