@@ -116,6 +116,18 @@ sleeps at once when it is far behind. Kameo at the same spot: that thread 7.0 % 
 A rewrite of the command processor (a "ring skimmer") was measured first and judged not worth it: this thread is under a
 tenth of a core even in Kameo. Turned off with `sync_only_lean = false`.
 
+## NativeXRenderer: the command processor's wait at its signals (2026-11-14)
+
+In this game's songs the command processor thread took about a fifth of a core. Most of the time it waits for the
+vertical blank (the game's Synchronize: cheap), but in most sessions it also runs right behind NativeXRenderer's thread
+and, before each of its signals to the game, waits for the drawing of what came before it: about 9,000 times a second,
+each spent spinning for some 20 µs. NativeXRenderer's D145 makes that wait sleep at once (its thread wakes the command
+processor when it gets there): that thread 18.7 % -> 7.2 % of a core at 160 FPS, the frames as even, and no worse with
+the game held to four efficiency cores. If stutters appear later on a laptop or a CPU with few threads, this is a change
+to look at first (NativeXRenderer's decisions.md, D145). The same update takes from upstream ReXGlue two SDK fixes:
+the SPIR-V translator reads a texture's exponent bias from the right word (change 104; no visible change here), and the
+command processor sleeps when it has no commands (change 105; no change here, where it rarely runs out).
+
 ## Also: registers as local variables in the generated code (2026-10-24)
 
 Not a bug, an optimization of the recompiled code, as in KameoRecomp, GRAWRecomp and POTCAWERecomp: with the SDK's
