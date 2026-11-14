@@ -215,6 +215,10 @@ ghmetallica_skip_intro = false
 # The main menu's online item named "ONLINE" (the game's own PlayStation 3 text, in the game's language), as online
 # play here is through Steam (src/online_text.cpp). false = "Xbox LIVE", as on the console.
 ghmetallica_online_text = true
+# The mouse cursor hidden over the game after cursor_auto_hide_ms without moving it (shown again when it moves, while
+# another window has the focus, and over the SDK's overlays). false = always shown.
+cursor_auto_hide = true
+cursor_auto_hide_ms = 2000
 )";
 
 uint32_t Crc32(const std::vector<char>& data) {
